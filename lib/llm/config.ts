@@ -1,18 +1,25 @@
 import 'server-only'
 
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
-import { createGateway, type LanguageModel } from 'ai'
+import type { LanguageModel } from 'ai'
 
 const GATEWAY_DEFAULT_MODEL = 'openai/gpt-5-mini'
+const OPENROUTER_DEFAULT_MODEL = 'openai/gpt-4o-mini'
+const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 const OPENCODE_DEFAULT_MODEL = 'big-pickle'
 const OPENCODE_BASE_URL = 'https://opencode.ai/zen/v1'
 
-export type LlmProvider = 'vercel-gateway' | 'opencode-zen' | 'gateway-default'
+export type LlmProvider = 'openrouter' | 'opencode-zen' | 'gateway-default'
 type LlmSelection = { model: LanguageModel; modelId: string; provider: LlmProvider }
 
-function vercelGateway(apiKey: string, modelId: string): LlmSelection {
-  const gateway = createGateway({ apiKey })
-  return { model: gateway(modelId), modelId, provider: 'vercel-gateway' }
+function openRouter(apiKey: string, modelId: string): LlmSelection {
+  const provider = createOpenAICompatible({
+    name: 'openrouter',
+    baseURL: OPENROUTER_BASE_URL,
+    apiKey,
+    supportsStructuredOutputs: true,
+  })
+  return { model: provider.chatModel(modelId), modelId, provider: 'openrouter' }
 }
 
 function opencodeZen(apiKey: string, modelId: string): LlmSelection {
@@ -20,23 +27,32 @@ function opencodeZen(apiKey: string, modelId: string): LlmSelection {
   return { model: opencode.chatModel(modelId), modelId, provider: 'opencode-zen' }
 }
 
+function openRouterKey() {
+  return (
+    process.env.OPENROUTER_API_KEY?.trim() ||
+    process.env.VERCEL_API_KEY_2?.trim() ||
+    process.env.VERCEL_API_KEY?.trim() ||
+    undefined
+  )
+}
+
 /**
  * Configuración del proveedor de LLM, leída solo en el servidor. Orden de prioridad:
  *
- *   VERCEL_API_KEY    clave del AI Gateway de Vercel; el modelo es un id `proveedor/modelo`
- *   OPENCODE_API_KEY  OpenCode Zen (endpoint compatible con OpenAI); el modelo es p. ej. `big-pickle`
- *   (ninguna)         AI Gateway con las credenciales del entorno de Vercel
- *   LLM_MODEL         (opcional) id del modelo del proveedor elegido
+ *   OPENROUTER_API_KEY (o VERCEL_API_KEY_2 / VERCEL_API_KEY)  OpenRouter; el modelo es un id `proveedor/modelo`
+ *   OPENCODE_API_KEY                                          OpenCode Zen; el modelo es p. ej. `big-pickle`
+ *   (ninguna)                                                 AI Gateway con las credenciales del entorno de Vercel
+ *   LLM_MODEL                                                 (opcional) id del modelo del proveedor elegido
  *
  * Las claves nunca se escriben en el código: solo se leen de variables de entorno.
  */
 export function getLlmServerConfig(): LlmSelection {
   const configuredModel = process.env.LLM_MODEL?.trim()
-  const vercelKey = process.env.VERCEL_API_KEY?.trim()
+  const routerKey = openRouterKey()
   const opencodeKey = process.env.OPENCODE_API_KEY?.trim()
 
-  if (vercelKey) {
-    return vercelGateway(vercelKey, configuredModel?.includes('/') ? configuredModel : GATEWAY_DEFAULT_MODEL)
+  if (routerKey) {
+    return openRouter(routerKey, configuredModel?.includes('/') ? configuredModel : OPENROUTER_DEFAULT_MODEL)
   }
   if (opencodeKey) {
     return opencodeZen(opencodeKey, configuredModel && !configuredModel.includes('/') ? configuredModel : OPENCODE_DEFAULT_MODEL)
@@ -51,7 +67,7 @@ export function getLlmServerConfig(): LlmSelection {
  */
 export function getLlmFallback(failed: LlmProvider): LlmSelection | null {
   const opencodeKey = process.env.OPENCODE_API_KEY?.trim()
-  if (failed === 'vercel-gateway') {
+  if (failed === 'openrouter') {
     return opencodeKey ? opencodeZen(opencodeKey, OPENCODE_DEFAULT_MODEL) : null
   }
   if (failed === 'opencode-zen') {
