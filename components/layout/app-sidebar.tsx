@@ -5,9 +5,11 @@ import {
   FileText,
   Files,
   GraduationCap,
-  House,
+  LayoutDashboard,
   MessagesSquare,
   Network,
+  Search,
+  Settings,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -28,12 +30,14 @@ import {
 } from '@/components/ui/sidebar'
 
 const study = [
-  { href: '/', label: 'Inicio', icon: House },
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/subjects', label: 'Materias', icon: BookOpen },
-  { href: '/files', label: 'Archivos', icon: Files },
+  { href: '/search', label: 'Búsqueda', icon: Search },
+  { href: '/settings', label: 'Configuración', icon: Settings },
 ]
 
 const tools = [
+  { href: '/files', label: 'Archivos', icon: Files },
   { href: '/chat', label: 'Conversaciones', icon: MessagesSquare },
   { href: '/map', label: 'Mapa de dudas', icon: Network },
   { href: '/documents', label: 'Documentos', icon: FileText },
@@ -107,7 +111,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavGroup label="Estudio" items={study} />
+        <NavGroup label="Navegación" items={study} />
         <NavGroup label="Herramientas" items={tools} />
       </SidebarContent>
       <SidebarFooter>

@@ -1,18 +1,16 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { db } from '@/lib/db'
-import {
-  conversations,
-  documents,
-  files,
-  questionNodes,
-  subjects,
-} from '@/lib/db/schema'
+import { getSubjectsRepo, type SubjectInput } from '@/lib/data/subjects-repo'
 import { getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
+import {
+  COLOR_KEYS,
+  DEFAULT_ICON,
+  GENERAL_WORKSPACE_ID,
+  ICON_KEYS,
+} from '@/lib/workspace'
 
 const subjectSchema = z.object({
   name: z
@@ -25,14 +23,30 @@ const subjectSchema = z.object({
     .string()
     .trim()
     .max(500, 'La descripción admite hasta 500 caracteres.'),
+  color: z.enum(COLOR_KEYS, 'Elegí un color de la lista.'),
+  icon: z.enum(ICON_KEYS, 'Elegí un icono de la lista.'),
 })
 
 function parseSubject(formData: FormData) {
-  return subjectSchema.safeParse({
+  const parsed = subjectSchema.safeParse({
     name: formData.get('name') ?? '',
     code: formData.get('code') ?? '',
     description: formData.get('description') ?? '',
+    color: formData.get('color') ?? '',
+    icon: formData.get('icon') ?? '',
   })
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0].message } as const
+  }
+  const { name, code, description, color, icon } = parsed.data
+  const input: SubjectInput = {
+    name,
+    code: code || null,
+    description: description || null,
+    color,
+    icon,
+  }
+  return { ok: true, input } as const
 }
 
 export async function createSubject(
@@ -40,78 +54,82 @@ export async function createSubject(
 ): Promise<ActionResult<{ id: string }>> {
   const userId = await getUserId()
   const parsed = parseSubject(formData)
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message }
+  if (!parsed.ok) return { ok: false, error: parsed.error }
 
-  const { name, code, description } = parsed.data
-  const [row] = await db
-    .insert(subjects)
-    .values({
-      userId,
-      name,
-      code: code || null,
-      description: description || null,
-    })
-    .returning({ id: subjects.id })
-
+  const { id } = await getSubjectsRepo().create(userId, parsed.input)
   revalidatePath('/', 'layout')
-  return { ok: true, data: { id: row.id } }
+  return { ok: true, data: { id } }
 }
 
 export async function updateSubject(
   id: string,
   formData: FormData,
 ): Promise<ActionResult> {
+  if (id === GENERAL_WORKSPACE_ID) {
+    return { ok: false, error: 'El workspace General no se puede editar.' }
+  }
   const userId = await getUserId()
   const parsed = parseSubject(formData)
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message }
+  if (!parsed.ok) return { ok: false, error: parsed.error }
 
-  const { name, code, description } = parsed.data
-  const updated = await db
-    .update(subjects)
-    .set({
-      name,
-      code: code || null,
-      description: description || null,
-      updatedAt: new Date(),
-    })
-    .where(and(eq(subjects.id, id), eq(subjects.userId, userId)))
-    .returning({ id: subjects.id })
-
-  if (updated.length === 0) return { ok: false, error: 'No encontramos la materia.' }
+  const updated = await getSubjectsRepo().update(userId, id, parsed.input)
+  if (!updated) return { ok: false, error: 'No encontramos la materia.' }
   revalidatePath('/', 'layout')
   return { ok: true }
 }
 
 export async function deleteSubject(id: string): Promise<ActionResult> {
+  if (id === GENERAL_WORKSPACE_ID) {
+    return { ok: false, error: 'El workspace General no se puede eliminar.' }
+  }
   const userId = await getUserId()
-
-  // Sin FK: se desvinculan los elementos de la materia para no dejar huérfanos.
-  const deleted = await db.transaction(async (tx) => {
-    const owned = and(eq(subjects.id, id), eq(subjects.userId, userId))
-    const [found] = await tx.select({ id: subjects.id }).from(subjects).where(owned)
-    if (!found) return false
-
-    await tx
-      .update(files)
-      .set({ subjectId: null })
-      .where(and(eq(files.subjectId, id), eq(files.userId, userId)))
-    await tx
-      .update(documents)
-      .set({ subjectId: null })
-      .where(and(eq(documents.subjectId, id), eq(documents.userId, userId)))
-    await tx
-      .update(conversations)
-      .set({ subjectId: null })
-      .where(and(eq(conversations.subjectId, id), eq(conversations.userId, userId)))
-    await tx
-      .update(questionNodes)
-      .set({ subjectId: null })
-      .where(and(eq(questionNodes.subjectId, id), eq(questionNodes.userId, userId)))
-    await tx.delete(subjects).where(owned)
-    return true
-  })
-
+  const deleted = await getSubjectsRepo().remove(userId, id)
   if (!deleted) return { ok: false, error: 'No encontramos la materia.' }
   revalidatePath('/', 'layout')
   return { ok: true }
+}
+
+const MAX_IMPORT = 50
+
+/** Importa materias desde un texto: una por línea, con código opcional ("MAT-201 | Análisis II"). */
+export async function importSubjects(
+  text: string,
+): Promise<ActionResult<{ count: number }>> {
+  const userId = await getUserId()
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  if (lines.length === 0) {
+    return { ok: false, error: 'Pegá al menos una materia, una por línea.' }
+  }
+  if (lines.length > MAX_IMPORT) {
+    return { ok: false, error: `Se pueden importar hasta ${MAX_IMPORT} materias a la vez.` }
+  }
+
+  const inputs: SubjectInput[] = []
+  for (const [index, line] of lines.entries()) {
+    const [first, ...rest] = line.split('|').map((part) => part.trim())
+    const hasCode = rest.length > 0 && rest.join('|').length > 0
+    const name = hasCode ? rest.join(' | ') : first
+    const code = hasCode ? first : ''
+    if (name.length === 0 || name.length > 120 || code.length > 20) {
+      return {
+        ok: false,
+        error: `La línea ${index + 1} no es válida: el nombre admite hasta 120 caracteres y el código hasta 20.`,
+      }
+    }
+    inputs.push({
+      name,
+      code: code || null,
+      description: null,
+      color: COLOR_KEYS[index % COLOR_KEYS.length],
+      icon: DEFAULT_ICON,
+    })
+  }
+
+  const count = await getSubjectsRepo().createMany(userId, inputs)
+  revalidatePath('/', 'layout')
+  return { ok: true, data: { count } }
 }

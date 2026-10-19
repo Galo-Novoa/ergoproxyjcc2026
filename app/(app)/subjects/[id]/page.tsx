@@ -50,9 +50,9 @@ export default async function SubjectDetailPage({
   return (
     <div className="flex flex-col gap-2">
       <Button asChild variant="ghost" size="sm" className="w-fit">
-        <Link href="/subjects">
+        <Link href="/">
           <ArrowLeft data-icon="inline-start" />
-          Materias
+          Dashboard
         </Link>
       </Button>
 
@@ -65,9 +65,9 @@ export default async function SubjectDetailPage({
             <SubjectFormDialog subject={subject} />
             <ConfirmDeleteButton
               title="¿Eliminar esta materia?"
-              description="Se elimina la materia. Sus archivos, conversaciones y documentos se conservan, pero quedan sin materia asignada."
+              description="Se elimina la materia. Sus archivos, conversaciones y documentos se conservan y pasan al workspace General."
               successMessage="Materia eliminada."
-              redirectTo="/subjects"
+              redirectTo="/"
               onConfirm={remove}
             />
           </>

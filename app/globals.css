@@ -37,6 +37,15 @@
   --sidebar-accent-foreground: oklch(0.22 0.04 255);
   --sidebar-border: oklch(0.91 0.008 250);
   --sidebar-ring: oklch(0.5 0.12 255);
+  /* Colores que la persona elige para cada materia */
+  --ws-azul: oklch(0.5 0.15 255);
+  --ws-turquesa: oklch(0.55 0.1 200);
+  --ws-verde: oklch(0.5 0.12 155);
+  --ws-ambar: oklch(0.58 0.13 75);
+  --ws-terracota: oklch(0.55 0.15 40);
+  --ws-rosa: oklch(0.55 0.16 5);
+  --ws-violeta: oklch(0.5 0.15 295);
+  --ws-pizarra: oklch(0.45 0.03 255);
 }
 
 .dark {
@@ -108,6 +117,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-ws-azul: var(--ws-azul);
+  --color-ws-turquesa: var(--ws-turquesa);
+  --color-ws-verde: var(--ws-verde);
+  --color-ws-ambar: var(--ws-ambar);
+  --color-ws-terracota: var(--ws-terracota);
+  --color-ws-rosa: var(--ws-rosa);
+  --color-ws-violeta: var(--ws-violeta);
+  --color-ws-pizarra: var(--ws-pizarra);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

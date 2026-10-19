@@ -80,6 +80,8 @@ export const subjects = pgTable(
     name: text('name').notNull(),
     code: text('code'),
     description: text('description'),
+    color: text('color').notNull().default('azul'),
+    icon: text('icon').notNull().default('book-open'),
     createdAt: timestamp('createdAt').notNull().defaultNow(),
     updatedAt: timestamp('updatedAt').notNull().defaultNow(),
   },

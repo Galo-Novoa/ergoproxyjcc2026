@@ -19,25 +19,30 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import type { ActionResult } from '@/lib/types'
 
-export function ConfirmDeleteButton({
-  title,
-  description,
-  successMessage,
-  redirectTo,
-  onConfirm,
-  iconOnly = false,
-  label = 'Eliminar',
-}: {
+type ConfirmProps = {
   title: string
   description: string
   successMessage: string
   redirectTo?: string
   onConfirm: () => Promise<ActionResult>
-  iconOnly?: boolean
-  label?: string
+}
+
+/** Diálogo de confirmación controlado: se puede abrir desde un menú sin trigger propio. */
+export function ConfirmDeleteDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  successMessage,
+  redirectTo,
+  onConfirm,
+  children,
+}: ConfirmProps & {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  children?: React.ReactNode
 }) {
   const router = useRouter()
-  const [open, setOpen] = useState(false)
   const [pending, startTransition] = useTransition()
 
   function handleConfirm(event: React.MouseEvent) {
@@ -49,26 +54,15 @@ export function ConfirmDeleteButton({
         return
       }
       toast.success(successMessage)
-      setOpen(false)
+      onOpenChange(false)
       if (redirectTo) router.push(redirectTo)
       else router.refresh()
     })
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        {iconOnly ? (
-          <Button variant="ghost" size="icon-sm" aria-label={label}>
-            <Trash2 />
-          </Button>
-        ) : (
-          <Button variant="outline">
-            <Trash2 data-icon="inline-start" />
-            {label}
-          </Button>
-        )}
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      {children ? <AlertDialogTrigger asChild>{children}</AlertDialogTrigger> : null}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -87,5 +81,28 @@ export function ConfirmDeleteButton({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  )
+}
+
+export function ConfirmDeleteButton({
+  iconOnly = false,
+  label = 'Eliminar',
+  ...props
+}: ConfirmProps & { iconOnly?: boolean; label?: string }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <ConfirmDeleteDialog open={open} onOpenChange={setOpen} {...props}>
+      {iconOnly ? (
+        <Button variant="ghost" size="icon-sm" aria-label={label}>
+          <Trash2 />
+        </Button>
+      ) : (
+        <Button variant="outline">
+          <Trash2 data-icon="inline-start" />
+          {label}
+        </Button>
+      )}
+    </ConfirmDeleteDialog>
   )
 }

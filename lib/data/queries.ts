@@ -1,7 +1,20 @@
 import 'server-only'
-import { and, asc, count, desc, eq, getTableColumns, sql } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  isNull,
+  max,
+  sql,
+} from 'drizzle-orm'
 import { z } from 'zod'
+import { getSubjectsRepo } from '@/lib/data/subjects-repo'
 import { db } from '@/lib/db'
+import { isDatabaseConfigured } from '@/lib/db/config'
 import {
   conversations,
   documents,
@@ -42,16 +55,96 @@ export async function getOverview(userId: string) {
 }
 
 export async function listSubjects(userId: string) {
+  return getSubjectsRepo().list(userId)
+}
+
+/** Resumen del workspace fijo General: lo que todavía no pertenece a ninguna materia. */
+export async function getGeneralSummary(userId: string) {
+  if (!isDatabaseConfigured) {
+    return { fileCount: 0, documentCount: 0, conversationCount: 0, lastActivityAt: null }
+  }
+  const [f, d, c] = await Promise.all([
+    db
+      .select({ n: count(), last: max(files.createdAt) })
+      .from(files)
+      .where(and(eq(files.userId, userId), isNull(files.subjectId))),
+    db
+      .select({ n: count(), last: max(documents.updatedAt) })
+      .from(documents)
+      .where(and(eq(documents.userId, userId), isNull(documents.subjectId))),
+    db
+      .select({ n: count(), last: max(conversations.updatedAt) })
+      .from(conversations)
+      .where(and(eq(conversations.userId, userId), isNull(conversations.subjectId))),
+  ])
+  const dates = [f[0].last, d[0].last, c[0].last].filter((v): v is Date => v instanceof Date)
+  return {
+    fileCount: f[0].n,
+    documentCount: d[0].n,
+    conversationCount: c[0].n,
+    lastActivityAt: dates.length ? new Date(Math.max(...dates.map((x) => x.getTime()))) : null,
+  }
+}
+
+export async function listGeneralFiles(userId: string) {
+  return db
+    .select()
+    .from(files)
+    .where(and(eq(files.userId, userId), isNull(files.subjectId)))
+    .orderBy(desc(files.createdAt))
+}
+
+export async function listGeneralDocuments(userId: string) {
   return db
     .select({
-      ...getTableColumns(subjects),
-      fileCount: sql<number>`(select count(*)::int from files where files."subjectId" = ${subjects.id} and files."userId" = ${userId})`,
-      conversationCount: sql<number>`(select count(*)::int from conversations where conversations."subjectId" = ${subjects.id} and conversations."userId" = ${userId})`,
-      documentCount: sql<number>`(select count(*)::int from documents where documents."subjectId" = ${subjects.id} and documents."userId" = ${userId})`,
+      id: documents.id,
+      title: documents.title,
+      kind: documents.kind,
+      updatedAt: documents.updatedAt,
     })
-    .from(subjects)
-    .where(eq(subjects.userId, userId))
-    .orderBy(asc(subjects.name))
+    .from(documents)
+    .where(and(eq(documents.userId, userId), isNull(documents.subjectId)))
+    .orderBy(desc(documents.updatedAt))
+}
+
+const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&')
+
+/** Búsqueda por nombre/título en todo lo que pertenece a la persona. */
+export async function searchAll(userId: string, query: string) {
+  const term = query.trim()
+  if (!term) return { subjects: [], files: [], documents: [], conversations: [] }
+  const pattern = `%${escapeLike(term)}%`
+
+  const matchingSubjects = (await getSubjectsRepo().list(userId)).filter(
+    (s) =>
+      s.name.toLowerCase().includes(term.toLowerCase()) ||
+      (s.code ?? '').toLowerCase().includes(term.toLowerCase()),
+  )
+  if (!isDatabaseConfigured) {
+    return { subjects: matchingSubjects, files: [], documents: [], conversations: [] }
+  }
+
+  const [f, d, c] = await Promise.all([
+    db
+      .select({ id: files.id, name: files.name, subjectId: files.subjectId })
+      .from(files)
+      .where(and(eq(files.userId, userId), ilike(files.name, pattern)))
+      .orderBy(desc(files.createdAt))
+      .limit(20),
+    db
+      .select({ id: documents.id, title: documents.title })
+      .from(documents)
+      .where(and(eq(documents.userId, userId), ilike(documents.title, pattern)))
+      .orderBy(desc(documents.updatedAt))
+      .limit(20),
+    db
+      .select({ id: conversations.id, title: conversations.title })
+      .from(conversations)
+      .where(and(eq(conversations.userId, userId), ilike(conversations.title, pattern)))
+      .orderBy(desc(conversations.updatedAt))
+      .limit(20),
+  ])
+  return { subjects: matchingSubjects, files: f, documents: d, conversations: c }
 }
 
 export async function listSubjectOptions(userId: string) {
@@ -63,12 +156,7 @@ export async function listSubjectOptions(userId: string) {
 }
 
 export async function getSubject(userId: string, id: string) {
-  if (!isUuid(id)) return undefined
-  const [row] = await db
-    .select()
-    .from(subjects)
-    .where(and(eq(subjects.id, id), eq(subjects.userId, userId)))
-  return row
+  return getSubjectsRepo().get(userId, id)
 }
 
 export async function listFiles(userId: string, subjectId?: string) {
