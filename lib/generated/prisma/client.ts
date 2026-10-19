@@ -112,6 +112,12 @@ export type ConversationFile = Prisma.ConversationFileModel
  */
 export type Message = Prisma.MessageModel
 /**
+ * Model ConversationNode
+ * Árbol de ramas de UNA conversación (distinto de QuestionNode, el mapa de dudas de la materia).
+ * La raíz es el único nodo sin padre; un índice único parcial (ver migración 6) lo garantiza.
+ */
+export type ConversationNode = Prisma.ConversationNodeModel
+/**
  * Model AgentAction
  * 
  */

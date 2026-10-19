@@ -411,6 +411,7 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
   Message: 'Message',
+  ConversationNode: 'ConversationNode',
   AgentAction: 'AgentAction',
   QuestionNode: 'QuestionNode'
 } as const
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "fileChunk" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "fileChunk" | "document" | "conversation" | "conversationFile" | "message" | "conversationNode" | "agentAction" | "questionNode"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1468,6 +1469,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ConversationNode: {
+      payload: Prisma.$ConversationNodePayload<ExtArgs>
+      fields: Prisma.ConversationNodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ConversationNodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ConversationNodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        findFirst: {
+          args: Prisma.ConversationNodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ConversationNodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        findMany: {
+          args: Prisma.ConversationNodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>[]
+        }
+        create: {
+          args: Prisma.ConversationNodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        createMany: {
+          args: Prisma.ConversationNodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ConversationNodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>[]
+        }
+        delete: {
+          args: Prisma.ConversationNodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        update: {
+          args: Prisma.ConversationNodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        deleteMany: {
+          args: Prisma.ConversationNodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ConversationNodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ConversationNodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>[]
+        }
+        upsert: {
+          args: Prisma.ConversationNodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ConversationNodePayload>
+        }
+        aggregate: {
+          args: Prisma.ConversationNodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateConversationNode>
+        }
+        groupBy: {
+          args: Prisma.ConversationNodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ConversationNodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ConversationNodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ConversationNodeCountAggregateOutputType> | number
+        }
+      }
+    }
     AgentAction: {
       payload: Prisma.$AgentActionPayload<ExtArgs>
       fields: Prisma.AgentActionFieldRefs
@@ -1834,6 +1909,7 @@ export const ConversationScalarFieldEnum = {
   subjectId: 'subjectId',
   title: 'title',
   mode: 'mode',
+  activeNodeId: 'activeNodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1859,10 +1935,33 @@ export const MessageScalarFieldEnum = {
   content: 'content',
   description: 'description',
   metadata: 'metadata',
+  nodeId: 'nodeId',
+  seq: 'seq',
   createdAt: 'createdAt'
 } as const
 
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const ConversationNodeScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  parentId: 'parentId',
+  anchorMessageId: 'anchorMessageId',
+  alias: 'alias',
+  topic: 'topic',
+  position: 'position',
+  contextSummary: 'contextSummary',
+  summaryUpToSeq: 'summaryUpToSeq',
+  summaryVersion: 'summaryVersion',
+  summaryUpdatedAt: 'summaryUpdatedAt',
+  inheritedSummary: 'inheritedSummary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationNodeScalarFieldEnum = (typeof ConversationNodeScalarFieldEnum)[keyof typeof ConversationNodeScalarFieldEnum]
 
 
 export const AgentActionScalarFieldEnum = {
@@ -2015,6 +2114,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt[]'
+ */
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
     
 
 
@@ -2196,6 +2309,7 @@ export type GlobalOmitConfig = {
   conversation?: Prisma.ConversationOmit
   conversationFile?: Prisma.ConversationFileOmit
   message?: Prisma.MessageOmit
+  conversationNode?: Prisma.ConversationNodeOmit
   agentAction?: Prisma.AgentActionOmit
   questionNode?: Prisma.QuestionNodeOmit
 }

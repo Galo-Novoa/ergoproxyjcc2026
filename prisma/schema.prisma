@@ -32,6 +32,7 @@ model User {
   questionNodes QuestionNode[]
   conversationFiles ConversationFile[]
   agentActions  AgentAction[]
+  conversationNodes ConversationNode[]
 
   @@map("user")
 }
@@ -274,6 +275,8 @@ model Conversation {
   subjectId String?  @db.Uuid
   title     String   @default("Nueva conversación")
   mode      String   @default("free")
+  /// Rama abierta por última vez; se restaura al reabrir la conversación.
+  activeNodeId String? @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -283,6 +286,7 @@ model Conversation {
   fileLinks     ConversationFile[]
   questionNodes QuestionNode[]
   agentActions  AgentAction[]
+  nodes         ConversationNode[]
 
   @@index([userId], map: "conversations_user_idx")
   @@index([subjectId], map: "conversations_subject_idx")
@@ -314,14 +318,21 @@ model Message {
   content        String
   description    String?
   metadata       Json?
+  /// Rama del árbol de la conversación a la que pertenece el mensaje.
+  nodeId         String?      @db.Uuid
+  /// Orden global de inserción: createdAt puede repetirse dentro de una misma transacción.
+  seq            BigInt       @default(autoincrement())
   createdAt      DateTime     @default(now()) @db.Timestamp(6)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  node           ConversationNode? @relation("NodeMessages", fields: [nodeId], references: [id], onDelete: SetNull)
 
   questionNodes QuestionNode[]
   agentActions  AgentAction[]
+  anchoredNodes ConversationNode[] @relation("NodeAnchor")
 
   @@index([conversationId], map: "messages_conversation_idx")
+  @@index([nodeId, seq], map: "messages_node_seq_idx")
   @@index([userId], map: "messages_user_idx")
   @@map("messages")
 }
@@ -329,6 +340,42 @@ model Message {
 // Acciones que el agente PROPONE. Nunca se ejecutan solas: pasan a 'accepted'
 // únicamente cuando el usuario las confirma y el backend las revalida.
 // type: 'propose_history_branch' (ampliable) · status: 'proposed' | 'accepted' | 'dismissed'
+/// Árbol de ramas de UNA conversación (distinto de QuestionNode, el mapa de dudas de la materia).
+/// La raíz es el único nodo sin padre; un índice único parcial (ver migración 6) lo garantiza.
+model ConversationNode {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId   String    @db.Uuid
+  userId           String
+  parentId         String?   @db.Uuid
+  /// Mensaje de la rama padre en el que se bifurcó. El hijo hereda hasta ese mensaje inclusive.
+  anchorMessageId  String?   @db.Uuid
+  alias            String
+  topic            String
+  /// Orden entre hermanos.
+  position         Int       @default(0)
+  /// Resumen de los mensajes PROPIOS de la rama hasta summaryUpToSeq. Nunca incluye ramas hermanas.
+  contextSummary   String?
+  summaryUpToSeq   BigInt?
+  summaryVersion   Int       @default(0)
+  summaryUpdatedAt DateTime? @db.Timestamp(6)
+  /// Resumen del tramo compartido hasta la bifurcación; es inmutable, así que se calcula una sola vez.
+  inheritedSummary String?
+  createdAt        DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+
+  conversation  Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent        ConversationNode?  @relation("ConversationTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children      ConversationNode[] @relation("ConversationTree")
+  anchorMessage Message?           @relation("NodeAnchor", fields: [anchorMessageId], references: [id], onDelete: SetNull)
+  messages      Message[]          @relation("NodeMessages")
+
+  @@index([conversationId], map: "conversation_nodes_conversation_idx")
+  @@index([parentId], map: "conversation_nodes_parent_idx")
+  @@index([userId], map: "conversation_nodes_user_idx")
+  @@map("conversation_nodes")
+}
+
 model AgentAction {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId         String

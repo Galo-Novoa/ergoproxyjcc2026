@@ -20,8 +20,18 @@ export type MessageModel = runtime.Types.Result.DefaultSelection<Prisma.$Message
 
 export type AggregateMessage = {
   _count: MessageCountAggregateOutputType | null
+  _avg: MessageAvgAggregateOutputType | null
+  _sum: MessageSumAggregateOutputType | null
   _min: MessageMinAggregateOutputType | null
   _max: MessageMaxAggregateOutputType | null
+}
+
+export type MessageAvgAggregateOutputType = {
+  seq: number | null
+}
+
+export type MessageSumAggregateOutputType = {
+  seq: bigint | null
 }
 
 export type MessageMinAggregateOutputType = {
@@ -31,6 +41,8 @@ export type MessageMinAggregateOutputType = {
   role: string | null
   content: string | null
   description: string | null
+  nodeId: string | null
+  seq: bigint | null
   createdAt: Date | null
 }
 
@@ -41,6 +53,8 @@ export type MessageMaxAggregateOutputType = {
   role: string | null
   content: string | null
   description: string | null
+  nodeId: string | null
+  seq: bigint | null
   createdAt: Date | null
 }
 
@@ -52,10 +66,20 @@ export type MessageCountAggregateOutputType = {
   content: number
   description: number
   metadata: number
+  nodeId: number
+  seq: number
   createdAt: number
   _all: number
 }
 
+
+export type MessageAvgAggregateInputType = {
+  seq?: true
+}
+
+export type MessageSumAggregateInputType = {
+  seq?: true
+}
 
 export type MessageMinAggregateInputType = {
   id?: true
@@ -64,6 +88,8 @@ export type MessageMinAggregateInputType = {
   role?: true
   content?: true
   description?: true
+  nodeId?: true
+  seq?: true
   createdAt?: true
 }
 
@@ -74,6 +100,8 @@ export type MessageMaxAggregateInputType = {
   role?: true
   content?: true
   description?: true
+  nodeId?: true
+  seq?: true
   createdAt?: true
 }
 
@@ -85,6 +113,8 @@ export type MessageCountAggregateInputType = {
   content?: true
   description?: true
   metadata?: true
+  nodeId?: true
+  seq?: true
   createdAt?: true
   _all?: true
 }
@@ -127,6 +157,18 @@ export type MessageAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: MessageAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: MessageSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: MessageMinAggregateInputType
@@ -157,6 +199,8 @@ export type MessageGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: MessageCountAggregateInputType | true
+  _avg?: MessageAvgAggregateInputType
+  _sum?: MessageSumAggregateInputType
   _min?: MessageMinAggregateInputType
   _max?: MessageMaxAggregateInputType
 }
@@ -169,8 +213,12 @@ export type MessageGroupByOutputType = {
   content: string
   description: string | null
   metadata: runtime.JsonValue | null
+  nodeId: string | null
+  seq: bigint
   createdAt: Date
   _count: MessageCountAggregateOutputType | null
+  _avg: MessageAvgAggregateOutputType | null
+  _sum: MessageSumAggregateOutputType | null
   _min: MessageMinAggregateOutputType | null
   _max: MessageMaxAggregateOutputType | null
 }
@@ -201,11 +249,15 @@ export type MessageWhereInput = {
   content?: Prisma.StringFilter<"Message"> | string
   description?: Prisma.StringNullableFilter<"Message"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Message">
+  nodeId?: Prisma.UuidNullableFilter<"Message"> | string | null
+  seq?: Prisma.BigIntFilter<"Message"> | bigint | number
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  node?: Prisma.XOR<Prisma.ConversationNodeNullableScalarRelationFilter, Prisma.ConversationNodeWhereInput> | null
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   agentActions?: Prisma.AgentActionListRelationFilter
+  anchoredNodes?: Prisma.ConversationNodeListRelationFilter
 }
 
 export type MessageOrderByWithRelationInput = {
@@ -216,11 +268,15 @@ export type MessageOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  nodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  seq?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   conversation?: Prisma.ConversationOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  node?: Prisma.ConversationNodeOrderByWithRelationInput
   questionNodes?: Prisma.QuestionNodeOrderByRelationAggregateInput
   agentActions?: Prisma.AgentActionOrderByRelationAggregateInput
+  anchoredNodes?: Prisma.ConversationNodeOrderByRelationAggregateInput
 }
 
 export type MessageWhereUniqueInput = Prisma.AtLeast<{
@@ -234,11 +290,15 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"Message"> | string
   description?: Prisma.StringNullableFilter<"Message"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Message">
+  nodeId?: Prisma.UuidNullableFilter<"Message"> | string | null
+  seq?: Prisma.BigIntFilter<"Message"> | bigint | number
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  node?: Prisma.XOR<Prisma.ConversationNodeNullableScalarRelationFilter, Prisma.ConversationNodeWhereInput> | null
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   agentActions?: Prisma.AgentActionListRelationFilter
+  anchoredNodes?: Prisma.ConversationNodeListRelationFilter
 }, "id">
 
 export type MessageOrderByWithAggregationInput = {
@@ -249,10 +309,14 @@ export type MessageOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  nodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  seq?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MessageCountOrderByAggregateInput
+  _avg?: Prisma.MessageAvgOrderByAggregateInput
   _max?: Prisma.MessageMaxOrderByAggregateInput
   _min?: Prisma.MessageMinOrderByAggregateInput
+  _sum?: Prisma.MessageSumOrderByAggregateInput
 }
 
 export type MessageScalarWhereWithAggregatesInput = {
@@ -266,6 +330,8 @@ export type MessageScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Message"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Message"> | string | null
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"Message">
+  nodeId?: Prisma.UuidNullableWithAggregatesFilter<"Message"> | string | null
+  seq?: Prisma.BigIntWithAggregatesFilter<"Message"> | bigint | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Message"> | Date | string
 }
 
@@ -275,11 +341,14 @@ export type MessageCreateInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUncheckedCreateInput = {
@@ -290,9 +359,12 @@ export type MessageUncheckedCreateInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUpdateInput = {
@@ -301,11 +373,14 @@ export type MessageUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateInput = {
@@ -316,9 +391,12 @@ export type MessageUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageCreateManyInput = {
@@ -329,6 +407,8 @@ export type MessageCreateManyInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
 }
 
@@ -338,6 +418,7 @@ export type MessageUpdateManyMutationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -349,6 +430,8 @@ export type MessageUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -370,7 +453,13 @@ export type MessageCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   description?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
+  nodeId?: Prisma.SortOrder
+  seq?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+}
+
+export type MessageAvgOrderByAggregateInput = {
+  seq?: Prisma.SortOrder
 }
 
 export type MessageMaxOrderByAggregateInput = {
@@ -380,6 +469,8 @@ export type MessageMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  nodeId?: Prisma.SortOrder
+  seq?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -390,17 +481,23 @@ export type MessageMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  nodeId?: Prisma.SortOrder
+  seq?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
-export type MessageScalarRelationFilter = {
-  is?: Prisma.MessageWhereInput
-  isNot?: Prisma.MessageWhereInput
+export type MessageSumOrderByAggregateInput = {
+  seq?: Prisma.SortOrder
 }
 
 export type MessageNullableScalarRelationFilter = {
   is?: Prisma.MessageWhereInput | null
   isNot?: Prisma.MessageWhereInput | null
+}
+
+export type MessageScalarRelationFilter = {
+  is?: Prisma.MessageWhereInput
+  isNot?: Prisma.MessageWhereInput
 }
 
 export type MessageCreateNestedManyWithoutUserInput = {
@@ -487,6 +584,72 @@ export type MessageUncheckedUpdateManyWithoutConversationNestedInput = {
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
 }
 
+export type BigIntFieldUpdateOperationsInput = {
+  set?: bigint | number
+  increment?: bigint | number
+  decrement?: bigint | number
+  multiply?: bigint | number
+  divide?: bigint | number
+}
+
+export type MessageCreateNestedOneWithoutAnchoredNodesInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutAnchoredNodesInput, Prisma.MessageUncheckedCreateWithoutAnchoredNodesInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAnchoredNodesInput
+  connect?: Prisma.MessageWhereUniqueInput
+}
+
+export type MessageCreateNestedManyWithoutNodeInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput> | Prisma.MessageCreateWithoutNodeInput[] | Prisma.MessageUncheckedCreateWithoutNodeInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutNodeInput | Prisma.MessageCreateOrConnectWithoutNodeInput[]
+  createMany?: Prisma.MessageCreateManyNodeInputEnvelope
+  connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+}
+
+export type MessageUncheckedCreateNestedManyWithoutNodeInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput> | Prisma.MessageCreateWithoutNodeInput[] | Prisma.MessageUncheckedCreateWithoutNodeInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutNodeInput | Prisma.MessageCreateOrConnectWithoutNodeInput[]
+  createMany?: Prisma.MessageCreateManyNodeInputEnvelope
+  connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+}
+
+export type MessageUpdateOneWithoutAnchoredNodesNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutAnchoredNodesInput, Prisma.MessageUncheckedCreateWithoutAnchoredNodesInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAnchoredNodesInput
+  upsert?: Prisma.MessageUpsertWithoutAnchoredNodesInput
+  disconnect?: Prisma.MessageWhereInput | boolean
+  delete?: Prisma.MessageWhereInput | boolean
+  connect?: Prisma.MessageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutAnchoredNodesInput, Prisma.MessageUpdateWithoutAnchoredNodesInput>, Prisma.MessageUncheckedUpdateWithoutAnchoredNodesInput>
+}
+
+export type MessageUpdateManyWithoutNodeNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput> | Prisma.MessageCreateWithoutNodeInput[] | Prisma.MessageUncheckedCreateWithoutNodeInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutNodeInput | Prisma.MessageCreateOrConnectWithoutNodeInput[]
+  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutNodeInput | Prisma.MessageUpsertWithWhereUniqueWithoutNodeInput[]
+  createMany?: Prisma.MessageCreateManyNodeInputEnvelope
+  set?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  disconnect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  delete?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  update?: Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput | Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput[]
+  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutNodeInput | Prisma.MessageUpdateManyWithWhereWithoutNodeInput[]
+  deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
+}
+
+export type MessageUncheckedUpdateManyWithoutNodeNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput> | Prisma.MessageCreateWithoutNodeInput[] | Prisma.MessageUncheckedCreateWithoutNodeInput[]
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutNodeInput | Prisma.MessageCreateOrConnectWithoutNodeInput[]
+  upsert?: Prisma.MessageUpsertWithWhereUniqueWithoutNodeInput | Prisma.MessageUpsertWithWhereUniqueWithoutNodeInput[]
+  createMany?: Prisma.MessageCreateManyNodeInputEnvelope
+  set?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  disconnect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  delete?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  connect?: Prisma.MessageWhereUniqueInput | Prisma.MessageWhereUniqueInput[]
+  update?: Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput | Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput[]
+  updateMany?: Prisma.MessageUpdateManyWithWhereWithoutNodeInput | Prisma.MessageUpdateManyWithWhereWithoutNodeInput[]
+  deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
+}
+
 export type MessageCreateNestedOneWithoutAgentActionsInput = {
   create?: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
   connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAgentActionsInput
@@ -523,10 +686,13 @@ export type MessageCreateWithoutUserInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUncheckedCreateWithoutUserInput = {
@@ -536,9 +702,12 @@ export type MessageUncheckedCreateWithoutUserInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageCreateOrConnectWithoutUserInput = {
@@ -578,6 +747,8 @@ export type MessageScalarWhereInput = {
   content?: Prisma.StringFilter<"Message"> | string
   description?: Prisma.StringNullableFilter<"Message"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Message">
+  nodeId?: Prisma.UuidNullableFilter<"Message"> | string | null
+  seq?: Prisma.BigIntFilter<"Message"> | bigint | number
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
 }
 
@@ -587,10 +758,13 @@ export type MessageCreateWithoutConversationInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUncheckedCreateWithoutConversationInput = {
@@ -600,9 +774,12 @@ export type MessageUncheckedCreateWithoutConversationInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageCreateOrConnectWithoutConversationInput = {
@@ -631,16 +808,151 @@ export type MessageUpdateManyWithWhereWithoutConversationInput = {
   data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutConversationInput>
 }
 
+export type MessageCreateWithoutAnchoredNodesInput = {
+  id?: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+}
+
+export type MessageUncheckedCreateWithoutAnchoredNodesInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
+  createdAt?: Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+}
+
+export type MessageCreateOrConnectWithoutAnchoredNodesInput = {
+  where: Prisma.MessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageCreateWithoutAnchoredNodesInput, Prisma.MessageUncheckedCreateWithoutAnchoredNodesInput>
+}
+
+export type MessageCreateWithoutNodeInput = {
+  id?: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
+}
+
+export type MessageUncheckedCreateWithoutNodeInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
+}
+
+export type MessageCreateOrConnectWithoutNodeInput = {
+  where: Prisma.MessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput>
+}
+
+export type MessageCreateManyNodeInputEnvelope = {
+  data: Prisma.MessageCreateManyNodeInput | Prisma.MessageCreateManyNodeInput[]
+  skipDuplicates?: boolean
+}
+
+export type MessageUpsertWithoutAnchoredNodesInput = {
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutAnchoredNodesInput, Prisma.MessageUncheckedUpdateWithoutAnchoredNodesInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutAnchoredNodesInput, Prisma.MessageUncheckedCreateWithoutAnchoredNodesInput>
+  where?: Prisma.MessageWhereInput
+}
+
+export type MessageUpdateToOneWithWhereWithoutAnchoredNodesInput = {
+  where?: Prisma.MessageWhereInput
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutAnchoredNodesInput, Prisma.MessageUncheckedUpdateWithoutAnchoredNodesInput>
+}
+
+export type MessageUpdateWithoutAnchoredNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageUncheckedUpdateWithoutAnchoredNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageUpsertWithWhereUniqueWithoutNodeInput = {
+  where: Prisma.MessageWhereUniqueInput
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutNodeInput, Prisma.MessageUncheckedUpdateWithoutNodeInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutNodeInput, Prisma.MessageUncheckedCreateWithoutNodeInput>
+}
+
+export type MessageUpdateWithWhereUniqueWithoutNodeInput = {
+  where: Prisma.MessageWhereUniqueInput
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutNodeInput, Prisma.MessageUncheckedUpdateWithoutNodeInput>
+}
+
+export type MessageUpdateManyWithWhereWithoutNodeInput = {
+  where: Prisma.MessageScalarWhereInput
+  data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutNodeInput>
+}
+
 export type MessageCreateWithoutAgentActionsInput = {
   id?: string
   role: string
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUncheckedCreateWithoutAgentActionsInput = {
@@ -651,8 +963,11 @@ export type MessageUncheckedCreateWithoutAgentActionsInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageCreateOrConnectWithoutAgentActionsInput = {
@@ -677,10 +992,13 @@ export type MessageUpdateWithoutAgentActionsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutAgentActionsInput = {
@@ -691,8 +1009,11 @@ export type MessageUncheckedUpdateWithoutAgentActionsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageCreateWithoutQuestionNodesInput = {
@@ -701,10 +1022,13 @@ export type MessageCreateWithoutQuestionNodesInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
   user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageUncheckedCreateWithoutQuestionNodesInput = {
@@ -715,8 +1039,11 @@ export type MessageUncheckedCreateWithoutQuestionNodesInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
 }
 
 export type MessageCreateOrConnectWithoutQuestionNodesInput = {
@@ -741,10 +1068,13 @@ export type MessageUpdateWithoutQuestionNodesInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutQuestionNodesInput = {
@@ -755,8 +1085,11 @@ export type MessageUncheckedUpdateWithoutQuestionNodesInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageCreateManyUserInput = {
@@ -766,6 +1099,8 @@ export type MessageCreateManyUserInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
 }
 
@@ -775,10 +1110,13 @@ export type MessageUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutUserInput = {
@@ -788,9 +1126,12 @@ export type MessageUncheckedUpdateWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateManyWithoutUserInput = {
@@ -800,6 +1141,8 @@ export type MessageUncheckedUpdateManyWithoutUserInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -810,6 +1153,8 @@ export type MessageCreateManyConversationInput = {
   content: string
   description?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
   createdAt?: Date | string
 }
 
@@ -819,10 +1164,13 @@ export type MessageUpdateWithoutConversationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutConversationInput = {
@@ -832,9 +1180,12 @@ export type MessageUncheckedUpdateWithoutConversationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
 }
 
 export type MessageUncheckedUpdateManyWithoutConversationInput = {
@@ -844,6 +1195,62 @@ export type MessageUncheckedUpdateManyWithoutConversationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MessageCreateManyNodeInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+}
+
+export type MessageUpdateWithoutNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
+}
+
+export type MessageUncheckedUpdateWithoutNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
+}
+
+export type MessageUncheckedUpdateManyWithoutNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -855,11 +1262,13 @@ export type MessageUncheckedUpdateManyWithoutConversationInput = {
 export type MessageCountOutputType = {
   questionNodes: number
   agentActions: number
+  anchoredNodes: number
 }
 
 export type MessageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   questionNodes?: boolean | MessageCountOutputTypeCountQuestionNodesArgs
   agentActions?: boolean | MessageCountOutputTypeCountAgentActionsArgs
+  anchoredNodes?: boolean | MessageCountOutputTypeCountAnchoredNodesArgs
 }
 
 /**
@@ -886,6 +1295,13 @@ export type MessageCountOutputTypeCountAgentActionsArgs<ExtArgs extends runtime.
   where?: Prisma.AgentActionWhereInput
 }
 
+/**
+ * MessageCountOutputType without action
+ */
+export type MessageCountOutputTypeCountAnchoredNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConversationNodeWhereInput
+}
+
 
 export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -895,11 +1311,15 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   content?: boolean
   description?: boolean
   metadata?: boolean
+  nodeId?: boolean
+  seq?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Message$questionNodesArgs<ExtArgs>
   agentActions?: boolean | Prisma.Message$agentActionsArgs<ExtArgs>
+  anchoredNodes?: boolean | Prisma.Message$anchoredNodesArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
@@ -911,9 +1331,12 @@ export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   content?: boolean
   description?: boolean
   metadata?: boolean
+  nodeId?: boolean
+  seq?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
 export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -924,9 +1347,12 @@ export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   content?: boolean
   description?: boolean
   metadata?: boolean
+  nodeId?: boolean
+  seq?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
 export type MessageSelectScalar = {
@@ -937,24 +1363,30 @@ export type MessageSelectScalar = {
   content?: boolean
   description?: boolean
   metadata?: boolean
+  nodeId?: boolean
+  seq?: boolean
   createdAt?: boolean
 }
 
-export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "userId" | "role" | "content" | "description" | "metadata" | "createdAt", ExtArgs["result"]["message"]>
+export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "userId" | "role" | "content" | "description" | "metadata" | "nodeId" | "seq" | "createdAt", ExtArgs["result"]["message"]>
 export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Message$questionNodesArgs<ExtArgs>
   agentActions?: boolean | Prisma.Message$agentActionsArgs<ExtArgs>
+  anchoredNodes?: boolean | Prisma.Message$anchoredNodesArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
 }
 export type MessageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  node?: boolean | Prisma.Message$nodeArgs<ExtArgs>
 }
 
 export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -962,8 +1394,10 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     conversation: Prisma.$ConversationPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
+    node: Prisma.$ConversationNodePayload<ExtArgs> | null
     questionNodes: Prisma.$QuestionNodePayload<ExtArgs>[]
     agentActions: Prisma.$AgentActionPayload<ExtArgs>[]
+    anchoredNodes: Prisma.$ConversationNodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -973,6 +1407,14 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     content: string
     description: string | null
     metadata: runtime.JsonValue | null
+    /**
+     * Rama del árbol de la conversación a la que pertenece el mensaje.
+     */
+    nodeId: string | null
+    /**
+     * Orden global de inserción: createdAt puede repetirse dentro de una misma transacción.
+     */
+    seq: bigint
     createdAt: Date
   }, ExtArgs["result"]["message"]>
   composites: {}
@@ -1370,8 +1812,10 @@ export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   conversation<T extends Prisma.ConversationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationDefaultArgs<ExtArgs>>): Prisma.Prisma__ConversationClient<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  node<T extends Prisma.Message$nodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$nodeArgs<ExtArgs>>): Prisma.Prisma__ConversationNodeClient<runtime.Types.Result.GetResult<Prisma.$ConversationNodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   questionNodes<T extends Prisma.Message$questionNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$questionNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentActions<T extends Prisma.Message$agentActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$agentActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  anchoredNodes<T extends Prisma.Message$anchoredNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$anchoredNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1408,6 +1852,8 @@ export interface MessageFieldRefs {
   readonly content: Prisma.FieldRef<"Message", 'String'>
   readonly description: Prisma.FieldRef<"Message", 'String'>
   readonly metadata: Prisma.FieldRef<"Message", 'Json'>
+  readonly nodeId: Prisma.FieldRef<"Message", 'String'>
+  readonly seq: Prisma.FieldRef<"Message", 'BigInt'>
   readonly createdAt: Prisma.FieldRef<"Message", 'DateTime'>
 }
     
@@ -1810,6 +2256,25 @@ export type MessageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Message.node
+ */
+export type Message$nodeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConversationNode
+   */
+  select?: Prisma.ConversationNodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConversationNode
+   */
+  omit?: Prisma.ConversationNodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationNodeInclude<ExtArgs> | null
+  where?: Prisma.ConversationNodeWhereInput
+}
+
+/**
  * Message.questionNodes
  */
 export type Message$questionNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1855,6 +2320,30 @@ export type Message$agentActionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.AgentActionScalarFieldEnum | Prisma.AgentActionScalarFieldEnum[]
+}
+
+/**
+ * Message.anchoredNodes
+ */
+export type Message$anchoredNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConversationNode
+   */
+  select?: Prisma.ConversationNodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConversationNode
+   */
+  omit?: Prisma.ConversationNodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationNodeInclude<ExtArgs> | null
+  where?: Prisma.ConversationNodeWhereInput
+  orderBy?: Prisma.ConversationNodeOrderByWithRelationInput | Prisma.ConversationNodeOrderByWithRelationInput[]
+  cursor?: Prisma.ConversationNodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConversationNodeScalarFieldEnum | Prisma.ConversationNodeScalarFieldEnum[]
 }
 
 /**

@@ -65,6 +65,7 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
   Message: 'Message',
+  ConversationNode: 'ConversationNode',
   AgentAction: 'AgentAction',
   QuestionNode: 'QuestionNode'
 } as const
@@ -264,6 +265,7 @@ export const ConversationScalarFieldEnum = {
   subjectId: 'subjectId',
   title: 'title',
   mode: 'mode',
+  activeNodeId: 'activeNodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -289,10 +291,33 @@ export const MessageScalarFieldEnum = {
   content: 'content',
   description: 'description',
   metadata: 'metadata',
+  nodeId: 'nodeId',
+  seq: 'seq',
   createdAt: 'createdAt'
 } as const
 
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const ConversationNodeScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  parentId: 'parentId',
+  anchorMessageId: 'anchorMessageId',
+  alias: 'alias',
+  topic: 'topic',
+  position: 'position',
+  contextSummary: 'contextSummary',
+  summaryUpToSeq: 'summaryUpToSeq',
+  summaryVersion: 'summaryVersion',
+  summaryUpdatedAt: 'summaryUpdatedAt',
+  inheritedSummary: 'inheritedSummary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationNodeScalarFieldEnum = (typeof ConversationNodeScalarFieldEnum)[keyof typeof ConversationNodeScalarFieldEnum]
 
 
 export const AgentActionScalarFieldEnum = {

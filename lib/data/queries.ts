@@ -221,6 +221,18 @@ export async function getConversationWithMessages(userId: string, id: string) {
   }
 }
 
+/** Datos de la conversación sin mensajes: los mensajes dependen de la rama que se muestre. */
+export async function getConversationHeader(userId: string, id: string) {
+  if (!isUuid(id)) return undefined
+  const row = await db.conversation.findFirst({
+    where: { id, userId },
+    include: { subject: { select: { name: true } } },
+  })
+  if (!row) return undefined
+  const { subject, ...rest } = row
+  return { ...rest, subjectName: subject?.name ?? null }
+}
+
 export async function listQuestionNodes(userId: string, subjectId?: string) {
   return db.questionNode.findMany({
     where: { userId, ...(subjectId ? { subjectId } : {}) },

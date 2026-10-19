@@ -15,8 +15,19 @@ import {
 } from '@/lib/llm/contract'
 import { buildRagPrompt } from '@/lib/rag/prompt'
 import type { RetrievalResult } from '@/lib/rag/retrieve'
+import type { LabeledText } from '@/lib/tree/compose'
+import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
 
-export type KnownNode = { id: string; question: string }
+export type BranchPromptInfo = {
+  alias: string
+  topic: string
+  isRoot: boolean
+  summaries: LabeledText[]
+  existingChildAliases: string[]
+  /** false cuando ya se alcanzó el tope de ramas o de profundidad. */
+  canPropose: boolean
+  truncated: boolean
+}
 
 export type AgentResult = { response: AgentResponse; metadata: MessageMetadata }
 
@@ -28,11 +39,32 @@ const MODE_GUIDANCE: Record<ConversationMode, string> = {
   free: 'Modo Libre: respondé de forma flexible según lo que pregunte el estudiante.',
 }
 
-function buildSystemPrompt(mode: ConversationMode, nodes: KnownNode[], rag: RetrievalResult | undefined) {
-  const nodeList = nodes.length
-    ? nodes.map((n) => `- ${n.id}: ${n.question}`).join('\n')
-    : '(todavía no hay nodos)'
+function buildBranchPrompt(branch: BranchPromptInfo) {
+  const lines = [
+    `Esta conversación es un árbol de ramas independientes. Estás en la rama «${branch.alias}»${
+      branch.isRoot ? ' (la inicial)' : ` (tema: ${branch.topic})`
+    }. Solo conocés esta rama y lo que heredó de sus ancestros hasta el punto de bifurcación; no sabés qué se habló en otras ramas.`,
+  ]
+  if (branch.summaries.length) {
+    lines.push(
+      'Contexto resumido de la rama (reemplaza a los mensajes más antiguos; tomalo como cierto):',
+      ...branch.summaries.map((s) => `### ${s.label}\n${s.text}`),
+    )
+  }
+  if (branch.truncated) {
+    lines.push('Parte del historial más antiguo no está disponible; no asumas lo que no figure arriba.')
+  }
+  if (branch.existingChildAliases.length) {
+    lines.push(`Ramas que ya salen de esta: ${branch.existingChildAliases.map((a) => `«${a}»`).join(', ')}. No las repitas.`)
+  }
+  return lines.join('\n')
+}
 
+function buildSystemPrompt(
+  mode: ConversationMode,
+  branch: BranchPromptInfo,
+  rag: RetrievalResult | undefined,
+) {
   return [
     'Sos un tutor para estudiantes de ingeniería y ciencias exactas de la FCEIA (UNR). Respondé en español rioplatense, con claridad y paso a paso.',
     MODE_GUIDANCE[mode],
@@ -40,11 +72,11 @@ function buildSystemPrompt(mode: ConversationMode, nodes: KnownNode[], rag: Retr
     '- output: el texto visible para el estudiante, en Markdown (podés usar listas, tablas y bloques de código).',
     '- description: alias corto (2 a 5 palabras, máximo 80 caracteres) del concepto o problema específico tratado, por ejemplo «Sustitución en integrales». Nunca copies la pregunta completa.',
     '- grounding: "documents", "mixed", "general" o "insufficient" según cuánto de la respuesta se apoya en los documentos del estudiante (criterios abajo). Sin fragmentos de documentos, usá "general" o "insufficient".',
-    '- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Solo proponé una rama cuando la respuesta abre un subtema que merece su propio nodo en el mapa de dudas.',
-    'Única acción disponible: {"type":"propose_history_branch","parent_node_id":<id de la lista o null>,"title":<alias corto>,"description":<tema específico de la rama>}.',
-    'Usá en parent_node_id solo un id de la lista de nodos existentes, o null. Nunca inventes ids. Las acciones son propuestas: el estudiante decide si las acepta.',
-    'Nodos existentes del mapa de dudas:',
-    nodeList,
+    branch.canPropose
+      ? `- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, nunca una por cada mensaje, y ninguna que repita lo que ya explicaste.`
+      : '- actions: dejala vacía; esta conversación ya no admite más ramas.',
+    `Única acción disponible: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Las acciones son propuestas: el estudiante decide si las abre.`,
+    buildBranchPrompt(branch),
     rag ? buildRagPrompt(rag) : '',
   ].join('\n')
 }
@@ -124,17 +156,17 @@ function providerStatus(error: unknown): number | undefined {
 
 export async function runAgent({
   mode,
-  nodes,
+  branch,
   history,
   rag,
 }: {
   mode: ConversationMode
-  nodes: KnownNode[]
+  branch: BranchPromptInfo
   history: { role: 'user' | 'assistant'; content: string }[]
   rag?: RetrievalResult
 }): Promise<AgentResult> {
   const config = getLlmServerConfig()
-  const system = buildSystemPrompt(mode, nodes, rag)
+  const system = buildSystemPrompt(mode, branch, rag)
 
   const generate = (model: LanguageModel) =>
     generateText({

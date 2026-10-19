@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { z } from 'zod'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
@@ -9,6 +10,15 @@ import { isConversationMode } from '@/lib/llm/contract'
 import { applyGrounding } from '@/lib/rag/ground'
 import { retrieveContext } from '@/lib/rag/retrieve'
 import { demoModeBlock, getUserId } from '@/lib/session'
+import { ensureRootNode, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
+import { composeContext, inheritedSize } from '@/lib/tree/compose'
+import {
+  INHERITED_COMPACT_CHARS,
+  MAX_DEPTH,
+  MAX_NODES_PER_CONVERSATION,
+  MAX_PROPOSALS_PER_MESSAGE,
+} from '@/lib/tree/config'
+import { compactOwnContext, ensureInheritedSummary } from '@/lib/tree/summarize'
 import type { ActionResult } from '@/lib/types'
 
 const contentSchema = z
@@ -18,17 +28,18 @@ const contentSchema = z
   .max(4000, 'El mensaje admite hasta 4000 caracteres.')
 
 const DEFAULT_TITLE = 'Nueva conversación'
-const HISTORY_LIMIT = 20
-const NODE_CONTEXT_LIMIT = 40
 const MAX_SELECTED_FILES = 8
 const SHORT_FOLLOW_UP_LENGTH = 60
 const CITATION_MARKERS = /\s?\[F\d+(?:\s*[,;]\s*F?\d+)*\]/g
+
+const normalizeAlias = (alias: string) => alias.trim().toLocaleLowerCase('es')
 
 export async function sendMessage(
   conversationId: string,
   rawContent: string,
   rawFileIds: string[] = [],
-): Promise<ActionResult<{ proposedActions: number }>> {
+  rawNodeId: string | null = null,
+): Promise<ActionResult<{ proposedActions: number; nodeId: string }>> {
   const blocked = demoModeBlock()
   if (blocked) return blocked
   const userId = await getUserId()
@@ -40,37 +51,43 @@ export async function sendMessage(
   if (!isUuid(conversationId)) return { ok: false, error: 'No encontramos la conversación.' }
   const conversation = await db.conversation.findFirst({
     where: { id: conversationId, userId },
-    select: { id: true, title: true, mode: true, subjectId: true },
+    select: { id: true, title: true, mode: true, subjectId: true, activeNodeId: true },
   })
   if (!conversation) return { ok: false, error: 'No encontramos la conversación.' }
   const mode = isConversationMode(conversation.mode) ? conversation.mode : 'free'
 
-  const [previous, nodes] = await Promise.all([
-    db.message.findMany({
-      where: { conversationId, userId, role: { in: ['user', 'assistant'] } },
-      select: { role: true, content: true },
-      orderBy: { createdAt: 'desc' },
-      take: HISTORY_LIMIT,
-    }),
-    db.questionNode.findMany({
-      where: { userId, ...(conversation.subjectId ? { subjectId: conversation.subjectId } : {}) },
-      select: { id: true, question: true },
-      orderBy: { createdAt: 'desc' },
-      take: NODE_CONTEXT_LIMIT,
-    }),
-  ])
+  // La rama sale de la conversación del usuario: un id ajeno o inexistente cae a la rama activa.
+  const rootId = await ensureRootNode(conversationId, userId)
+  const tree = await loadTree(conversationId, userId)
+  const nodeId = pickNodeId(tree, rootId, rawNodeId, conversation.activeNodeId)
+
+  let branch = await loadBranch(conversationId, userId, nodeId, tree)
+  const target = branch.path[branch.path.length - 1]
+  if (
+    branch.path.length > 1 &&
+    !target.inheritedSummary &&
+    inheritedSize(branch.path, branch.visible) > INHERITED_COMPACT_CHARS
+  ) {
+    await ensureInheritedSummary(conversationId, userId, nodeId)
+    branch = await loadBranch(conversationId, userId, nodeId, tree)
+  }
+  const context = composeContext(
+    branch.path,
+    branch.visible.filter((v) => v.message.role === 'user' || v.message.role === 'assistant'),
+  )
 
   // Las citas de turnos anteriores se quitan: sus marcadores [F1] no existen en la búsqueda actual.
-  const history = [
-    ...previous.reverse().map((m) => ({
-      role: m.role === 'assistant' ? ('assistant' as const) : ('user' as const),
-      content: m.role === 'assistant' ? m.content.replace(CITATION_MARKERS, '') : m.content,
-    })),
-    { role: 'user' as const, content },
-  ]
+  const history: { role: 'user' | 'assistant'; content: string }[] = context.messages.map((m) => ({
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: m.role === 'assistant' ? m.content.replace(CITATION_MARKERS, '') : m.content,
+  }))
+  if (history[0]?.role === 'assistant') {
+    history.unshift({ role: 'user', content: '(Continuación de la conversación de esta rama.)' })
+  }
+  history.push({ role: 'user', content })
 
-  // Una repregunta corta ("¿y el paso 3?") se busca junto con la pregunta anterior para no perder el tema.
-  const lastUserQuestion = previous.find((m) => m.role === 'user')?.content
+  // Una repregunta corta ("¿y el paso 3?") se busca junto con la pregunta anterior de la MISMA rama.
+  const lastUserQuestion = context.messages.findLast((m) => m.role === 'user')?.content
   const retrievalQuery =
     content.length < SHORT_FOLLOW_UP_LENGTH && lastUserQuestion
       ? `${lastUserQuestion}\n${content}`
@@ -82,44 +99,59 @@ export async function sendMessage(
     selectedFileIds,
   })
 
+  const existingChildAliases = tree.filter((n) => n.parentId === nodeId).map((n) => n.alias)
+  const canPropose =
+    tree.length < MAX_NODES_PER_CONVERSATION && branch.path.length <= MAX_DEPTH
+
   // Si el modelo falla no se guarda nada: el usuario conserva su borrador y puede reintentar.
   let result
   try {
-    result = await runAgent({ mode, nodes, history, rag: retrieval })
+    result = await runAgent({
+      mode,
+      history,
+      rag: retrieval,
+      branch: {
+        alias: target.alias,
+        topic: target.topic,
+        isRoot: branch.path.length === 1,
+        summaries: context.summaries,
+        existingChildAliases,
+        canPropose,
+        truncated: context.truncated,
+      },
+    })
   } catch (error) {
     if (error instanceof AgentError) return { ok: false, error: error.message }
     return { ok: false, error: 'No pudimos generar la respuesta. Probá de nuevo.' }
   }
 
-  // Las acciones solo pueden colgar de nodos del propio usuario; el resto se descarta.
-  const parentIds = [
-    ...new Set(
-      result.response.actions.flatMap((a) => (a.parent_node_id ? [a.parent_node_id] : [])),
-    ),
-  ].filter(isUuid)
-  const ownedParents = new Set(
-    parentIds.length
-      ? (
-          await db.questionNode.findMany({
-            where: { id: { in: parentIds }, userId },
-            select: { id: true },
-          })
-        ).map((n) => n.id)
-      : [],
-  )
-  const actions = result.response.actions.filter(
-    (a) => a.parent_node_id === null || ownedParents.has(a.parent_node_id),
-  )
+  // Se descartan propuestas repetidas (entre sí o con ramas que ya existen) y las que excedan los topes.
+  const taken = new Set(existingChildAliases.map(normalizeAlias))
+  const actions = canPropose
+    ? result.response.actions
+        .filter((a) => {
+          const key = normalizeAlias(a.alias)
+          if (taken.has(key)) return false
+          taken.add(key)
+          return true
+        })
+        .slice(0, MAX_PROPOSALS_PER_MESSAGE)
+    : []
   const droppedActions =
     result.metadata.droppedActions + (result.response.actions.length - actions.length)
   const grounded = applyGrounding(result.response.output, result.response.grounding, retrieval)
+  const newTitle =
+    conversation.title === DEFAULT_TITLE && result.response.description
+      ? result.response.description
+      : conversation.title
 
   await db.$transaction(async (tx) => {
-    await tx.message.create({ data: { conversationId, userId, role: 'user', content } })
+    await tx.message.create({ data: { conversationId, userId, nodeId, role: 'user', content } })
     const reply = await tx.message.create({
       data: {
         conversationId,
         userId,
+        nodeId,
         role: 'assistant',
         content: grounded.output,
         description: result.response.description,
@@ -138,18 +170,21 @@ export async function sendMessage(
         })),
       })
     }
+    if (newTitle !== conversation.title) {
+      await tx.conversationNode.updateMany({
+        where: { conversationId, userId, parentId: null },
+        data: { topic: newTitle },
+      })
+    }
     await tx.conversation.updateMany({
       where: { id: conversationId, userId },
-      data: {
-        title:
-          conversation.title === DEFAULT_TITLE && result.response.description
-            ? result.response.description
-            : conversation.title,
-        updatedAt: new Date(),
-      },
+      data: { title: newTitle, activeNodeId: nodeId, updatedAt: new Date() },
     })
   })
 
+  // El resumen se genera después de responder para no sumar latencia al turno.
+  after(() => compactOwnContext(nodeId, userId))
+
   revalidatePath('/chat', 'layout')
-  return { ok: true, data: { proposedActions: actions.length } }
+  return { ok: true, data: { proposedActions: actions.length, nodeId } }
 }

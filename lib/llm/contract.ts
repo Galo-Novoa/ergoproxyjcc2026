@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GROUNDING_VALUES, type Grounding, type RagMetadata } from '@/lib/rag/types'
+import { ALIAS_MAX } from '@/lib/tree/config'
 
 export const CONVERSATION_MODES = ['theory', 'practice', 'free'] as const
 export type ConversationMode = (typeof CONVERSATION_MODES)[number]
@@ -13,16 +14,33 @@ export const MODE_LABELS: Record<ConversationMode, string> = {
 export const isConversationMode = (value: string): value is ConversationMode =>
   (CONVERSATION_MODES as readonly string[]).includes(value)
 
-/** Acciones que el agente puede PROPONER. Para sumar una nueva, agregarla acá y en `resolveAgentAction`. */
+/**
+ * Acciones que el agente puede PROPONER. Para sumar una nueva, agregarla acá y en `resolveAgentAction`.
+ * El padre de la rama no lo elige el modelo: es la rama donde se hizo la propuesta (lo decide el servidor).
+ */
 export const proposeHistoryBranchSchema = z.object({
   type: z.literal('propose_history_branch'),
-  parent_node_id: z.string().nullable(),
-  title: z.string().trim().min(1).max(60),
+  alias: z.string().trim().min(1).max(ALIAS_MAX),
   description: z.string().trim().min(1).max(200),
 })
 
 export const agentActionSchema = z.discriminatedUnion('type', [proposeHistoryBranchSchema])
 export type AgentActionProposal = z.infer<typeof agentActionSchema>
+
+/** Lee el payload guardado de una propuesta, incluidas las anteriores al árbol (`title` en lugar de `alias`). */
+export function parseProposalPayload(payload: unknown): AgentActionProposal | null {
+  const current = agentActionSchema.safeParse(payload)
+  if (current.success) return current.data
+  if (!payload || typeof payload !== 'object') return null
+  const legacy = payload as { type?: unknown; title?: unknown; description?: unknown }
+  if (legacy.type !== 'propose_history_branch' || typeof legacy.title !== 'string') return null
+  const migrated = agentActionSchema.safeParse({
+    type: legacy.type,
+    alias: legacy.title.trim().slice(0, ALIAS_MAX),
+    description: legacy.description,
+  })
+  return migrated.success ? migrated.data : null
+}
 
 /**
  * Contrato estricto que se le exige al proveedor. Usa el objeto de la acción y no la unión discriminada:
