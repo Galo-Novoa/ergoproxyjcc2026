@@ -154,7 +154,12 @@ export async function runAgent({
       metadata: { model: modelId, recovery: 'none', droppedActions: 0 },
     }
   } catch (error) {
-    console.error('[llm] Falló la generación:', error instanceof Error ? error.message : error)
+    const cause = RetryError.isInstance(error) ? error.lastError : error
+    console.error(
+      '[llm] Falló la generación:',
+      cause instanceof Error ? cause.message : cause,
+      APICallError.isInstance(cause) ? `(HTTP ${cause.statusCode}) ${cause.responseBody?.slice(0, 500)}` : '',
+    )
     if (NoObjectGeneratedError.isInstance(error)) {
       const recovered = recover(error.text)
       if (recovered) {

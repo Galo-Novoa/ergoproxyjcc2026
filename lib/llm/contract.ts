@@ -23,11 +23,15 @@ export const proposeHistoryBranchSchema = z.object({
 export const agentActionSchema = z.discriminatedUnion('type', [proposeHistoryBranchSchema])
 export type AgentActionProposal = z.infer<typeof agentActionSchema>
 
-/** Contrato estricto que se le exige al proveedor. */
+/**
+ * Contrato estricto que se le exige al proveedor. Usa el objeto de la acción y no la unión discriminada:
+ * esta genera `oneOf` en el JSON Schema, que OpenAI rechaza en `response_format` (HTTP 400).
+ * Al sumar una segunda acción, armar la unión con `z.union` (genera `anyOf`, que sí se acepta).
+ */
 export const agentResponseSchema = z.object({
   output: z.string().trim().min(1),
   description: z.string().trim().min(1).max(80),
-  actions: z.array(agentActionSchema),
+  actions: z.array(proposeHistoryBranchSchema),
 })
 
 /** Validación tolerante para recuperar JSON del texto crudo: las acciones se validan una por una. */
