@@ -1,0 +1,214 @@
+import {
+  CONTENT_MAX,
+  FOLDER_KINDS,
+  PROMPT_INDEX_LIMIT,
+  SIMILARITY_THRESHOLD,
+  TITLE_MAX,
+  type FolderKind,
+} from '@/lib/folder/config'
+import type { FolderProposal } from '@/lib/folder/schema'
+
+export type NodeRef = { id: string; title: string; kind: string }
+export type EdgeRef = { fromId: string; toId: string; kind: string }
+
+export const isFolderKind = (value: unknown): value is FolderKind =>
+  typeof value === 'string' && (FOLDER_KINDS as readonly string[]).includes(value)
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const isNodeId = (value: unknown): value is string => typeof value === 'string' && UUID.test(value)
+
+export function cleanTitle(raw: string) {
+  return raw.replace(/\s+/g, ' ').trim().slice(0, TITLE_MAX)
+}
+
+const STOPWORDS = new Set(['de', 'del', 'la', 'el', 'los', 'las', 'y', 'e', 'o', 'en', 'un', 'una', 'al', 'a', 'para', 'por', 'con', 'que'])
+
+/** Minúsculas, sin tildes ni signos: "Teorema de Bolzano" y "teorema de bolzano!" son lo mismo. */
+export function normalizeTitle(title: string) {
+  return title
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function tokens(title: string) {
+  return new Set(
+    normalizeTitle(title)
+      .split(' ')
+      .filter((t) => t && !STOPWORDS.has(t)),
+  )
+}
+
+/** 1 = mismo título; si un título contiene al otro (al menos dos palabras) se lo trata como casi igual. */
+export function titleSimilarity(a: string, b: string) {
+  const na = normalizeTitle(a)
+  const nb = normalizeTitle(b)
+  if (!na || !nb) return 0
+  if (na === nb) return 1
+  const ta = tokens(a)
+  const tb = tokens(b)
+  if (ta.size === 0 || tb.size === 0) return 0
+  let shared = 0
+  for (const t of ta) if (tb.has(t)) shared += 1
+  const jaccard = shared / (ta.size + tb.size - shared)
+  const [small, large] = ta.size <= tb.size ? [ta, tb] : [tb, ta]
+  const contained = small.size >= 2 && [...small].every((t) => large.has(t))
+  return Math.max(jaccard, contained ? 0.8 : 0)
+}
+
+/** Los ejercicios se comparan solo con ejercicios; los apuntes teóricos, entre sí. */
+const group = (kind: string) => (kind === 'exercise' || kind === 'solution' ? kind : 'knowledge')
+
+export function findSimilarNode(nodes: NodeRef[], title: string, kind: string): NodeRef | null {
+  let best: NodeRef | null = null
+  let bestScore = 0
+  for (const node of nodes) {
+    if (group(node.kind) !== group(kind)) continue
+    const score = titleSimilarity(node.title, title)
+    if (score >= SIMILARITY_THRESHOLD && score > bestScore) {
+      best = node
+      bestScore = score
+    }
+  }
+  return best
+}
+
+/** Conectar `fromId` → `toId` como "contiene" crea un ciclo si `fromId` ya cuelga de `toId`. */
+export function wouldCreateCycle(edges: EdgeRef[], fromId: string, toId: string) {
+  if (fromId === toId) return true
+  const children = new Map<string, string[]>()
+  for (const e of edges) {
+    if (e.kind !== 'child') continue
+    const list = children.get(e.fromId) ?? []
+    list.push(e.toId)
+    children.set(e.fromId, list)
+  }
+  const seen = new Set<string>()
+  const stack = [toId]
+  while (stack.length) {
+    const current = stack.pop() as string
+    if (current === fromId) return true
+    if (seen.has(current)) continue
+    seen.add(current)
+    stack.push(...(children.get(current) ?? []))
+  }
+  return false
+}
+
+/** La relación "relacionado" es simétrica: se guarda siempre con el id menor primero. */
+export const canonicalRelated = (a: string, b: string): [string, string] => (a < b ? [a, b] : [b, a])
+
+export function edgeExists(edges: EdgeRef[], a: string, b: string, kind: 'child' | 'related') {
+  if (kind === 'related') {
+    const [from, to] = canonicalRelated(a, b)
+    return edges.some((e) => e.kind === 'related' && e.fromId === from && e.toId === to)
+  }
+  return edges.some((e) => e.kind === 'child' && e.fromId === a && e.toId === b)
+}
+
+const compact = (text: string) => text.replace(/\s+/g, ' ').trim().toLowerCase()
+
+/** Agrega texto a un apunte sin repetir lo que ya contiene. `changed` es false si no había nada nuevo. */
+export function mergeContent(existing: string, addition: string):
+  | { ok: true; content: string; changed: boolean }
+  | { ok: false; error: string } {
+  const add = addition.trim()
+  if (!add) return { ok: true, content: existing, changed: false }
+  if (compact(existing).includes(compact(add))) return { ok: true, content: existing, changed: false }
+  const content = existing.trim() ? `${existing.trimEnd()}\n\n${add}` : add
+  if (content.length > CONTENT_MAX) {
+    return { ok: false, error: `El apunte superaría el máximo de ${CONTENT_MAX} caracteres.` }
+  }
+  return { ok: true, content, changed: true }
+}
+
+export type Normalized = { ok: true; proposal: FolderProposal } | { ok: false; reason: string }
+
+const blank = (): Omit<FolderProposal, 'operation' | 'reason'> => ({
+  type: 'propose_folder_change',
+  kind: null,
+  title: null,
+  content: null,
+  targetNodeId: null,
+  parentNodeId: null,
+  relatedNodeId: null,
+  relation: null,
+  solution: null,
+})
+
+/**
+ * Deja la propuesta del modelo coherente con el estado real de la Carpeta. Nunca confía en los ids del modelo:
+ * los que no existen en el workspace se descartan. Si ya hay un apunte parecido, una creación se convierte en
+ * una ampliación de ese apunte (reutilizar antes que duplicar).
+ */
+export function normalizeFolderProposal(
+  proposal: FolderProposal,
+  ctx: { nodes: NodeRef[]; edges: EdgeRef[] },
+): Normalized {
+  const byId = new Map(ctx.nodes.map((n) => [n.id, n]))
+  const known = (id: string | null) => (id && byId.has(id) ? id : null)
+  const reason = proposal.reason
+
+  if (proposal.operation === 'create') {
+    const title = cleanTitle(proposal.title ?? '')
+    if (!title) return { ok: false, reason: 'La propuesta no tiene título.' }
+    const kind: FolderKind = isFolderKind(proposal.kind) ? proposal.kind : 'concept'
+    const content = (proposal.content ?? '').trim()
+    const similar = findSimilarNode(ctx.nodes, title, kind)
+    if (similar) {
+      if (kind === 'exercise' || kind === 'solution' || !content) {
+        return { ok: false, reason: `Ya existe «${similar.title}».` }
+      }
+      return normalizeFolderProposal(
+        { ...blank(), operation: 'append', targetNodeId: similar.id, content, reason },
+        ctx,
+      )
+    }
+    return {
+      ok: true,
+      proposal: {
+        ...blank(),
+        operation: 'create',
+        kind,
+        title,
+        content: content || null,
+        parentNodeId: known(proposal.parentNodeId),
+        relatedNodeId: known(proposal.relatedNodeId),
+        solution: kind === 'exercise' ? (proposal.solution?.trim() || null) : null,
+        reason,
+      },
+    }
+  }
+
+  if (proposal.operation === 'append') {
+    const target = known(proposal.targetNodeId)
+    const content = (proposal.content ?? '').trim()
+    if (!target) return { ok: false, reason: 'El apunte de destino no existe.' }
+    if (!content) return { ok: false, reason: 'La propuesta no tiene contenido.' }
+    return { ok: true, proposal: { ...blank(), operation: 'append', targetNodeId: target, content, reason } }
+  }
+
+  const a = known(proposal.targetNodeId)
+  const b = known(proposal.relatedNodeId)
+  if (!a || !b || a === b) return { ok: false, reason: 'Los apuntes a relacionar no son válidos.' }
+  const relation = proposal.relation === 'child' ? 'child' : 'related'
+  if (edgeExists(ctx.edges, a, b, relation)) return { ok: false, reason: 'Esos apuntes ya están relacionados.' }
+  if (relation === 'child' && wouldCreateCycle(ctx.edges, a, b)) {
+    return { ok: false, reason: 'Esa relación crearía un ciclo.' }
+  }
+  return {
+    ok: true,
+    proposal: { ...blank(), operation: 'link', targetNodeId: a, relatedNodeId: b, relation, reason },
+  }
+}
+
+/** Índice compacto de la Carpeta para el prompt: id, tipo y título (el contenido no se envía). */
+export function buildFolderIndex(nodes: NodeRef[]) {
+  return nodes
+    .slice(0, PROMPT_INDEX_LIMIT)
+    .map((n) => `- ${n.id} · ${n.kind} · ${n.title}`)
+    .join('\n')
+}

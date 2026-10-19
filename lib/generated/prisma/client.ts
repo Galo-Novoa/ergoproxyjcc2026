@@ -127,3 +127,19 @@ export type AgentAction = Prisma.AgentActionModel
  * 
  */
 export type QuestionNode = Prisma.QuestionNodeModel
+/**
+ * Model FolderNode
+ * 
+ */
+export type FolderNode = Prisma.FolderNodeModel
+/**
+ * Model FolderEdge
+ * 
+ */
+export type FolderEdge = Prisma.FolderEdgeModel
+/**
+ * Model FolderSource
+ * Referencia explícita de un apunte al historial que lo justifica. Las claves al historial son
+ * SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia queda inactiva.
+ */
+export type FolderSource = Prisma.FolderSourceModel

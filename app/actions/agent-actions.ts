@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
+import { applyFolderProposal, FolderError, type FolderSourceRef } from '@/lib/folder/server'
 import { isConversationMode, parseProposalPayload } from '@/lib/llm/contract'
 import { demoModeBlock, getUserId } from '@/lib/session'
 import { loadTree } from '@/lib/tree/branch'
@@ -44,6 +45,46 @@ export async function resolveAgentAction(
 
   const proposal = parseProposalPayload(action.payload)
   if (!proposal) return { ok: false, error: 'La acción propuesta no es válida.' }
+
+  if (proposal.type === 'propose_folder_change') {
+    const conversation = await db.conversation.findFirst({
+      where: { id: action.conversationId, userId },
+      select: { subjectId: true, title: true },
+    })
+    if (!conversation) return { ok: false, error: 'No encontramos la conversación.' }
+    const historyNode = action.message.nodeId
+      ? await db.conversationNode.findFirst({
+          where: { id: action.message.nodeId, conversationId: action.conversationId, userId },
+          select: { id: true, alias: true },
+        })
+      : null
+    const source: FolderSourceRef = {
+      conversationId: action.conversationId,
+      messageId: action.message.id,
+      historyNodeId: historyNode?.id ?? null,
+      label: historyNode ? `${conversation.title} › ${historyNode.alias}` : conversation.title,
+    }
+    try {
+      const folderNodeId = await db.$transaction(async (tx) => {
+        const claimed = await tx.agentAction.updateMany({
+          where: { id: actionId, userId, status: 'proposed' },
+          data: { status: 'accepted', resolvedAt: new Date() },
+        })
+        if (claimed.count === 0) return null
+        const { nodeId } = await applyFolderProposal(tx, userId, conversation.subjectId, proposal, source)
+        await tx.agentAction.update({ where: { id: actionId }, data: { resultNodeId: nodeId } })
+        return nodeId
+      })
+      if (!folderNodeId) return { ok: false, error: ALREADY_RESOLVED }
+    } catch (error) {
+      if (error instanceof FolderError) return { ok: false, error: error.message }
+      throw error
+    }
+    revalidatePath('/folder')
+    revalidatePath('/chat', 'layout')
+    return { ok: true }
+  }
+
   const parentId = action.message.nodeId
   if (!parentId) return { ok: false, error: 'La rama de origen ya no existe. Descartá la propuesta.' }
 

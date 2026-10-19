@@ -67,7 +67,10 @@ export const ModelName = {
   Message: 'Message',
   ConversationNode: 'ConversationNode',
   AgentAction: 'AgentAction',
-  QuestionNode: 'QuestionNode'
+  QuestionNode: 'QuestionNode',
+  FolderNode: 'FolderNode',
+  FolderEdge: 'FolderEdge',
+  FolderSource: 'FolderSource'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -354,6 +357,46 @@ export const QuestionNodeScalarFieldEnum = {
 } as const
 
 export type QuestionNodeScalarFieldEnum = (typeof QuestionNodeScalarFieldEnum)[keyof typeof QuestionNodeScalarFieldEnum]
+
+
+export const FolderNodeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  subjectId: 'subjectId',
+  kind: 'kind',
+  title: 'title',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolderNodeScalarFieldEnum = (typeof FolderNodeScalarFieldEnum)[keyof typeof FolderNodeScalarFieldEnum]
+
+
+export const FolderEdgeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fromId: 'fromId',
+  toId: 'toId',
+  kind: 'kind',
+  createdAt: 'createdAt'
+} as const
+
+export type FolderEdgeScalarFieldEnum = (typeof FolderEdgeScalarFieldEnum)[keyof typeof FolderEdgeScalarFieldEnum]
+
+
+export const FolderSourceScalarFieldEnum = {
+  id: 'id',
+  nodeId: 'nodeId',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  historyNodeId: 'historyNodeId',
+  label: 'label',
+  createdAt: 'createdAt'
+} as const
+
+export type FolderSourceScalarFieldEnum = (typeof FolderSourceScalarFieldEnum)[keyof typeof FolderSourceScalarFieldEnum]
 
 
 export const SortOrder = {

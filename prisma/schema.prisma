@@ -33,6 +33,9 @@ model User {
   conversationFiles ConversationFile[]
   agentActions  AgentAction[]
   conversationNodes ConversationNode[]
+  folderNodes   FolderNode[]
+  folderEdges   FolderEdge[]
+  folderSources FolderSource[]
 
   @@map("user")
 }
@@ -143,6 +146,7 @@ model Subject {
   documents     Document[]
   conversations Conversation[]
   questionNodes QuestionNode[]
+  folderNodes   FolderNode[]
 
   @@index([userId], map: "subjects_user_idx")
   @@index([organizationId], map: "subjects_org_idx")
@@ -287,6 +291,7 @@ model Conversation {
   questionNodes QuestionNode[]
   agentActions  AgentAction[]
   nodes         ConversationNode[]
+  folderSources FolderSource[]
 
   @@index([userId], map: "conversations_user_idx")
   @@index([subjectId], map: "conversations_subject_idx")
@@ -330,6 +335,7 @@ model Message {
   questionNodes QuestionNode[]
   agentActions  AgentAction[]
   anchoredNodes ConversationNode[] @relation("NodeAnchor")
+  folderSources FolderSource[]
 
   @@index([conversationId], map: "messages_conversation_idx")
   @@index([nodeId, seq], map: "messages_node_seq_idx")
@@ -369,7 +375,8 @@ model ConversationNode {
   children      ConversationNode[] @relation("ConversationTree")
   anchorMessage Message?           @relation("NodeAnchor", fields: [anchorMessageId], references: [id], onDelete: SetNull)
   messages      Message[]          @relation("NodeMessages")
-
+  folderSources FolderSource[]
+  
   @@index([conversationId], map: "conversation_nodes_conversation_idx")
   @@index([parentId], map: "conversation_nodes_parent_idx")
   @@index([userId], map: "conversation_nodes_user_idx")
@@ -426,4 +433,71 @@ model QuestionNode {
   @@index([subjectId], map: "question_nodes_subject_idx")
   @@index([parentId], map: "question_nodes_parent_idx")
   @@map("question_nodes")
+}
+
+// --- Carpeta: grafo de conocimiento por workspace ---------------------------
+// Distinto del árbol de ramas del historial (ConversationNode): un apunte puede recibir
+// referencias de muchas sesiones y ramas mediante FolderSource, sin compartir estructura.
+// subjectId NULL = workspace General (mismo criterio que File y Document).
+// kind: 'concept' | 'key_points' | 'exercise' | 'solution' | 'note'
+model FolderNode {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String
+  subjectId String?  @db.Uuid
+  kind      String   @default("concept")
+  title     String
+  /// Contenido en Markdown.
+  content   String   @default("")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  outgoing FolderEdge[]   @relation("EdgeFrom")
+  incoming FolderEdge[]   @relation("EdgeTo")
+  sources  FolderSource[]
+
+  @@index([userId, subjectId], map: "folder_nodes_user_subject_idx")
+  @@map("folder_nodes")
+}
+
+// kind: 'child' (from contiene a to; el grafo no admite ciclos) | 'related' (simétrica; se guarda con from < to)
+model FolderEdge {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String
+  fromId    String     @db.Uuid
+  toId      String     @db.Uuid
+  kind      String
+  createdAt DateTime   @default(now()) @db.Timestamp(6)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  from      FolderNode @relation("EdgeFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to        FolderNode @relation("EdgeTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId, kind], map: "folder_edges_unique_key")
+  @@index([toId], map: "folder_edges_to_idx")
+  @@index([userId], map: "folder_edges_user_idx")
+  @@map("folder_edges")
+}
+
+/// Referencia explícita de un apunte al historial que lo justifica. Las claves al historial son
+/// SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia queda inactiva.
+model FolderSource {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nodeId         String            @db.Uuid
+  userId         String
+  conversationId String?           @db.Uuid
+  messageId      String?           @db.Uuid
+  historyNodeId  String?           @db.Uuid
+  label          String
+  createdAt      DateTime          @default(now()) @db.Timestamp(6)
+  node           FolderNode        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  message        Message?          @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  historyNode    ConversationNode? @relation(fields: [historyNodeId], references: [id], onDelete: SetNull)
+
+  @@index([nodeId], map: "folder_sources_node_idx")
+  @@index([conversationId], map: "folder_sources_conversation_idx")
+  @@index([userId], map: "folder_sources_user_idx")
+  @@map("folder_sources")
 }

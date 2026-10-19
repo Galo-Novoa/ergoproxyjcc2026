@@ -311,6 +311,7 @@ export type ConversationNodeWhereInput = {
   children?: Prisma.ConversationNodeListRelationFilter
   anchorMessage?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   messages?: Prisma.MessageListRelationFilter
+  folderSources?: Prisma.FolderSourceListRelationFilter
 }
 
 export type ConversationNodeOrderByWithRelationInput = {
@@ -335,6 +336,7 @@ export type ConversationNodeOrderByWithRelationInput = {
   children?: Prisma.ConversationNodeOrderByRelationAggregateInput
   anchorMessage?: Prisma.MessageOrderByWithRelationInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
+  folderSources?: Prisma.FolderSourceOrderByRelationAggregateInput
 }
 
 export type ConversationNodeWhereUniqueInput = Prisma.AtLeast<{
@@ -362,6 +364,7 @@ export type ConversationNodeWhereUniqueInput = Prisma.AtLeast<{
   children?: Prisma.ConversationNodeListRelationFilter
   anchorMessage?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   messages?: Prisma.MessageListRelationFilter
+  folderSources?: Prisma.FolderSourceListRelationFilter
 }, "id">
 
 export type ConversationNodeOrderByWithAggregationInput = {
@@ -426,6 +429,7 @@ export type ConversationNodeCreateInput = {
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateInput = {
@@ -446,6 +450,7 @@ export type ConversationNodeUncheckedCreateInput = {
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUpdateInput = {
@@ -466,6 +471,7 @@ export type ConversationNodeUpdateInput = {
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateInput = {
@@ -486,6 +492,7 @@ export type ConversationNodeUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeCreateManyInput = {
@@ -827,6 +834,22 @@ export type ConversationNodeUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.ConversationNodeScalarWhereInput | Prisma.ConversationNodeScalarWhereInput[]
 }
 
+export type ConversationNodeCreateNestedOneWithoutFolderSourcesInput = {
+  create?: Prisma.XOR<Prisma.ConversationNodeCreateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedCreateWithoutFolderSourcesInput>
+  connectOrCreate?: Prisma.ConversationNodeCreateOrConnectWithoutFolderSourcesInput
+  connect?: Prisma.ConversationNodeWhereUniqueInput
+}
+
+export type ConversationNodeUpdateOneWithoutFolderSourcesNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationNodeCreateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedCreateWithoutFolderSourcesInput>
+  connectOrCreate?: Prisma.ConversationNodeCreateOrConnectWithoutFolderSourcesInput
+  upsert?: Prisma.ConversationNodeUpsertWithoutFolderSourcesInput
+  disconnect?: Prisma.ConversationNodeWhereInput | boolean
+  delete?: Prisma.ConversationNodeWhereInput | boolean
+  connect?: Prisma.ConversationNodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationNodeUpdateToOneWithWhereWithoutFolderSourcesInput, Prisma.ConversationNodeUpdateWithoutFolderSourcesInput>, Prisma.ConversationNodeUncheckedUpdateWithoutFolderSourcesInput>
+}
+
 export type ConversationNodeCreateWithoutUserInput = {
   id?: string
   alias: string
@@ -844,6 +867,7 @@ export type ConversationNodeCreateWithoutUserInput = {
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutUserInput = {
@@ -863,6 +887,7 @@ export type ConversationNodeUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutUserInput = {
@@ -929,6 +954,7 @@ export type ConversationNodeCreateWithoutConversationInput = {
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutConversationInput = {
@@ -948,6 +974,7 @@ export type ConversationNodeUncheckedCreateWithoutConversationInput = {
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutConversationInput = {
@@ -993,6 +1020,7 @@ export type ConversationNodeCreateWithoutMessagesInput = {
   parent?: Prisma.ConversationNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutMessagesInput = {
@@ -1012,6 +1040,7 @@ export type ConversationNodeUncheckedCreateWithoutMessagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutMessagesInput = {
@@ -1036,6 +1065,7 @@ export type ConversationNodeCreateWithoutAnchorMessageInput = {
   parent?: Prisma.ConversationNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutAnchorMessageInput = {
@@ -1055,6 +1085,7 @@ export type ConversationNodeUncheckedCreateWithoutAnchorMessageInput = {
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutAnchorMessageInput = {
@@ -1095,6 +1126,7 @@ export type ConversationNodeUpdateWithoutMessagesInput = {
   parent?: Prisma.ConversationNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutMessagesInput = {
@@ -1114,6 +1146,7 @@ export type ConversationNodeUncheckedUpdateWithoutMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUpsertWithWhereUniqueWithoutAnchorMessageInput = {
@@ -1149,6 +1182,7 @@ export type ConversationNodeCreateWithoutChildrenInput = {
   parent?: Prisma.ConversationNodeCreateNestedOneWithoutChildrenInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutChildrenInput = {
@@ -1168,6 +1202,7 @@ export type ConversationNodeUncheckedCreateWithoutChildrenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutChildrenInput = {
@@ -1192,6 +1227,7 @@ export type ConversationNodeCreateWithoutParentInput = {
   children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
   anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
   messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeUncheckedCreateWithoutParentInput = {
@@ -1211,6 +1247,7 @@ export type ConversationNodeUncheckedCreateWithoutParentInput = {
   updatedAt?: Date | string
   children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutHistoryNodeInput
 }
 
 export type ConversationNodeCreateOrConnectWithoutParentInput = {
@@ -1251,6 +1288,7 @@ export type ConversationNodeUpdateWithoutChildrenInput = {
   parent?: Prisma.ConversationNodeUpdateOneWithoutChildrenNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutChildrenInput = {
@@ -1270,6 +1308,7 @@ export type ConversationNodeUncheckedUpdateWithoutChildrenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUpsertWithWhereUniqueWithoutParentInput = {
@@ -1286,6 +1325,102 @@ export type ConversationNodeUpdateWithWhereUniqueWithoutParentInput = {
 export type ConversationNodeUpdateManyWithWhereWithoutParentInput = {
   where: Prisma.ConversationNodeScalarWhereInput
   data: Prisma.XOR<Prisma.ConversationNodeUpdateManyMutationInput, Prisma.ConversationNodeUncheckedUpdateManyWithoutParentInput>
+}
+
+export type ConversationNodeCreateWithoutFolderSourcesInput = {
+  id?: string
+  alias: string
+  topic: string
+  position?: number
+  contextSummary?: string | null
+  summaryUpToSeq?: bigint | number | null
+  summaryVersion?: number
+  summaryUpdatedAt?: Date | string | null
+  inheritedSummary?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutNodesInput
+  user: Prisma.UserCreateNestedOneWithoutConversationNodesInput
+  parent?: Prisma.ConversationNodeCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ConversationNodeCreateNestedManyWithoutParentInput
+  anchorMessage?: Prisma.MessageCreateNestedOneWithoutAnchoredNodesInput
+  messages?: Prisma.MessageCreateNestedManyWithoutNodeInput
+}
+
+export type ConversationNodeUncheckedCreateWithoutFolderSourcesInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  parentId?: string | null
+  anchorMessageId?: string | null
+  alias: string
+  topic: string
+  position?: number
+  contextSummary?: string | null
+  summaryUpToSeq?: bigint | number | null
+  summaryVersion?: number
+  summaryUpdatedAt?: Date | string | null
+  inheritedSummary?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutParentInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutNodeInput
+}
+
+export type ConversationNodeCreateOrConnectWithoutFolderSourcesInput = {
+  where: Prisma.ConversationNodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationNodeCreateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedCreateWithoutFolderSourcesInput>
+}
+
+export type ConversationNodeUpsertWithoutFolderSourcesInput = {
+  update: Prisma.XOR<Prisma.ConversationNodeUpdateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedUpdateWithoutFolderSourcesInput>
+  create: Prisma.XOR<Prisma.ConversationNodeCreateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedCreateWithoutFolderSourcesInput>
+  where?: Prisma.ConversationNodeWhereInput
+}
+
+export type ConversationNodeUpdateToOneWithWhereWithoutFolderSourcesInput = {
+  where?: Prisma.ConversationNodeWhereInput
+  data: Prisma.XOR<Prisma.ConversationNodeUpdateWithoutFolderSourcesInput, Prisma.ConversationNodeUncheckedUpdateWithoutFolderSourcesInput>
+}
+
+export type ConversationNodeUpdateWithoutFolderSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  contextSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUpToSeq?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  summaryVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  summaryUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  inheritedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutNodesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutConversationNodesNestedInput
+  parent?: Prisma.ConversationNodeUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
+  anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+}
+
+export type ConversationNodeUncheckedUpdateWithoutFolderSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorMessageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alias?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  contextSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUpToSeq?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  summaryVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  summaryUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  inheritedSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
 }
 
 export type ConversationNodeCreateManyUserInput = {
@@ -1322,6 +1457,7 @@ export type ConversationNodeUpdateWithoutUserInput = {
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutUserInput = {
@@ -1341,6 +1477,7 @@ export type ConversationNodeUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateManyWithoutUserInput = {
@@ -1394,6 +1531,7 @@ export type ConversationNodeUpdateWithoutConversationInput = {
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutConversationInput = {
@@ -1413,6 +1551,7 @@ export type ConversationNodeUncheckedUpdateWithoutConversationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateManyWithoutConversationInput = {
@@ -1466,6 +1605,7 @@ export type ConversationNodeUpdateWithoutAnchorMessageInput = {
   parent?: Prisma.ConversationNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutAnchorMessageInput = {
@@ -1485,6 +1625,7 @@ export type ConversationNodeUncheckedUpdateWithoutAnchorMessageInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateManyWithoutAnchorMessageInput = {
@@ -1538,6 +1679,7 @@ export type ConversationNodeUpdateWithoutParentInput = {
   children?: Prisma.ConversationNodeUpdateManyWithoutParentNestedInput
   anchorMessage?: Prisma.MessageUpdateOneWithoutAnchoredNodesNestedInput
   messages?: Prisma.MessageUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateWithoutParentInput = {
@@ -1557,6 +1699,7 @@ export type ConversationNodeUncheckedUpdateWithoutParentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.ConversationNodeUncheckedUpdateManyWithoutParentNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutNodeNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput
 }
 
 export type ConversationNodeUncheckedUpdateManyWithoutParentInput = {
@@ -1584,11 +1727,13 @@ export type ConversationNodeUncheckedUpdateManyWithoutParentInput = {
 export type ConversationNodeCountOutputType = {
   children: number
   messages: number
+  folderSources: number
 }
 
 export type ConversationNodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | ConversationNodeCountOutputTypeCountChildrenArgs
   messages?: boolean | ConversationNodeCountOutputTypeCountMessagesArgs
+  folderSources?: boolean | ConversationNodeCountOutputTypeCountFolderSourcesArgs
 }
 
 /**
@@ -1615,6 +1760,13 @@ export type ConversationNodeCountOutputTypeCountMessagesArgs<ExtArgs extends run
   where?: Prisma.MessageWhereInput
 }
 
+/**
+ * ConversationNodeCountOutputType without action
+ */
+export type ConversationNodeCountOutputTypeCountFolderSourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderSourceWhereInput
+}
+
 
 export type ConversationNodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1638,6 +1790,7 @@ export type ConversationNodeSelect<ExtArgs extends runtime.Types.Extensions.Inte
   children?: boolean | Prisma.ConversationNode$childrenArgs<ExtArgs>
   anchorMessage?: boolean | Prisma.ConversationNode$anchorMessageArgs<ExtArgs>
   messages?: boolean | Prisma.ConversationNode$messagesArgs<ExtArgs>
+  folderSources?: boolean | Prisma.ConversationNode$folderSourcesArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationNodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conversationNode"]>
 
@@ -1711,6 +1864,7 @@ export type ConversationNodeInclude<ExtArgs extends runtime.Types.Extensions.Int
   children?: boolean | Prisma.ConversationNode$childrenArgs<ExtArgs>
   anchorMessage?: boolean | Prisma.ConversationNode$anchorMessageArgs<ExtArgs>
   messages?: boolean | Prisma.ConversationNode$messagesArgs<ExtArgs>
+  folderSources?: boolean | Prisma.ConversationNode$folderSourcesArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationNodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConversationNodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1735,6 +1889,7 @@ export type $ConversationNodePayload<ExtArgs extends runtime.Types.Extensions.In
     children: Prisma.$ConversationNodePayload<ExtArgs>[]
     anchorMessage: Prisma.$MessagePayload<ExtArgs> | null
     messages: Prisma.$MessagePayload<ExtArgs>[]
+    folderSources: Prisma.$FolderSourcePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2164,6 +2319,7 @@ export interface Prisma__ConversationNodeClient<T, Null = never, ExtArgs extends
   children<T extends Prisma.ConversationNode$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationNode$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   anchorMessage<T extends Prisma.ConversationNode$anchorMessageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationNode$anchorMessageArgs<ExtArgs>>): Prisma.Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   messages<T extends Prisma.ConversationNode$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationNode$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folderSources<T extends Prisma.ConversationNode$folderSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ConversationNode$folderSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2692,6 +2848,30 @@ export type ConversationNode$messagesArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.MessageScalarFieldEnum | Prisma.MessageScalarFieldEnum[]
+}
+
+/**
+ * ConversationNode.folderSources
+ */
+export type ConversationNode$folderSourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FolderSource
+   */
+  select?: Prisma.FolderSourceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FolderSource
+   */
+  omit?: Prisma.FolderSourceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderSourceInclude<ExtArgs> | null
+  where?: Prisma.FolderSourceWhereInput
+  orderBy?: Prisma.FolderSourceOrderByWithRelationInput | Prisma.FolderSourceOrderByWithRelationInput[]
+  cursor?: Prisma.FolderSourceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderSourceScalarFieldEnum | Prisma.FolderSourceScalarFieldEnum[]
 }
 
 /**

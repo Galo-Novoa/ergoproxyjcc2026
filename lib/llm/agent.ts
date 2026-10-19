@@ -16,7 +16,19 @@ import {
 import { buildRagPrompt } from '@/lib/rag/prompt'
 import type { RetrievalResult } from '@/lib/rag/retrieve'
 import type { LabeledText } from '@/lib/tree/compose'
+import {
+  FOLDER_KIND_LABELS,
+  MAX_FOLDER_PROPOSALS_PER_MESSAGE,
+  PROMPT_INDEX_LIMIT,
+  TITLE_MAX,
+  type FolderKind,
+} from '@/lib/folder/config'
 import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
+
+export type FolderPromptInfo = {
+  canPropose: boolean
+  nodes: { id: string; title: string; kind: string }[]
+}
 
 export type BranchPromptInfo = {
   alias: string
@@ -60,9 +72,34 @@ function buildBranchPrompt(branch: BranchPromptInfo) {
   return lines.join('\n')
 }
 
+function buildFolderPrompt(folder: FolderPromptInfo) {
+  if (!folder.canPropose) {
+    return 'La Carpeta del estudiante está llena: no propongas acciones de tipo propose_folder_change.'
+  }
+  const shown = folder.nodes.slice(0, PROMPT_INDEX_LIMIT)
+  const kinds = Object.entries(FOLDER_KIND_LABELS)
+    .map(([kind, label]) => `${kind} (${label})`)
+    .join(', ')
+  const lines = [
+    `La Carpeta es el cuaderno ordenado del estudiante, separado de este chat. Acción disponible: {"type":"propose_folder_change","operation":"create"|"append"|"link","kind":<${kinds}>|null,"title":<hasta ${TITLE_MAX} caracteres>|null,"content":<Markdown>|null,"targetNodeId":<id>|null,"parentNodeId":<id>|null,"relatedNodeId":<id>|null,"relation":"child"|"related"|null,"solution":<Markdown>|null,"reason":<por qué conviene guardarlo>}.`,
+    `Usala SOLO cuando lo explicado tiene valor para estudiar después (una definición, los puntos clave de un tema, un ejercicio con su resolución) o cuando el estudiante pide guardarlo. Máximo ${MAX_FOLDER_PROPOSALS_PER_MESSAGE} por respuesta; la mayoría de las respuestas no necesitan ninguna.`,
+    '- create: apunte nuevo (kind, title y content obligatorios). Para un ejercicio resuelto usá kind "exercise", el enunciado en content y la resolución en solution.',
+    '- append: agrega contenido a un apunte que YA existe (targetNodeId y content). Preferilo sobre create cuando el tema ya está en la lista.',
+    '- link: relaciona dos apuntes existentes (targetNodeId y relatedNodeId, más relation: "child" si el segundo es un subtema del primero, "related" si solo se vinculan).',
+    'Usá únicamente ids de la lista; nunca inventes ids. Si la lista está vacía, solo podés usar create.',
+  ]
+  lines.push(
+    shown.length
+      ? `Apuntes existentes en la Carpeta:\n${shown.map((n) => `- ${n.id} · ${n.kind} · ${n.title}`).join('\n')}`
+      : 'La Carpeta todavía no tiene apuntes.',
+  )
+  return lines.join('\n')
+}
+
 function buildSystemPrompt(
   mode: ConversationMode,
   branch: BranchPromptInfo,
+  folder: FolderPromptInfo,
   rag: RetrievalResult | undefined,
 ) {
   return [
@@ -72,10 +109,11 @@ function buildSystemPrompt(
     '- output: el texto visible para el estudiante, en Markdown (podés usar listas, tablas y bloques de código).',
     '- description: alias corto (2 a 5 palabras, máximo 80 caracteres) del concepto o problema específico tratado, por ejemplo «Sustitución en integrales». Nunca copies la pregunta completa.',
     '- grounding: "documents", "mixed", "general" o "insufficient" según cuánto de la respuesta se apoya en los documentos del estudiante (criterios abajo). Sin fragmentos de documentos, usá "general" o "insufficient".',
+    '- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Las acciones son propuestas: el estudiante decide si las acepta.',
     branch.canPropose
-      ? `- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, nunca una por cada mensaje, y ninguna que repita lo que ya explicaste.`
-      : '- actions: dejala vacía; esta conversación ya no admite más ramas.',
-    `Única acción disponible: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Las acciones son propuestas: el estudiante decide si las abre.`,
+      ? `Rama de historial: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, y ninguna que repita lo que ya explicaste.`
+      : 'Esta conversación ya no admite más ramas: no propongas acciones propose_history_branch.',
+    buildFolderPrompt(folder),
     buildBranchPrompt(branch),
     rag ? buildRagPrompt(rag) : '',
   ].join('\n')
@@ -157,16 +195,18 @@ function providerStatus(error: unknown): number | undefined {
 export async function runAgent({
   mode,
   branch,
+  folder,
   history,
   rag,
 }: {
   mode: ConversationMode
   branch: BranchPromptInfo
+  folder: FolderPromptInfo
   history: { role: 'user' | 'assistant'; content: string }[]
   rag?: RetrievalResult
 }): Promise<AgentResult> {
   const config = getLlmServerConfig()
-  const system = buildSystemPrompt(mode, branch, rag)
+  const system = buildSystemPrompt(mode, branch, folder, rag)
 
   const generate = (model: LanguageModel) =>
     generateText({

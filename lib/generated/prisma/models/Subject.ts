@@ -236,6 +236,7 @@ export type SubjectWhereInput = {
   documents?: Prisma.DocumentListRelationFilter
   conversations?: Prisma.ConversationListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
+  folderNodes?: Prisma.FolderNodeListRelationFilter
 }
 
 export type SubjectOrderByWithRelationInput = {
@@ -256,6 +257,7 @@ export type SubjectOrderByWithRelationInput = {
   documents?: Prisma.DocumentOrderByRelationAggregateInput
   conversations?: Prisma.ConversationOrderByRelationAggregateInput
   questionNodes?: Prisma.QuestionNodeOrderByRelationAggregateInput
+  folderNodes?: Prisma.FolderNodeOrderByRelationAggregateInput
 }
 
 export type SubjectWhereUniqueInput = Prisma.AtLeast<{
@@ -279,6 +281,7 @@ export type SubjectWhereUniqueInput = Prisma.AtLeast<{
   documents?: Prisma.DocumentListRelationFilter
   conversations?: Prisma.ConversationListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
+  folderNodes?: Prisma.FolderNodeListRelationFilter
 }, "id">
 
 export type SubjectOrderByWithAggregationInput = {
@@ -331,6 +334,7 @@ export type SubjectCreateInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateInput = {
@@ -349,6 +353,7 @@ export type SubjectUncheckedCreateInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUpdateInput = {
@@ -367,6 +372,7 @@ export type SubjectUpdateInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateInput = {
@@ -385,6 +391,7 @@ export type SubjectUncheckedUpdateInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateManyInput = {
@@ -632,6 +639,22 @@ export type SubjectUpdateOneWithoutQuestionNodesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutQuestionNodesInput, Prisma.SubjectUpdateWithoutQuestionNodesInput>, Prisma.SubjectUncheckedUpdateWithoutQuestionNodesInput>
 }
 
+export type SubjectCreateNestedOneWithoutFolderNodesInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutFolderNodesInput, Prisma.SubjectUncheckedCreateWithoutFolderNodesInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutFolderNodesInput
+  connect?: Prisma.SubjectWhereUniqueInput
+}
+
+export type SubjectUpdateOneWithoutFolderNodesNestedInput = {
+  create?: Prisma.XOR<Prisma.SubjectCreateWithoutFolderNodesInput, Prisma.SubjectUncheckedCreateWithoutFolderNodesInput>
+  connectOrCreate?: Prisma.SubjectCreateOrConnectWithoutFolderNodesInput
+  upsert?: Prisma.SubjectUpsertWithoutFolderNodesInput
+  disconnect?: Prisma.SubjectWhereInput | boolean
+  delete?: Prisma.SubjectWhereInput | boolean
+  connect?: Prisma.SubjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SubjectUpdateToOneWithWhereWithoutFolderNodesInput, Prisma.SubjectUpdateWithoutFolderNodesInput>, Prisma.SubjectUncheckedUpdateWithoutFolderNodesInput>
+}
+
 export type SubjectCreateWithoutUserInput = {
   id?: string
   visibility?: string
@@ -647,6 +670,7 @@ export type SubjectCreateWithoutUserInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutUserInput = {
@@ -664,6 +688,7 @@ export type SubjectUncheckedCreateWithoutUserInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutUserInput = {
@@ -724,6 +749,7 @@ export type SubjectCreateWithoutOrganizationInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutOrganizationInput = {
@@ -741,6 +767,7 @@ export type SubjectUncheckedCreateWithoutOrganizationInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutOrganizationInput = {
@@ -784,6 +811,7 @@ export type SubjectCreateWithoutFilesInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutFilesInput = {
@@ -801,6 +829,7 @@ export type SubjectUncheckedCreateWithoutFilesInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutFilesInput = {
@@ -834,6 +863,7 @@ export type SubjectUpdateWithoutFilesInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutFilesInput = {
@@ -851,6 +881,7 @@ export type SubjectUncheckedUpdateWithoutFilesInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutDocumentsInput = {
@@ -868,6 +899,7 @@ export type SubjectCreateWithoutDocumentsInput = {
   files?: Prisma.FileCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutDocumentsInput = {
@@ -885,6 +917,7 @@ export type SubjectUncheckedCreateWithoutDocumentsInput = {
   files?: Prisma.FileUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutDocumentsInput = {
@@ -918,6 +951,7 @@ export type SubjectUpdateWithoutDocumentsInput = {
   files?: Prisma.FileUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutDocumentsInput = {
@@ -935,6 +969,7 @@ export type SubjectUncheckedUpdateWithoutDocumentsInput = {
   files?: Prisma.FileUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutConversationsInput = {
@@ -952,6 +987,7 @@ export type SubjectCreateWithoutConversationsInput = {
   files?: Prisma.FileCreateNestedManyWithoutSubjectInput
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutConversationsInput = {
@@ -969,6 +1005,7 @@ export type SubjectUncheckedCreateWithoutConversationsInput = {
   files?: Prisma.FileUncheckedCreateNestedManyWithoutSubjectInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutConversationsInput = {
@@ -1002,6 +1039,7 @@ export type SubjectUpdateWithoutConversationsInput = {
   files?: Prisma.FileUpdateManyWithoutSubjectNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutConversationsInput = {
@@ -1019,6 +1057,7 @@ export type SubjectUncheckedUpdateWithoutConversationsInput = {
   files?: Prisma.FileUncheckedUpdateManyWithoutSubjectNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateWithoutQuestionNodesInput = {
@@ -1036,6 +1075,7 @@ export type SubjectCreateWithoutQuestionNodesInput = {
   files?: Prisma.FileCreateNestedManyWithoutSubjectInput
   documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectUncheckedCreateWithoutQuestionNodesInput = {
@@ -1053,6 +1093,7 @@ export type SubjectUncheckedCreateWithoutQuestionNodesInput = {
   files?: Prisma.FileUncheckedCreateNestedManyWithoutSubjectInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutSubjectInput
 }
 
 export type SubjectCreateOrConnectWithoutQuestionNodesInput = {
@@ -1086,6 +1127,7 @@ export type SubjectUpdateWithoutQuestionNodesInput = {
   files?: Prisma.FileUpdateManyWithoutSubjectNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutQuestionNodesInput = {
@@ -1103,6 +1145,95 @@ export type SubjectUncheckedUpdateWithoutQuestionNodesInput = {
   files?: Prisma.FileUncheckedUpdateManyWithoutSubjectNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectCreateWithoutFolderNodesInput = {
+  id?: string
+  visibility?: string
+  name: string
+  code?: string | null
+  description?: string | null
+  color?: string
+  icon?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutSubjectsInput
+  organization?: Prisma.OrganizationCreateNestedOneWithoutSubjectsInput
+  files?: Prisma.FileCreateNestedManyWithoutSubjectInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutSubjectInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutSubjectInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectUncheckedCreateWithoutFolderNodesInput = {
+  id?: string
+  userId: string
+  organizationId?: string | null
+  visibility?: string
+  name: string
+  code?: string | null
+  description?: string | null
+  color?: string
+  icon?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutSubjectInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSubjectInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSubjectInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutSubjectInput
+}
+
+export type SubjectCreateOrConnectWithoutFolderNodesInput = {
+  where: Prisma.SubjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutFolderNodesInput, Prisma.SubjectUncheckedCreateWithoutFolderNodesInput>
+}
+
+export type SubjectUpsertWithoutFolderNodesInput = {
+  update: Prisma.XOR<Prisma.SubjectUpdateWithoutFolderNodesInput, Prisma.SubjectUncheckedUpdateWithoutFolderNodesInput>
+  create: Prisma.XOR<Prisma.SubjectCreateWithoutFolderNodesInput, Prisma.SubjectUncheckedCreateWithoutFolderNodesInput>
+  where?: Prisma.SubjectWhereInput
+}
+
+export type SubjectUpdateToOneWithWhereWithoutFolderNodesInput = {
+  where?: Prisma.SubjectWhereInput
+  data: Prisma.XOR<Prisma.SubjectUpdateWithoutFolderNodesInput, Prisma.SubjectUncheckedUpdateWithoutFolderNodesInput>
+}
+
+export type SubjectUpdateWithoutFolderNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutSubjectsNestedInput
+  organization?: Prisma.OrganizationUpdateOneWithoutSubjectsNestedInput
+  files?: Prisma.FileUpdateManyWithoutSubjectNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+}
+
+export type SubjectUncheckedUpdateWithoutFolderNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  icon?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  files?: Prisma.FileUncheckedUpdateManyWithoutSubjectNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectCreateManyUserInput = {
@@ -1133,6 +1264,7 @@ export type SubjectUpdateWithoutUserInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutUserInput = {
@@ -1150,6 +1282,7 @@ export type SubjectUncheckedUpdateWithoutUserInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateManyWithoutUserInput = {
@@ -1193,6 +1326,7 @@ export type SubjectUpdateWithoutOrganizationInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateWithoutOrganizationInput = {
@@ -1210,6 +1344,7 @@ export type SubjectUncheckedUpdateWithoutOrganizationInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSubjectNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutSubjectNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutSubjectNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput
 }
 
 export type SubjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1235,6 +1370,7 @@ export type SubjectCountOutputType = {
   documents: number
   conversations: number
   questionNodes: number
+  folderNodes: number
 }
 
 export type SubjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1242,6 +1378,7 @@ export type SubjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   documents?: boolean | SubjectCountOutputTypeCountDocumentsArgs
   conversations?: boolean | SubjectCountOutputTypeCountConversationsArgs
   questionNodes?: boolean | SubjectCountOutputTypeCountQuestionNodesArgs
+  folderNodes?: boolean | SubjectCountOutputTypeCountFolderNodesArgs
 }
 
 /**
@@ -1282,6 +1419,13 @@ export type SubjectCountOutputTypeCountQuestionNodesArgs<ExtArgs extends runtime
   where?: Prisma.QuestionNodeWhereInput
 }
 
+/**
+ * SubjectCountOutputType without action
+ */
+export type SubjectCountOutputTypeCountFolderNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderNodeWhereInput
+}
+
 
 export type SubjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1301,6 +1445,7 @@ export type SubjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   documents?: boolean | Prisma.Subject$documentsArgs<ExtArgs>
   conversations?: boolean | Prisma.Subject$conversationsArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Subject$questionNodesArgs<ExtArgs>
+  folderNodes?: boolean | Prisma.Subject$folderNodesArgs<ExtArgs>
   _count?: boolean | Prisma.SubjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["subject"]>
 
@@ -1358,6 +1503,7 @@ export type SubjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   documents?: boolean | Prisma.Subject$documentsArgs<ExtArgs>
   conversations?: boolean | Prisma.Subject$conversationsArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Subject$questionNodesArgs<ExtArgs>
+  folderNodes?: boolean | Prisma.Subject$folderNodesArgs<ExtArgs>
   _count?: boolean | Prisma.SubjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SubjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1378,6 +1524,7 @@ export type $SubjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     documents: Prisma.$DocumentPayload<ExtArgs>[]
     conversations: Prisma.$ConversationPayload<ExtArgs>[]
     questionNodes: Prisma.$QuestionNodePayload<ExtArgs>[]
+    folderNodes: Prisma.$FolderNodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1791,6 +1938,7 @@ export interface Prisma__SubjectClient<T, Null = never, ExtArgs extends runtime.
   documents<T extends Prisma.Subject$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   conversations<T extends Prisma.Subject$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questionNodes<T extends Prisma.Subject$questionNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$questionNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folderNodes<T extends Prisma.Subject$folderNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subject$folderNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2344,6 +2492,30 @@ export type Subject$questionNodesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.QuestionNodeScalarFieldEnum | Prisma.QuestionNodeScalarFieldEnum[]
+}
+
+/**
+ * Subject.folderNodes
+ */
+export type Subject$folderNodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FolderNode
+   */
+  select?: Prisma.FolderNodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FolderNode
+   */
+  omit?: Prisma.FolderNodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderNodeInclude<ExtArgs> | null
+  where?: Prisma.FolderNodeWhereInput
+  orderBy?: Prisma.FolderNodeOrderByWithRelationInput | Prisma.FolderNodeOrderByWithRelationInput[]
+  cursor?: Prisma.FolderNodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderNodeScalarFieldEnum | Prisma.FolderNodeScalarFieldEnum[]
 }
 
 /**

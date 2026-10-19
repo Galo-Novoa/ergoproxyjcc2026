@@ -5,6 +5,8 @@ import { after } from 'next/server'
 import { z } from 'zod'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
+import { MAX_NODES_PER_WORKSPACE } from '@/lib/folder/config'
+import { loadFolderIndex, prepareFolderProposals } from '@/lib/folder/server'
 import { AgentError, runAgent } from '@/lib/llm/agent'
 import { isConversationMode } from '@/lib/llm/contract'
 import { applyGrounding } from '@/lib/rag/ground'
@@ -103,12 +105,18 @@ export async function sendMessage(
   const canPropose =
     tree.length < MAX_NODES_PER_CONVERSATION && branch.path.length <= MAX_DEPTH
 
+  const folderIndex = await loadFolderIndex(userId, conversation.subjectId)
+
   // Si el modelo falla no se guarda nada: el usuario conserva su borrador y puede reintentar.
   let result
   try {
     result = await runAgent({
       mode,
       history,
+      folder: {
+        canPropose: folderIndex.nodes.length < MAX_NODES_PER_WORKSPACE,
+        nodes: folderIndex.nodes,
+      },
       rag: retrieval,
       branch: {
         alias: target.alias,
@@ -127,8 +135,10 @@ export async function sendMessage(
 
   // Se descartan propuestas repetidas (entre sí o con ramas que ya existen) y las que excedan los topes.
   const taken = new Set(existingChildAliases.map(normalizeAlias))
-  const actions = canPropose
-    ? result.response.actions
+  const proposed = result.response.actions
+  const branchActions = canPropose
+    ? proposed
+        .filter((a) => a.type === 'propose_history_branch')
         .filter((a) => {
           const key = normalizeAlias(a.alias)
           if (taken.has(key)) return false
@@ -137,8 +147,14 @@ export async function sendMessage(
         })
         .slice(0, MAX_PROPOSALS_PER_MESSAGE)
     : []
-  const droppedActions =
-    result.metadata.droppedActions + (result.response.actions.length - actions.length)
+  // Las de Carpeta se validan contra los apuntes reales: ids inventados y duplicados se descartan acá.
+  const folderPrepared = await prepareFolderProposals(
+    userId,
+    conversation.subjectId,
+    proposed.filter((a) => a.type === 'propose_folder_change'),
+  )
+  const actions = [...branchActions, ...folderPrepared.valid]
+  const droppedActions = result.metadata.droppedActions + (proposed.length - actions.length)
   const grounded = applyGrounding(result.response.output, result.response.grounding, retrieval)
   const newTitle =
     conversation.title === DEFAULT_TITLE && result.response.description

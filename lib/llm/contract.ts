@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { GROUNDING_VALUES, type Grounding, type RagMetadata } from '@/lib/rag/types'
+import { proposeFolderChangeSchema } from '@/lib/folder/schema'
 import { ALIAS_MAX } from '@/lib/tree/config'
 
 export const CONVERSATION_MODES = ['theory', 'practice', 'free'] as const
@@ -24,7 +25,11 @@ export const proposeHistoryBranchSchema = z.object({
   description: z.string().trim().min(1).max(200),
 })
 
-export const agentActionSchema = z.discriminatedUnion('type', [proposeHistoryBranchSchema])
+export const agentActionSchema = z.discriminatedUnion('type', [
+  proposeHistoryBranchSchema,
+  proposeFolderChangeSchema,
+])
+export type BranchProposal = z.infer<typeof proposeHistoryBranchSchema>
 export type AgentActionProposal = z.infer<typeof agentActionSchema>
 
 /** Lee el payload guardado de una propuesta, incluidas las anteriores al árbol (`title` en lugar de `alias`). */
@@ -45,13 +50,13 @@ export function parseProposalPayload(payload: unknown): AgentActionProposal | nu
 /**
  * Contrato estricto que se le exige al proveedor. Usa el objeto de la acción y no la unión discriminada:
  * esta genera `oneOf` en el JSON Schema, que OpenAI rechaza en `response_format` (HTTP 400).
- * Al sumar una segunda acción, armar la unión con `z.union` (genera `anyOf`, que sí se acepta).
+ * Con varias acciones se usa `z.union` (genera `anyOf`, que sí se acepta).
  */
 export const agentResponseSchema = z.object({
   output: z.string().trim().min(1),
   description: z.string().trim().min(1).max(80),
   grounding: z.enum(GROUNDING_VALUES),
-  actions: z.array(proposeHistoryBranchSchema),
+  actions: z.array(z.union([proposeHistoryBranchSchema, proposeFolderChangeSchema])),
 })
 
 /** Validación tolerante para recuperar JSON del texto crudo: las acciones se validan una por una. */
