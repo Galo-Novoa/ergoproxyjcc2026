@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Papel de cuaderno frío, tinta azul y resaltador ámbar */
+  --background: oklch(0.985 0.003 250);
+  --foreground: oklch(0.22 0.04 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.04 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.04 255);
+  --primary: oklch(0.38 0.1 255);
+  --primary-foreground: oklch(0.985 0.003 250);
+  --secondary: oklch(0.95 0.01 250);
+  --secondary-foreground: oklch(0.28 0.05 255);
+  --muted: oklch(0.955 0.006 250);
+  --muted-foreground: oklch(0.48 0.03 255);
+  --accent: oklch(0.9 0.14 92);
+  --accent-foreground: oklch(0.27 0.06 80);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.91 0.008 250);
+  --input: oklch(0.91 0.008 250);
+  --ring: oklch(0.5 0.12 255);
+  --chart-1: oklch(0.38 0.1 255);
+  --chart-2: oklch(0.6 0.12 200);
+  --chart-3: oklch(0.8 0.15 92);
+  --chart-4: oklch(0.55 0.05 255);
+  --chart-5: oklch(0.7 0.08 160);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.97 0.006 250);
+  --sidebar-foreground: oklch(0.22 0.04 255);
+  --sidebar-primary: oklch(0.38 0.1 255);
+  --sidebar-primary-foreground: oklch(0.985 0.003 250);
+  --sidebar-accent: oklch(0.93 0.014 250);
+  --sidebar-accent-foreground: oklch(0.22 0.04 255);
+  --sidebar-border: oklch(0.91 0.008 250);
+  --sidebar-ring: oklch(0.5 0.12 255);
+}
+
+.dark {
+  --background: oklch(0.18 0.025 255);
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.22 0.03 255);
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.22 0.03 255);
+  --popover-foreground: oklch(0.96 0.005 250);
+  --primary: oklch(0.78 0.1 250);
+  --primary-foreground: oklch(0.2 0.04 255);
+  --secondary: oklch(0.27 0.03 255);
+  --secondary-foreground: oklch(0.96 0.005 250);
+  --muted: oklch(0.27 0.03 255);
+  --muted-foreground: oklch(0.7 0.03 255);
+  --accent: oklch(0.8 0.14 92);
+  --accent-foreground: oklch(0.22 0.05 80);
+  --destructive: oklch(0.65 0.2 25);
+  --border: oklch(0.3 0.03 255);
+  --input: oklch(0.3 0.03 255);
+  --ring: oklch(0.65 0.1 250);
+  --chart-1: oklch(0.78 0.1 250);
+  --chart-2: oklch(0.7 0.12 200);
+  --chart-3: oklch(0.82 0.15 92);
+  --chart-4: oklch(0.65 0.05 255);
+  --chart-5: oklch(0.75 0.08 160);
+  --sidebar: oklch(0.2 0.028 255);
+  --sidebar-foreground: oklch(0.96 0.005 250);
+  --sidebar-primary: oklch(0.78 0.1 250);
+  --sidebar-primary-foreground: oklch(0.2 0.04 255);
+  --sidebar-accent: oklch(0.27 0.03 255);
+  --sidebar-accent-foreground: oklch(0.96 0.005 250);
+  --sidebar-border: oklch(0.3 0.03 255);
+  --sidebar-ring: oklch(0.65 0.1 250);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans-family), 'Geist Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-family), 'Georgia', ui-serif, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-serif tracking-tight text-balance;
+  }
+}
+
+/* Papel milimetrado sutil: firma visual de las pantallas de acceso y vacías */
+.bg-graph-paper {
+  background-image:
+    linear-gradient(to right, color-mix(in oklch, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--border) 70%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Prosa de Markdown para notas y resúmenes */
+.markdown-body {
+  @apply text-sm leading-relaxed text-foreground;
+}
+.markdown-body h1 {
+  @apply mt-6 mb-3 text-2xl font-semibold;
+}
+.markdown-body h2 {
+  @apply mt-5 mb-2 text-xl font-semibold;
+}
+.markdown-body h3 {
+  @apply mt-4 mb-2 text-lg font-semibold;
+}
+.markdown-body p {
+  @apply my-3;
+}
+.markdown-body ul {
+  @apply my-3 list-disc pl-6;
+}
+.markdown-body ol {
+  @apply my-3 list-decimal pl-6;
+}
+.markdown-body li {
+  @apply my-1;
+}
+.markdown-body a {
+  @apply text-primary underline underline-offset-2;
+}
+.markdown-body blockquote {
+  @apply my-3 border-l-2 border-accent pl-4 text-muted-foreground italic;
+}
+.markdown-body code {
+  @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em];
+}
+.markdown-body pre {
+  @apply my-3 overflow-x-auto rounded-lg bg-muted p-4;
+}
+.markdown-body pre code {
+  @apply bg-transparent p-0;
+}
+.markdown-body table {
+  @apply my-3 w-full border-collapse text-left;
+}
+.markdown-body th,
+.markdown-body td {
+  @apply border border-border px-3 py-2;
+}
