@@ -14,6 +14,16 @@ const DEMO_USER: SessionUser = {
   email: 'demo@local',
 }
 
+/**
+ * Las acciones que escriben en Postgres no pueden correr con la identidad demo
+ * (su id no existe en la tabla de usuarios). Devuelven este error en su lugar.
+ */
+export function demoModeBlock(): { ok: false; error: string } | null {
+  return isDatabaseConfigured
+    ? null
+    : { ok: false, error: 'Modo demo: conectá una base de datos para guardar datos.' }
+}
+
 export const getSession = cache(async () =>
   auth.api.getSession({ headers: await headers() }),
 )

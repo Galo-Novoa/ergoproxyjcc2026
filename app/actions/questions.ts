@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { readScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
-import { getUserId } from '@/lib/session'
+import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
 const questionSchema = z.object({
@@ -19,6 +19,8 @@ const questionSchema = z.object({
 })
 
 export async function createQuestion(formData: FormData): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   const parsed = questionSchema.safeParse({
     question: formData.get('question') ?? '',
@@ -65,6 +67,8 @@ export async function setQuestionStatus(
   id: string,
   status: 'open' | 'resolved',
 ): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos la duda.' }
   const { count } = await db.questionNode.updateMany({
@@ -78,6 +82,8 @@ export async function setQuestionStatus(
 }
 
 export async function deleteQuestion(id: string): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos la duda.' }
   // Las dudas hijas pasan a ser raíces (ON DELETE SET NULL en parentId): no quedan huérfanas.

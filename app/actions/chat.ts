@@ -6,7 +6,7 @@ import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
 import { AgentError, runAgent } from '@/lib/llm/agent'
 import { isConversationMode } from '@/lib/llm/contract'
-import { getUserId } from '@/lib/session'
+import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
 const contentSchema = z
@@ -23,6 +23,8 @@ export async function sendMessage(
   conversationId: string,
   rawContent: string,
 ): Promise<ActionResult<{ proposedActions: number }>> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   const parsed = contentSchema.safeParse(rawContent)
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message }

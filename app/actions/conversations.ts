@@ -4,12 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { readScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
-import { getUserId } from '@/lib/session'
+import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
 export async function createConversation(
   subjectId?: string,
 ): Promise<ActionResult<{ id: string }>> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
 
   let ownedSubjectId: string | null = null
@@ -34,6 +36,8 @@ export async function createConversation(
 }
 
 export async function deleteConversation(id: string): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos la conversación.' }
   // Los mensajes se borran solos (ON DELETE CASCADE) y las dudas ligadas conservan su texto.

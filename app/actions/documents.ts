@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { readScope, writeScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
-import { getUserId } from '@/lib/session'
+import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
 const documentSchema = z.object({
@@ -22,6 +22,8 @@ const documentSchema = z.object({
 export async function createDocument(
   formData: FormData,
 ): Promise<ActionResult<{ id: string }>> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   const parsed = documentSchema.safeParse({
     title: formData.get('title') ?? '',
@@ -55,6 +57,8 @@ export async function createDocument(
 }
 
 export async function deleteDocument(id: string): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos el documento.' }
   const scope = await writeScope(userId)

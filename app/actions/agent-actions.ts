@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
 import { agentActionSchema, isConversationMode } from '@/lib/llm/contract'
-import { getUserId } from '@/lib/session'
+import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
 /** Confirma o descarta una acción propuesta. Al aceptar se revalida todo en el servidor. */
@@ -12,6 +12,8 @@ export async function resolveAgentAction(
   actionId: string,
   decision: 'accept' | 'dismiss',
 ): Promise<ActionResult<{ nodeId?: string }>> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(actionId)) return { ok: false, error: 'No encontramos la acción.' }
 
@@ -79,6 +81,8 @@ export async function setConversationMode(
   conversationId: string,
   mode: string,
 ): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
   const userId = await getUserId()
   if (!isUuid(conversationId)) return { ok: false, error: 'No encontramos la conversación.' }
   if (!isConversationMode(mode)) return { ok: false, error: 'Modo inválido.' }
