@@ -117,7 +117,7 @@ export async function runAgent({
   nodes: KnownNode[]
   history: { role: 'user' | 'assistant'; content: string }[]
 }): Promise<AgentResult> {
-  const { model } = getLlmServerConfig()
+  const { model, modelId } = getLlmServerConfig()
 
   try {
     const result = await generateText({
