@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Autenticación (Better Auth) -------------------------------------------
+// Los nombres de tabla y columna son los que espera Better Auth: no renombrar.
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @db.Timestamp(6)
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   Membership[]
+  subjects      Subject[]
+  files         File[]
+  documents     Document[]
+  conversations Conversation[]
+  messages      Message[]
+  questionNodes QuestionNode[]
+  conversationFiles ConversationFile[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamp(6)
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "session_user_idx")
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamp(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamp(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime  @default(now()) @db.Timestamp(6)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "account_user_idx")
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamp(6)
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime? @default(now()) @db.Timestamp(6)
+
+  @@map("verification")
+}
+
+// --- Ámbito institucional --------------------------------------------------
+// Una organización (por ejemplo, una facultad) puede administrar recursos
+// compartidos. Hoy ninguna pantalla crea organizaciones: el modelo y las reglas
+// de acceso (lib/authz.ts) quedan listos para una instalación institucional.
+// Un recurso con visibility = 'private' es solo de su dueño, siempre.
+
+model Organization {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  memberships Membership[]
+  subjects    Subject[]
+  files       File[]
+  documents   Document[]
+
+  @@map("organizations")
+}
+
+// role: 'admin' (administra recursos compartidos) | 'member' (solo lectura de lo compartido)
+model Membership {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String       @db.Uuid
+  userId         String
+  role           String       @default("member")
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId], map: "memberships_org_user_key")
+  @@index([userId], map: "memberships_user_idx")
+  @@map("memberships")
+}
+
+// --- Dominio académico -----------------------------------------------------
+// Todo registro tiene dueño (`userId`, con FK). Subject, File y Document pueden
+// además pertenecer a una organización con visibility = 'organization'.
+// Un File/Document con subjectId = NULL pertenece al workspace General.
+
+model Subject {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  organizationId String?       @db.Uuid
+  visibility     String        @default("private")
+  name           String
+  code           String?
+  description    String?
+  color          String        @default("azul")
+  icon           String        @default("book-open")
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime      @default(now()) @updatedAt @db.Timestamp(6)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  files         File[]
+  documents     Document[]
+  conversations Conversation[]
+  questionNodes QuestionNode[]
+
+  @@index([userId], map: "subjects_user_idx")
+  @@index([organizationId], map: "subjects_org_idx")
+  @@map("subjects")
+}
+
+model File {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  organizationId String?       @db.Uuid
+  visibility     String        @default("private")
+  subjectId      String?       @db.Uuid
+  name           String
+  mimeType       String
+  sizeBytes      Int           @default(0)
+  storageUrl     String?
+  status         String        @default("pending")
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  subject        Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  documents         Document[]
+  conversationLinks ConversationFile[]
+  questionNodes     QuestionNode[]
+
+  @@index([userId], map: "files_user_idx")
+  @@index([subjectId], map: "files_subject_idx")
+  @@index([organizationId], map: "files_org_idx")
+  @@map("files")
+}
+
+// kind: 'note' | 'summary'
+model Document {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  organizationId String?       @db.Uuid
+  visibility     String        @default("private")
+  subjectId      String?       @db.Uuid
+  sourceFileId   String?       @db.Uuid
+  title          String
+  kind           String        @default("note")
+  contentMd      String        @default("")
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime      @default(now()) @updatedAt @db.Timestamp(6)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  subject        Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  sourceFile     File?         @relation(fields: [sourceFileId], references: [id], onDelete: SetNull)
+
+  @@index([userId], map: "documents_user_idx")
+  @@index([subjectId], map: "documents_subject_idx")
+  @@index([organizationId], map: "documents_org_idx")
+  @@map("documents")
+}
+
+// Las conversaciones y sus mensajes son siempre privados de su dueño.
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String
+  subjectId String?  @db.Uuid
+  title     String   @default("Nueva conversación")
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+
+  messages      Message[]
+  fileLinks     ConversationFile[]
+  questionNodes QuestionNode[]
+
+  @@index([userId], map: "conversations_user_idx")
+  @@index([subjectId], map: "conversations_subject_idx")
+  @@map("conversations")
+}
+
+model ConversationFile {
+  conversationId String       @db.Uuid
+  fileId         String       @db.Uuid
+  userId         String
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  file           File         @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, fileId])
+  @@index([userId], map: "conversation_files_user_idx")
+  @@map("conversation_files")
+}
+
+// role: 'user' | 'assistant' | 'system'
+model Message {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String       @db.Uuid
+  userId         String
+  role           String
+  content        String
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  questionNodes QuestionNode[]
+
+  @@index([conversationId], map: "messages_conversation_idx")
+  @@index([userId], map: "messages_user_idx")
+  @@map("messages")
+}
+
+// Nodos del mapa conceptual: cada duda es un nodo; `parentId` arma el árbol.
+// status: 'open' | 'resolved'
+model QuestionNode {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  subjectId      String?       @db.Uuid
+  conversationId String?       @db.Uuid
+  messageId      String?       @db.Uuid
+  fileId         String?       @db.Uuid
+  parentId       String?       @db.Uuid
+  question       String
+  answerSummary  String?
+  status         String        @default("open")
+  posX           Float         @default(0) @db.Real
+  posY           Float         @default(0) @db.Real
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime      @default(now()) @updatedAt @db.Timestamp(6)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject        Subject?      @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  message        Message?      @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  file           File?         @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  parent         QuestionNode? @relation("QuestionTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children       QuestionNode[] @relation("QuestionTree")
+
+  @@index([userId], map: "question_nodes_user_idx")
+  @@index([subjectId], map: "question_nodes_subject_idx")
+  @@index([parentId], map: "question_nodes_parent_idx")
+  @@map("question_nodes")
+}

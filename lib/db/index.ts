@@ -1,14 +1,18 @@
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { Pool } from 'pg'
-import * as schema from './schema'
+import 'server-only'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@/lib/generated/prisma/client'
 
-const globalForDb = globalThis as unknown as { pgPool?: Pool }
+const globalForDb = globalThis as unknown as { prisma?: PrismaClient }
 
-// Un único Pool compartido entre Better Auth y Drizzle (se reutiliza en HMR).
-export const pool =
-  globalForDb.pgPool ??
-  new Pool({ connectionString: process.env.DATABASE_URL, max: 5 })
+function createClient() {
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+    max: 5,
+  })
+  return new PrismaClient({ adapter })
+}
 
-if (process.env.NODE_ENV !== 'production') globalForDb.pgPool = pool
+// Una única instancia compartida entre Better Auth y la app (se reutiliza en HMR).
+export const db = globalForDb.prisma ?? createClient()
 
-export const db = drizzle(pool, { schema })
+if (process.env.NODE_ENV !== 'production') globalForDb.prisma = db

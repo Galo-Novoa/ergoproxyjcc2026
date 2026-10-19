@@ -1,18 +1,11 @@
 import 'server-only'
-import { and, asc, eq, getTableColumns, sql } from 'drizzle-orm'
 import { z } from 'zod'
+import { readScope, writeScope } from '@/lib/authz'
 import { db } from '@/lib/db'
 import { isDatabaseConfigured } from '@/lib/db/config'
-import {
-  conversations,
-  documents,
-  files,
-  questionNodes,
-  subjects,
-} from '@/lib/db/schema'
 
-// Dos adaptadores con la misma interfaz: Postgres (Neon) y memoria para el modo demo.
-// Toda operación recibe `userId` y lo aplica: no hay RLS en Neon.
+// Dos adaptadores con la misma interfaz: Postgres (Prisma sobre Neon) y memoria para el modo demo.
+// Toda operación recibe `userId` y lo aplica en el WHERE (ver lib/authz.ts): no hay RLS en Neon.
 
 export type SubjectRecord = {
   id: string
@@ -53,93 +46,109 @@ const uuid = z.uuid()
 
 // --- Postgres --------------------------------------------------------------
 
-// Drizzle entrega los timestamps crudos como string; se interpretan como UTC igual que sus columnas.
-const asDate = (value: unknown) =>
-  value instanceof Date ? value : new Date(`${String(value)}+0000`)
+const subjectSelect = {
+  id: true,
+  name: true,
+  code: true,
+  description: true,
+  color: true,
+  icon: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+const latest = (...dates: (Date | null | undefined)[]) =>
+  new Date(Math.max(...dates.filter((d): d is Date => d instanceof Date).map((d) => d.getTime())))
 
 const postgresRepo: SubjectsRepo = {
   async list(userId) {
-    return db
-      .select({
-        ...getTableColumns(subjects),
-        fileCount: sql<number>`(select count(*)::int from files where files."subjectId" = ${subjects.id} and files."userId" = ${userId})`,
-        conversationCount: sql<number>`(select count(*)::int from conversations where conversations."subjectId" = ${subjects.id} and conversations."userId" = ${userId})`,
-        documentCount: sql<number>`(select count(*)::int from documents where documents."subjectId" = ${subjects.id} and documents."userId" = ${userId})`,
-        lastActivityAt: sql<Date>`greatest(
-          ${subjects.updatedAt},
-          (select max(files."createdAt") from files where files."subjectId" = ${subjects.id} and files."userId" = ${userId}),
-          (select max(conversations."updatedAt") from conversations where conversations."subjectId" = ${subjects.id} and conversations."userId" = ${userId}),
-          (select max(documents."updatedAt") from documents where documents."subjectId" = ${subjects.id} and documents."userId" = ${userId})
-        )`.mapWith(asDate),
-      })
-      .from(subjects)
-      .where(eq(subjects.userId, userId))
-      .orderBy(asc(subjects.name))
+    const scope = await readScope(userId)
+    const subjects = await db.subject.findMany({
+      where: scope,
+      select: subjectSelect,
+      orderBy: { name: 'asc' },
+    })
+    if (subjects.length === 0) return []
+
+    const subjectIds = subjects.map((s) => s.id)
+    const [files, conversations, documents] = await Promise.all([
+      db.file.groupBy({
+        by: ['subjectId'],
+        where: { AND: [scope, { subjectId: { in: subjectIds } }] },
+        _count: { _all: true },
+        _max: { createdAt: true },
+      }),
+      db.conversation.groupBy({
+        by: ['subjectId'],
+        where: { userId, subjectId: { in: subjectIds } },
+        _count: { _all: true },
+        _max: { updatedAt: true },
+      }),
+      db.document.groupBy({
+        by: ['subjectId'],
+        where: { AND: [scope, { subjectId: { in: subjectIds } }] },
+        _count: { _all: true },
+        _max: { updatedAt: true },
+      }),
+    ])
+
+    const fileBy = new Map(files.map((r) => [r.subjectId, r]))
+    const conversationBy = new Map(conversations.map((r) => [r.subjectId, r]))
+    const documentBy = new Map(documents.map((r) => [r.subjectId, r]))
+
+    return subjects.map((s) => {
+      const f = fileBy.get(s.id)
+      const c = conversationBy.get(s.id)
+      const d = documentBy.get(s.id)
+      return {
+        ...s,
+        fileCount: f?._count._all ?? 0,
+        conversationCount: c?._count._all ?? 0,
+        documentCount: d?._count._all ?? 0,
+        lastActivityAt: latest(s.updatedAt, f?._max.createdAt, c?._max.updatedAt, d?._max.updatedAt),
+      }
+    })
   },
 
   async get(userId, id) {
     if (!uuid.safeParse(id).success) return undefined
-    const [row] = await db
-      .select()
-      .from(subjects)
-      .where(and(eq(subjects.id, id), eq(subjects.userId, userId)))
-    return row
+    const scope = await readScope(userId)
+    const row = await db.subject.findFirst({
+      where: { AND: [scope, { id }] },
+      select: subjectSelect,
+    })
+    return row ?? undefined
   },
 
   async create(userId, input) {
-    const [row] = await db
-      .insert(subjects)
-      .values({ userId, ...input })
-      .returning({ id: subjects.id })
-    return row
+    return db.subject.create({ data: { userId, ...input }, select: { id: true } })
   },
 
   async createMany(userId, inputs) {
     if (inputs.length === 0) return 0
-    const rows = await db
-      .insert(subjects)
-      .values(inputs.map((input) => ({ userId, ...input })))
-      .returning({ id: subjects.id })
-    return rows.length
+    const { count } = await db.subject.createMany({
+      data: inputs.map((input) => ({ userId, ...input })),
+    })
+    return count
   },
 
   async update(userId, id, input) {
     if (!uuid.safeParse(id).success) return false
-    const updated = await db
-      .update(subjects)
-      .set({ ...input, updatedAt: new Date() })
-      .where(and(eq(subjects.id, id), eq(subjects.userId, userId)))
-      .returning({ id: subjects.id })
-    return updated.length > 0
+    const scope = await writeScope(userId)
+    const { count } = await db.subject.updateMany({
+      where: { AND: [scope, { id }] },
+      data: input,
+    })
+    return count > 0
   },
 
   async remove(userId, id) {
     if (!uuid.safeParse(id).success) return false
-    // Sin FK: se desvinculan los elementos para que pasen a General y no queden huérfanos.
-    return db.transaction(async (tx) => {
-      const owned = and(eq(subjects.id, id), eq(subjects.userId, userId))
-      const [found] = await tx.select({ id: subjects.id }).from(subjects).where(owned)
-      if (!found) return false
-
-      await tx
-        .update(files)
-        .set({ subjectId: null })
-        .where(and(eq(files.subjectId, id), eq(files.userId, userId)))
-      await tx
-        .update(documents)
-        .set({ subjectId: null })
-        .where(and(eq(documents.subjectId, id), eq(documents.userId, userId)))
-      await tx
-        .update(conversations)
-        .set({ subjectId: null })
-        .where(and(eq(conversations.subjectId, id), eq(conversations.userId, userId)))
-      await tx
-        .update(questionNodes)
-        .set({ subjectId: null })
-        .where(and(eq(questionNodes.subjectId, id), eq(questionNodes.userId, userId)))
-      await tx.delete(subjects).where(owned)
-      return true
-    })
+    const scope = await writeScope(userId)
+    // Las claves foráneas (ON DELETE SET NULL) mandan archivos, documentos,
+    // conversaciones y dudas de la materia al workspace General.
+    const { count } = await db.subject.deleteMany({ where: { AND: [scope, { id }] } })
+    return count > 0
   },
 }
 

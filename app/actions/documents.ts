@@ -1,11 +1,10 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { readScope, writeScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
-import { documents, subjects } from '@/lib/db/schema'
 import { getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
@@ -36,18 +35,20 @@ export async function createDocument(
   let ownedSubjectId: string | null = null
   if (subjectId !== 'none') {
     if (!isUuid(subjectId)) return { ok: false, error: 'Materia inválida.' }
-    const [subject] = await db
-      .select({ id: subjects.id })
-      .from(subjects)
-      .where(and(eq(subjects.id, subjectId), eq(subjects.userId, userId)))
+    const scope = await readScope(userId)
+    const subject = await db.subject.findFirst({
+      where: { AND: [scope, { id: subjectId }] },
+      select: { id: true },
+    })
     if (!subject) return { ok: false, error: 'No encontramos la materia.' }
     ownedSubjectId = subject.id
   }
 
-  const [row] = await db
-    .insert(documents)
-    .values({ userId, title, contentMd, kind, subjectId: ownedSubjectId })
-    .returning({ id: documents.id })
+  // Los documentos nuevos son privados; compartirlos con una organización es una acción aparte.
+  const row = await db.document.create({
+    data: { userId, title, contentMd, kind, subjectId: ownedSubjectId },
+    select: { id: true },
+  })
 
   revalidatePath('/', 'layout')
   return { ok: true, data: { id: row.id } }
@@ -55,11 +56,10 @@ export async function createDocument(
 
 export async function deleteDocument(id: string): Promise<ActionResult> {
   const userId = await getUserId()
-  const deleted = await db
-    .delete(documents)
-    .where(and(eq(documents.id, id), eq(documents.userId, userId)))
-    .returning({ id: documents.id })
-  if (deleted.length === 0) return { ok: false, error: 'No encontramos el documento.' }
+  if (!isUuid(id)) return { ok: false, error: 'No encontramos el documento.' }
+  const scope = await writeScope(userId)
+  const { count } = await db.document.deleteMany({ where: { AND: [scope, { id }] } })
+  if (count === 0) return { ok: false, error: 'No encontramos el documento.' }
   revalidatePath('/', 'layout')
   return { ok: true }
 }

@@ -1,57 +1,27 @@
 import 'server-only'
-import {
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  getTableColumns,
-  ilike,
-  isNull,
-  max,
-  sql,
-} from 'drizzle-orm'
 import { z } from 'zod'
+import { readScope } from '@/lib/authz'
 import { getSubjectsRepo } from '@/lib/data/subjects-repo'
 import { db } from '@/lib/db'
 import { isDatabaseConfigured } from '@/lib/db/config'
-import {
-  conversations,
-  documents,
-  files,
-  messages,
-  questionNodes,
-  subjects,
-} from '@/lib/db/schema'
 
-// Toda consulta recibe `userId` y lo aplica en el WHERE: no hay RLS en Neon.
+// Toda consulta recibe `userId` y lo aplica en el WHERE (ver lib/authz.ts): no hay RLS en Neon.
+// Subject, File y Document usan `readScope` (propios + compartidos por la organización);
+// conversaciones, mensajes y dudas son siempre privados del dueño.
 
 const uuid = z.uuid()
 export const isUuid = (value: string) => uuid.safeParse(value).success
 
 export async function getOverview(userId: string) {
-  const [s, f, c, d, q] = await Promise.all([
-    db.select({ n: count() }).from(subjects).where(eq(subjects.userId, userId)),
-    db.select({ n: count() }).from(files).where(eq(files.userId, userId)),
-    db
-      .select({ n: count() })
-      .from(conversations)
-      .where(eq(conversations.userId, userId)),
-    db.select({ n: count() }).from(documents).where(eq(documents.userId, userId)),
-    db
-      .select({ n: count() })
-      .from(questionNodes)
-      .where(
-        and(eq(questionNodes.userId, userId), eq(questionNodes.status, 'open')),
-      ),
+  const scope = await readScope(userId)
+  const [subjects, files, conversations, documents, openQuestions] = await Promise.all([
+    db.subject.count({ where: scope }),
+    db.file.count({ where: scope }),
+    db.conversation.count({ where: { userId } }),
+    db.document.count({ where: scope }),
+    db.questionNode.count({ where: { userId, status: 'open' } }),
   ])
-  return {
-    subjects: s[0].n,
-    files: f[0].n,
-    conversations: c[0].n,
-    documents: d[0].n,
-    openQuestions: q[0].n,
-  }
+  return { subjects, files, conversations, documents, openQuestions }
 }
 
 export async function listSubjects(userId: string) {
@@ -63,57 +33,56 @@ export async function getGeneralSummary(userId: string) {
   if (!isDatabaseConfigured) {
     return { fileCount: 0, documentCount: 0, conversationCount: 0, lastActivityAt: null }
   }
+  const scope = await readScope(userId)
   const [f, d, c] = await Promise.all([
-    db
-      .select({ n: count(), last: max(files.createdAt) })
-      .from(files)
-      .where(and(eq(files.userId, userId), isNull(files.subjectId))),
-    db
-      .select({ n: count(), last: max(documents.updatedAt) })
-      .from(documents)
-      .where(and(eq(documents.userId, userId), isNull(documents.subjectId))),
-    db
-      .select({ n: count(), last: max(conversations.updatedAt) })
-      .from(conversations)
-      .where(and(eq(conversations.userId, userId), isNull(conversations.subjectId))),
+    db.file.aggregate({
+      where: { AND: [scope, { subjectId: null }] },
+      _count: { _all: true },
+      _max: { createdAt: true },
+    }),
+    db.document.aggregate({
+      where: { AND: [scope, { subjectId: null }] },
+      _count: { _all: true },
+      _max: { updatedAt: true },
+    }),
+    db.conversation.aggregate({
+      where: { userId, subjectId: null },
+      _count: { _all: true },
+      _max: { updatedAt: true },
+    }),
   ])
-  const dates = [f[0].last, d[0].last, c[0].last].filter((v): v is Date => v instanceof Date)
+  const dates = [f._max.createdAt, d._max.updatedAt, c._max.updatedAt].filter(
+    (v): v is Date => v instanceof Date,
+  )
   return {
-    fileCount: f[0].n,
-    documentCount: d[0].n,
-    conversationCount: c[0].n,
+    fileCount: f._count._all,
+    documentCount: d._count._all,
+    conversationCount: c._count._all,
     lastActivityAt: dates.length ? new Date(Math.max(...dates.map((x) => x.getTime()))) : null,
   }
 }
 
 export async function listGeneralFiles(userId: string) {
-  return db
-    .select()
-    .from(files)
-    .where(and(eq(files.userId, userId), isNull(files.subjectId)))
-    .orderBy(desc(files.createdAt))
+  const scope = await readScope(userId)
+  return db.file.findMany({
+    where: { AND: [scope, { subjectId: null }] },
+    orderBy: { createdAt: 'desc' },
+  })
 }
 
 export async function listGeneralDocuments(userId: string) {
-  return db
-    .select({
-      id: documents.id,
-      title: documents.title,
-      kind: documents.kind,
-      updatedAt: documents.updatedAt,
-    })
-    .from(documents)
-    .where(and(eq(documents.userId, userId), isNull(documents.subjectId)))
-    .orderBy(desc(documents.updatedAt))
+  const scope = await readScope(userId)
+  return db.document.findMany({
+    where: { AND: [scope, { subjectId: null }] },
+    select: { id: true, title: true, kind: true, updatedAt: true },
+    orderBy: { updatedAt: 'desc' },
+  })
 }
 
-const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&')
-
-/** Búsqueda por nombre/título en todo lo que pertenece a la persona. */
+/** Búsqueda por nombre/título en todo lo que la persona puede ver. */
 export async function searchAll(userId: string, query: string) {
   const term = query.trim()
   if (!term) return { subjects: [], files: [], documents: [], conversations: [] }
-  const pattern = `%${escapeLike(term)}%`
 
   const matchingSubjects = (await getSubjectsRepo().list(userId)).filter(
     (s) =>
@@ -124,35 +93,38 @@ export async function searchAll(userId: string, query: string) {
     return { subjects: matchingSubjects, files: [], documents: [], conversations: [] }
   }
 
-  const [f, d, c] = await Promise.all([
-    db
-      .select({ id: files.id, name: files.name, subjectId: files.subjectId })
-      .from(files)
-      .where(and(eq(files.userId, userId), ilike(files.name, pattern)))
-      .orderBy(desc(files.createdAt))
-      .limit(20),
-    db
-      .select({ id: documents.id, title: documents.title })
-      .from(documents)
-      .where(and(eq(documents.userId, userId), ilike(documents.title, pattern)))
-      .orderBy(desc(documents.updatedAt))
-      .limit(20),
-    db
-      .select({ id: conversations.id, title: conversations.title })
-      .from(conversations)
-      .where(and(eq(conversations.userId, userId), ilike(conversations.title, pattern)))
-      .orderBy(desc(conversations.updatedAt))
-      .limit(20),
+  const scope = await readScope(userId)
+  const contains = { contains: term, mode: 'insensitive' } as const
+  const [files, documents, conversations] = await Promise.all([
+    db.file.findMany({
+      where: { AND: [scope, { name: contains }] },
+      select: { id: true, name: true, subjectId: true },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+    db.document.findMany({
+      where: { AND: [scope, { title: contains }] },
+      select: { id: true, title: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 20,
+    }),
+    db.conversation.findMany({
+      where: { userId, title: contains },
+      select: { id: true, title: true },
+      orderBy: { updatedAt: 'desc' },
+      take: 20,
+    }),
   ])
-  return { subjects: matchingSubjects, files: f, documents: d, conversations: c }
+  return { subjects: matchingSubjects, files, documents, conversations }
 }
 
 export async function listSubjectOptions(userId: string) {
-  return db
-    .select({ id: subjects.id, name: subjects.name })
-    .from(subjects)
-    .where(eq(subjects.userId, userId))
-    .orderBy(asc(subjects.name))
+  const scope = await readScope(userId)
+  return db.subject.findMany({
+    where: scope,
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+  })
 }
 
 export async function getSubject(userId: string, id: string) {
@@ -160,121 +132,85 @@ export async function getSubject(userId: string, id: string) {
 }
 
 export async function listFiles(userId: string, subjectId?: string) {
-  return db
-    .select({
-      ...getTableColumns(files),
-      subjectName: subjects.name,
-    })
-    .from(files)
-    .leftJoin(
-      subjects,
-      and(eq(files.subjectId, subjects.id), eq(subjects.userId, userId)),
-    )
-    .where(
-      and(
-        eq(files.userId, userId),
-        subjectId ? eq(files.subjectId, subjectId) : undefined,
-      ),
-    )
-    .orderBy(desc(files.createdAt))
+  const scope = await readScope(userId)
+  const rows = await db.file.findMany({
+    where: { AND: [scope, subjectId ? { subjectId } : {}] },
+    include: { subject: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
+  })
+  return rows.map(({ subject, ...file }) => ({ ...file, subjectName: subject?.name ?? null }))
 }
 
 export async function listDocuments(userId: string, subjectId?: string) {
-  return db
-    .select({
-      id: documents.id,
-      title: documents.title,
-      kind: documents.kind,
-      subjectId: documents.subjectId,
-      updatedAt: documents.updatedAt,
-      subjectName: subjects.name,
-    })
-    .from(documents)
-    .leftJoin(
-      subjects,
-      and(eq(documents.subjectId, subjects.id), eq(subjects.userId, userId)),
-    )
-    .where(
-      and(
-        eq(documents.userId, userId),
-        subjectId ? eq(documents.subjectId, subjectId) : undefined,
-      ),
-    )
-    .orderBy(desc(documents.updatedAt))
+  const scope = await readScope(userId)
+  const rows = await db.document.findMany({
+    where: { AND: [scope, subjectId ? { subjectId } : {}] },
+    select: {
+      id: true,
+      title: true,
+      kind: true,
+      subjectId: true,
+      updatedAt: true,
+      subject: { select: { name: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+  return rows.map(({ subject, ...doc }) => ({ ...doc, subjectName: subject?.name ?? null }))
 }
 
 export async function getDocument(userId: string, id: string) {
   if (!isUuid(id)) return undefined
-  const [row] = await db
-    .select({
-      ...getTableColumns(documents),
-      subjectName: subjects.name,
-    })
-    .from(documents)
-    .leftJoin(
-      subjects,
-      and(eq(documents.subjectId, subjects.id), eq(subjects.userId, userId)),
-    )
-    .where(and(eq(documents.id, id), eq(documents.userId, userId)))
-  return row
+  const scope = await readScope(userId)
+  const row = await db.document.findFirst({
+    where: { AND: [scope, { id }] },
+    include: { subject: { select: { name: true } } },
+  })
+  if (!row) return undefined
+  const { subject, ...doc } = row
+  return { ...doc, subjectName: subject?.name ?? null }
 }
 
 export async function listConversations(userId: string, subjectId?: string) {
-  return db
-    .select({
-      ...getTableColumns(conversations),
-      subjectName: subjects.name,
-      messageCount: sql<number>`(select count(*)::int from messages where messages."conversationId" = ${conversations.id} and messages."userId" = ${userId})`,
-    })
-    .from(conversations)
-    .leftJoin(
-      subjects,
-      and(eq(conversations.subjectId, subjects.id), eq(subjects.userId, userId)),
-    )
-    .where(
-      and(
-        eq(conversations.userId, userId),
-        subjectId ? eq(conversations.subjectId, subjectId) : undefined,
-      ),
-    )
-    .orderBy(desc(conversations.updatedAt))
+  const rows = await db.conversation.findMany({
+    where: { userId, ...(subjectId ? { subjectId } : {}) },
+    include: {
+      subject: { select: { name: true } },
+      _count: { select: { messages: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+  return rows.map(({ subject, _count, ...conversation }) => ({
+    ...conversation,
+    subjectName: subject?.name ?? null,
+    messageCount: _count.messages,
+  }))
 }
 
 export async function getConversationWithMessages(userId: string, id: string) {
   if (!isUuid(id)) return undefined
-  const [conversation] = await db
-    .select({
-      ...getTableColumns(conversations),
-      subjectName: subjects.name,
-    })
-    .from(conversations)
-    .leftJoin(
-      subjects,
-      and(eq(conversations.subjectId, subjects.id), eq(subjects.userId, userId)),
-    )
-    .where(and(eq(conversations.id, id), eq(conversations.userId, userId)))
-  if (!conversation) return undefined
+  const row = await db.conversation.findFirst({
+    where: { id, userId },
+    include: { subject: { select: { name: true } } },
+  })
+  if (!row) return undefined
+  const { subject, ...rest } = row
 
-  const rows = await db
-    .select()
-    .from(messages)
-    .where(and(eq(messages.conversationId, id), eq(messages.userId, userId)))
-    .orderBy(asc(messages.createdAt))
+  const messages = await db.message.findMany({
+    where: { conversationId: id, userId },
+    orderBy: { createdAt: 'asc' },
+  })
 
-  return { conversation, messages: rows }
+  return {
+    conversation: { ...rest, subjectName: subject?.name ?? null },
+    messages,
+  }
 }
 
 export async function listQuestionNodes(userId: string, subjectId?: string) {
-  return db
-    .select()
-    .from(questionNodes)
-    .where(
-      and(
-        eq(questionNodes.userId, userId),
-        subjectId ? eq(questionNodes.subjectId, subjectId) : undefined,
-      ),
-    )
-    .orderBy(asc(questionNodes.createdAt))
+  return db.questionNode.findMany({
+    where: { userId, ...(subjectId ? { subjectId } : {}) },
+    orderBy: { createdAt: 'asc' },
+  })
 }
 
 export type SubjectWithCounts = Awaited<ReturnType<typeof listSubjects>>[number]

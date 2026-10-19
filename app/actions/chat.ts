@@ -1,10 +1,9 @@
 'use server'
 
-import { and, asc, eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
-import { conversations, messages } from '@/lib/db/schema'
 import { getLlmServerConfig } from '@/lib/llm/config'
 import { getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
@@ -64,40 +63,37 @@ export async function sendMessage(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message }
   const content = parsed.data
 
-  const [conversation] = await db
-    .select({ id: conversations.id, title: conversations.title })
-    .from(conversations)
-    .where(and(eq(conversations.id, conversationId), eq(conversations.userId, userId)))
+  if (!isUuid(conversationId)) return { ok: false, error: 'No encontramos la conversación.' }
+  const conversation = await db.conversation.findFirst({
+    where: { id: conversationId, userId },
+    select: { id: true, title: true },
+  })
   if (!conversation) return { ok: false, error: 'No encontramos la conversación.' }
 
-  await db.insert(messages).values({ conversationId, userId, role: 'user', content })
+  await db.message.create({ data: { conversationId, userId, role: 'user', content } })
 
-  const history = await db
-    .select({ role: messages.role, content: messages.content })
-    .from(messages)
-    .where(and(eq(messages.conversationId, conversationId), eq(messages.userId, userId)))
-    .orderBy(asc(messages.createdAt))
+  const history = await db.message.findMany({
+    where: { conversationId, userId },
+    select: { role: true, content: true },
+    orderBy: { createdAt: 'asc' },
+  })
 
   const reply = await askModel(history.slice(-20))
   const demo = reply === null
 
-  await db.insert(messages).values({
-    conversationId,
-    userId,
-    role: 'assistant',
-    content: reply ?? DEMO_REPLY,
+  await db.message.create({
+    data: { conversationId, userId, role: 'assistant', content: reply ?? DEMO_REPLY },
   })
 
-  await db
-    .update(conversations)
-    .set({
-      updatedAt: new Date(),
+  await db.conversation.updateMany({
+    where: { id: conversationId, userId },
+    data: {
       title:
         conversation.title === 'Nueva conversación'
           ? content.slice(0, 60)
           : conversation.title,
-    })
-    .where(and(eq(conversations.id, conversationId), eq(conversations.userId, userId)))
+    },
+  })
 
   revalidatePath('/chat', 'layout')
   return { ok: true, data: { demo } }
