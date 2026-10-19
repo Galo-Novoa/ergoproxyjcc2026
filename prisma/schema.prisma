@@ -24,6 +24,7 @@ model User {
   memberships   Membership[]
   subjects      Subject[]
   files         File[]
+  filePages     FilePage[]
   documents     Document[]
   conversations Conversation[]
   messages      Message[]
@@ -146,6 +147,12 @@ model Subject {
   @@map("subjects")
 }
 
+// Archivo subido (PDF). El binario vive en Vercel Blob (privado); acá solo hay metadatos.
+// status: 'uploading' | 'processing' | 'ready' | 'needs_ocr' | 'failed'
+//   - needs_ocr: el PDF no tiene capa de texto (escaneado); no se extrajo contenido.
+// kind: 'theory' | 'practice' | NULL (sin clasificar)
+// kindSource: 'manual' (la persona eligió) | 'auto' (sugerido por el backend) | NULL
+// pageCount / textPageCount: páginas del PDF y páginas con texto extraído (ver FilePage).
 model File {
   id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId         String
@@ -156,7 +163,15 @@ model File {
   mimeType       String
   sizeBytes      Int           @default(0)
   storageUrl     String?
-  status         String        @default("pending")
+  storagePath    String?
+  status         String        @default("uploading")
+  errorMessage   String?
+  kind           String?
+  kindSource     String?
+  kindReason     String?
+  pageCount      Int?
+  textPageCount  Int?
+  processedAt    DateTime?     @db.Timestamp(6)
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
@@ -165,11 +180,30 @@ model File {
   documents         Document[]
   conversationLinks ConversationFile[]
   questionNodes     QuestionNode[]
+  pages             FilePage[]
 
   @@index([userId], map: "files_user_idx")
   @@index([subjectId], map: "files_subject_idx")
   @@index([organizationId], map: "files_org_idx")
   @@map("files")
+}
+
+// Texto extraído de un PDF, una fila por página con texto (pageNumber desde 1).
+// Es la base para RAG: cada fragmento puede citar su página. Las páginas sin texto
+// (escaneadas) no tienen fila: nunca se inventa contenido.
+model FilePage {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fileId     String   @db.Uuid
+  userId     String
+  pageNumber Int
+  text       String
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  file       File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, pageNumber], map: "file_pages_file_page_key")
+  @@index([userId], map: "file_pages_user_idx")
+  @@map("file_pages")
 }
 
 // kind: 'note' | 'summary'

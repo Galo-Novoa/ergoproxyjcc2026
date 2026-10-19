@@ -405,6 +405,7 @@ export const ModelName = {
   Membership: 'Membership',
   Subject: 'Subject',
   File: 'File',
+  FilePage: 'FilePage',
   Document: 'Document',
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1022,6 +1023,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FilePage: {
+      payload: Prisma.$FilePagePayload<ExtArgs>
+      fields: Prisma.FilePageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FilePageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FilePageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        findFirst: {
+          args: Prisma.FilePageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FilePageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        findMany: {
+          args: Prisma.FilePageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>[]
+        }
+        create: {
+          args: Prisma.FilePageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        createMany: {
+          args: Prisma.FilePageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FilePageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>[]
+        }
+        delete: {
+          args: Prisma.FilePageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        update: {
+          args: Prisma.FilePageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        deleteMany: {
+          args: Prisma.FilePageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FilePageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FilePageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>[]
+        }
+        upsert: {
+          args: Prisma.FilePageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FilePagePayload>
+        }
+        aggregate: {
+          args: Prisma.FilePageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFilePage>
+        }
+        groupBy: {
+          args: Prisma.FilePageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FilePageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FilePageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FilePageCountAggregateOutputType> | number
+        }
+      }
+    }
     Document: {
       payload: Prisma.$DocumentPayload<ExtArgs>
       fields: Prisma.DocumentFieldRefs
@@ -1612,11 +1687,31 @@ export const FileScalarFieldEnum = {
   mimeType: 'mimeType',
   sizeBytes: 'sizeBytes',
   storageUrl: 'storageUrl',
+  storagePath: 'storagePath',
   status: 'status',
+  errorMessage: 'errorMessage',
+  kind: 'kind',
+  kindSource: 'kindSource',
+  kindReason: 'kindReason',
+  pageCount: 'pageCount',
+  textPageCount: 'textPageCount',
+  processedAt: 'processedAt',
   createdAt: 'createdAt'
 } as const
 
 export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
+
+
+export const FilePageScalarFieldEnum = {
+  id: 'id',
+  fileId: 'fileId',
+  userId: 'userId',
+  pageNumber: 'pageNumber',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type FilePageScalarFieldEnum = (typeof FilePageScalarFieldEnum)[keyof typeof FilePageScalarFieldEnum]
 
 
 export const DocumentScalarFieldEnum = {
@@ -1998,6 +2093,7 @@ export type GlobalOmitConfig = {
   membership?: Prisma.MembershipOmit
   subject?: Prisma.SubjectOmit
   file?: Prisma.FileOmit
+  filePage?: Prisma.FilePageOmit
   document?: Prisma.DocumentOmit
   conversation?: Prisma.ConversationOmit
   conversationFile?: Prisma.ConversationFileOmit

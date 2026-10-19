@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { deleteSubject } from '@/app/actions/subjects'
+import { FileList } from '@/components/files/file-list'
+import { FileUploadButton } from '@/components/files/file-upload-button'
 import { ConfirmDeleteButton } from '@/components/shared/confirm-delete-button'
 import { EmptyState } from '@/components/shared/empty-state'
 import { PageHeader } from '@/components/shared/page-header'
@@ -22,6 +24,8 @@ import {
   listDocuments,
   listFiles,
 } from '@/lib/data/queries'
+import { isDatabaseConfigured } from '@/lib/db/config'
+import { toFileItem } from '@/lib/files/view'
 import { requireUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'Materia' }
@@ -41,6 +45,8 @@ export default async function SubjectDetailPage({
     listConversations(user.id, id),
     listDocuments(user.id, id),
   ])
+  const now = new Date()
+  const fileItems = files.map((file) => toFileItem(file, now))
 
   async function remove() {
     'use server'
@@ -74,29 +80,30 @@ export default async function SubjectDetailPage({
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
             <CardTitle className="flex items-center gap-2 text-base">
               <Files className="size-4" /> Archivos
             </CardTitle>
             <CardDescription>{files.length} en esta materia</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {files.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin archivos todavía.</p>
-            ) : (
-              <ul className="flex flex-col gap-1 text-sm">
-                {files.slice(0, 5).map((f) => (
-                  <li key={f.id} className="truncate">
-                    {f.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+          {isDatabaseConfigured ? (
+            <FileUploadButton subjectId={id} variant="outline" />
+          ) : null}
+        </CardHeader>
+        <CardContent className={fileItems.length === 0 ? undefined : 'p-0'}>
+          {fileItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Sin archivos todavía. Subí un PDF para que quede asociado a esta materia.
+            </p>
+          ) : (
+            <FileList files={fileItems} />
+          )}
+        </CardContent>
+      </Card>
 
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">

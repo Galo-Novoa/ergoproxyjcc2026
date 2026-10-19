@@ -59,6 +59,7 @@ export const ModelName = {
   Membership: 'Membership',
   Subject: 'Subject',
   File: 'File',
+  FilePage: 'FilePage',
   Document: 'Document',
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
@@ -190,11 +191,31 @@ export const FileScalarFieldEnum = {
   mimeType: 'mimeType',
   sizeBytes: 'sizeBytes',
   storageUrl: 'storageUrl',
+  storagePath: 'storagePath',
   status: 'status',
+  errorMessage: 'errorMessage',
+  kind: 'kind',
+  kindSource: 'kindSource',
+  kindReason: 'kindReason',
+  pageCount: 'pageCount',
+  textPageCount: 'textPageCount',
+  processedAt: 'processedAt',
   createdAt: 'createdAt'
 } as const
 
 export type FileScalarFieldEnum = (typeof FileScalarFieldEnum)[keyof typeof FileScalarFieldEnum]
+
+
+export const FilePageScalarFieldEnum = {
+  id: 'id',
+  fileId: 'fileId',
+  userId: 'userId',
+  pageNumber: 'pageNumber',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type FilePageScalarFieldEnum = (typeof FilePageScalarFieldEnum)[keyof typeof FilePageScalarFieldEnum]
 
 
 export const DocumentScalarFieldEnum = {

@@ -82,6 +82,11 @@ export type Subject = Prisma.SubjectModel
  */
 export type File = Prisma.FileModel
 /**
+ * Model FilePage
+ * 
+ */
+export type FilePage = Prisma.FilePageModel
+/**
  * Model Document
  * 
  */

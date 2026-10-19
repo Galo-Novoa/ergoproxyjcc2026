@@ -1,9 +1,10 @@
-import { ArrowLeft, FileUp, FileText, Files, Landmark } from 'lucide-react'
+import { ArrowLeft, FileText, Files, Landmark } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FileList } from '@/components/files/file-list'
+import { FileUploadButton } from '@/components/files/file-upload-button'
 import { EmptyState } from '@/components/shared/empty-state'
 import { PageHeader } from '@/components/shared/page-header'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,23 +16,19 @@ import {
 } from '@/components/ui/card'
 import { listGeneralDocuments, listGeneralFiles } from '@/lib/data/queries'
 import { isDatabaseConfigured } from '@/lib/db/config'
+import { toFileItem } from '@/lib/files/view'
 import { formatRelative } from '@/lib/format'
 import { requireUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'General' }
 
-function formatSize(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
 export default async function GeneralWorkspacePage() {
   const user = await requireUser()
-  const [files, documents] = isDatabaseConfigured
+  const [fileRows, documents] = isDatabaseConfigured
     ? await Promise.all([listGeneralFiles(user.id), listGeneralDocuments(user.id)])
     : [[], []]
   const now = new Date()
+  const files = fileRows.map((row) => toFileItem(row, now))
 
   return (
     <div className="flex flex-col gap-2">
@@ -46,21 +43,8 @@ export default async function GeneralWorkspacePage() {
         title="General"
         description="Documentación general de la facultad y archivos que todavía no pertenecen a ninguna materia."
         badge={<Badge variant="secondary">Workspace fijo</Badge>}
-        actions={
-          <Button disabled>
-            <FileUp data-icon="inline-start" />
-            Subir archivo
-          </Button>
-        }
+        actions={isDatabaseConfigured ? <FileUploadButton subjectId="none" /> : undefined}
       />
-
-      <Alert>
-        <AlertTitle>La subida de archivos todavía no está activa</AlertTitle>
-        <AlertDescription>
-          Para guardar archivos hace falta conectar un almacenamiento (por ejemplo Vercel Blob).
-          Cuando esté disponible, lo que subas acá podrás moverlo a una materia más adelante.
-        </AlertDescription>
-      </Alert>
 
       <div className="grid gap-4 pt-2 md:grid-cols-2">
         <Card>
@@ -70,7 +54,7 @@ export default async function GeneralWorkspacePage() {
             </CardTitle>
             <CardDescription>{files.length} en total</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className={files.length === 0 ? undefined : 'p-0'}>
             {files.length === 0 ? (
               <EmptyState
                 icon={Landmark}
@@ -78,16 +62,7 @@ export default async function GeneralWorkspacePage() {
                 description="Reglamentos, calendarios y trámites de la facultad van a vivir acá."
               />
             ) : (
-              <ul className="flex flex-col divide-y text-sm">
-                {files.map((file) => (
-                  <li key={file.id} className="flex items-center justify-between gap-3 py-2">
-                    <span className="truncate font-medium">{file.name}</span>
-                    <span className="shrink-0 text-muted-foreground">
-                      {formatSize(file.sizeBytes)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <FileList files={files} />
             )}
           </CardContent>
         </Card>

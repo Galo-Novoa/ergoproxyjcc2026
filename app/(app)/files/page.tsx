@@ -1,71 +1,49 @@
-import { FileUp, Files } from 'lucide-react'
+import { Files } from 'lucide-react'
 import type { Metadata } from 'next'
+import { FileList } from '@/components/files/file-list'
+import { FileUploadButton } from '@/components/files/file-upload-button'
 import { DemoBadge } from '@/components/shared/demo-badge'
 import { EmptyState } from '@/components/shared/empty-state'
 import { PageHeader } from '@/components/shared/page-header'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { listFiles } from '@/lib/data/queries'
+import { listFiles, listSubjects } from '@/lib/data/queries'
+import { isDatabaseConfigured } from '@/lib/db/config'
+import { toFileItem } from '@/lib/files/view'
 import { requireUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'Archivos' }
 
-function formatSize(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
 export default async function FilesPage() {
   const user = await requireUser()
-  const files = await listFiles(user.id)
+  const [rows, subjects] = await Promise.all([listFiles(user.id), listSubjects(user.id)])
+  const now = new Date()
+  const files = rows.map((row) => toFileItem(row, now))
 
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Archivos"
-        description="Tus apuntes, guías y parciales, asociados a cada materia."
-        badge={<DemoBadge label="Subida no disponible" />}
+        description="Tus apuntes, guías y parciales en PDF, asociados a cada materia."
+        badge={isDatabaseConfigured ? undefined : <DemoBadge label="Subida no disponible" />}
         actions={
-          <Button disabled>
-            <FileUp data-icon="inline-start" />
-            Subir archivo
-          </Button>
+          isDatabaseConfigured ? (
+            <FileUploadButton
+              subjects={subjects.map((subject) => ({ id: subject.id, name: subject.name }))}
+            />
+          ) : undefined
         }
       />
-
-      <Alert>
-        <AlertTitle>La subida de archivos todavía no está activa</AlertTitle>
-        <AlertDescription>
-          Para guardar archivos hace falta conectar un almacenamiento (por ejemplo Vercel Blob).
-          Mientras tanto podés usar materias, conversaciones, mapa de dudas y documentos.
-        </AlertDescription>
-      </Alert>
 
       {files.length === 0 ? (
         <EmptyState
           icon={Files}
           title="No hay archivos"
-          description="Cuando la subida esté activa, vas a ver acá todo lo que cargues."
+          description="Subí un PDF: extraemos su texto por página y sugerimos si es teoría o práctica."
         />
       ) : (
         <Card>
           <CardContent className="p-0">
-            <ul className="divide-y">
-              {files.map((file) => (
-                <li key={file.id} className="flex items-center justify-between gap-4 px-4 py-3">
-                  <div className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">{file.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {formatSize(file.sizeBytes)} · {file.mimeType}
-                    </span>
-                  </div>
-                  {file.subjectName ? <Badge variant="secondary">{file.subjectName}</Badge> : null}
-                </li>
-              ))}
-            </ul>
+            <FileList files={files} />
           </CardContent>
         </Card>
       )}
