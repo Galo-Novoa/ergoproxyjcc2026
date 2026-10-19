@@ -102,6 +102,11 @@ export type ConversationFile = Prisma.ConversationFileModel
  */
 export type Message = Prisma.MessageModel
 /**
+ * Model AgentAction
+ * 
+ */
+export type AgentAction = Prisma.AgentActionModel
+/**
  * Model QuestionNode
  * 
  */

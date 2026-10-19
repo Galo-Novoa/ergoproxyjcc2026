@@ -1,24 +1,23 @@
 import 'server-only'
 
+const DEFAULT_MODEL = 'openai/gpt-5.5'
+
 /**
  * Configuración del proveedor de LLM, leída solo en el servidor.
- * La clave nunca sale de este módulo: a la UI solo se le expone el estado.
+ * Los modelos se invocan por el AI Gateway de Vercel con un id `proveedor/modelo`;
+ * la autenticación la resuelve la plataforma, así que no hay claves en el código.
  *
- *   LLM_API_KEY   clave del proveedor
- *   LLM_MODEL     identificador del modelo
- *   LLM_BASE_URL  (opcional) endpoint compatible con la API de OpenAI
+ *   LLM_MODEL  (opcional) id del modelo en formato `proveedor/modelo`
  */
 export function getLlmServerConfig() {
-  const apiKey = process.env.LLM_API_KEY
-  const model = process.env.LLM_MODEL
-  const baseUrl = process.env.LLM_BASE_URL
-  return { apiKey, model, baseUrl, configured: Boolean(apiKey && model) }
+  const model = process.env.LLM_MODEL?.trim() || DEFAULT_MODEL
+  return { model, configured: true as const }
 }
 
 export type LlmStatus = { configured: boolean; model: string | null }
 
-/** Versión segura para pasar a componentes: sin claves ni URLs. */
+/** Versión segura para pasar a componentes. */
 export function getLlmStatus(): LlmStatus {
   const { configured, model } = getLlmServerConfig()
-  return { configured, model: configured ? (model ?? null) : null }
+  return { configured, model }
 }

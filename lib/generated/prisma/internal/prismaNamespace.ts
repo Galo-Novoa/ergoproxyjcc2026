@@ -409,6 +409,7 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
   Message: 'Message',
+  AgentAction: 'AgentAction',
   QuestionNode: 'QuestionNode'
 } as const
 
@@ -425,7 +426,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "document" | "conversation" | "conversationFile" | "message" | "questionNode"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1317,6 +1318,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AgentAction: {
+      payload: Prisma.$AgentActionPayload<ExtArgs>
+      fields: Prisma.AgentActionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AgentActionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AgentActionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        findFirst: {
+          args: Prisma.AgentActionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AgentActionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        findMany: {
+          args: Prisma.AgentActionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>[]
+        }
+        create: {
+          args: Prisma.AgentActionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        createMany: {
+          args: Prisma.AgentActionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AgentActionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>[]
+        }
+        delete: {
+          args: Prisma.AgentActionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        update: {
+          args: Prisma.AgentActionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        deleteMany: {
+          args: Prisma.AgentActionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AgentActionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AgentActionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>[]
+        }
+        upsert: {
+          args: Prisma.AgentActionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentActionPayload>
+        }
+        aggregate: {
+          args: Prisma.AgentActionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAgentAction>
+        }
+        groupBy: {
+          args: Prisma.AgentActionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgentActionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AgentActionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgentActionCountAggregateOutputType> | number
+        }
+      }
+    }
     QuestionNode: {
       payload: Prisma.$QuestionNodePayload<ExtArgs>
       fields: Prisma.QuestionNodeFieldRefs
@@ -1566,6 +1641,7 @@ export const ConversationScalarFieldEnum = {
   userId: 'userId',
   subjectId: 'subjectId',
   title: 'title',
+  mode: 'mode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1589,10 +1665,28 @@ export const MessageScalarFieldEnum = {
   userId: 'userId',
   role: 'role',
   content: 'content',
+  description: 'description',
+  metadata: 'metadata',
   createdAt: 'createdAt'
 } as const
 
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const AgentActionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  type: 'type',
+  payload: 'payload',
+  status: 'status',
+  resultNodeId: 'resultNodeId',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type AgentActionScalarFieldEnum = (typeof AgentActionScalarFieldEnum)[keyof typeof AgentActionScalarFieldEnum]
 
 
 export const QuestionNodeScalarFieldEnum = {
@@ -1623,6 +1717,21 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -1637,6 +1746,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1691,6 +1809,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1870,6 +2002,7 @@ export type GlobalOmitConfig = {
   conversation?: Prisma.ConversationOmit
   conversationFile?: Prisma.ConversationFileOmit
   message?: Prisma.MessageOmit
+  agentAction?: Prisma.AgentActionOmit
   questionNode?: Prisma.QuestionNodeOmit
 }
 

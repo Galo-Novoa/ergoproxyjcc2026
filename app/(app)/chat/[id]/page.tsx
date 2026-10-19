@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getConversationWithMessages } from '@/lib/data/queries'
 import { getLlmStatus } from '@/lib/llm/config'
+import { isConversationMode } from '@/lib/llm/contract'
 import { requireUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'Conversación' }
@@ -45,10 +46,16 @@ export default async function ConversationPage({
       />
       <ChatThread
         conversationId={id}
+        mode={isConversationMode(data.conversation.mode) ? data.conversation.mode : 'free'}
         initialMessages={data.messages.map((m) => ({
           id: m.id,
           role: m.role,
           content: m.content,
+          actions: m.agentActions.map((a) => ({
+            id: a.id,
+            status: a.status,
+            payload: a.payload,
+          })),
         }))}
       />
     </div>

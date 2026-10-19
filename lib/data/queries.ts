@@ -197,6 +197,9 @@ export async function getConversationWithMessages(userId: string, id: string) {
 
   const messages = await db.message.findMany({
     where: { conversationId: id, userId },
+    include: {
+      agentActions: { orderBy: { createdAt: 'asc' } },
+    },
     orderBy: { createdAt: 'asc' },
   })
 

@@ -1,18 +1,19 @@
 'use client'
 
-import { GraduationCap, SendHorizontal } from 'lucide-react'
+import { AlertCircle, GraduationCap, MessagesSquare, SendHorizontal } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
+import { setConversationMode } from '@/app/actions/agent-actions'
 import { sendMessage } from '@/app/actions/chat'
+import { AgentActionCard, type AgentActionView } from '@/components/chat/agent-action-card'
+import { Markdown } from '@/components/chat/markdown'
+import { EmptyState } from '@/components/shared/empty-state'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import { Button } from '@/components/ui/button'
-import {
-  Message,
-  MessageAvatar,
-  MessageContent,
-} from '@/components/ui/message'
+import { Message, MessageAvatar, MessageContent } from '@/components/ui/message'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -22,35 +23,65 @@ import {
   MessageScrollerViewport,
 } from '@/components/ui/message-scroller'
 import { Spinner } from '@/components/ui/spinner'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { EmptyState } from '@/components/shared/empty-state'
-import { MessagesSquare } from 'lucide-react'
+import {
+  CONVERSATION_MODES,
+  isConversationMode,
+  MODE_LABELS,
+  type ConversationMode,
+} from '@/lib/llm/contract'
 
-type ChatMessage = { id: string; role: string; content: string }
+export type ChatMessage = {
+  id: string
+  role: string
+  content: string
+  actions: AgentActionView[]
+}
 
 export function ChatThread({
   conversationId,
+  mode,
   initialMessages,
 }: {
   conversationId: string
+  mode: ConversationMode
   initialMessages: ChatMessage[]
 }) {
   const router = useRouter()
   const [draft, setDraft] = useState('')
   const [pendingText, setPendingText] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [currentMode, setCurrentMode] = useState(mode)
   const [pending, startTransition] = useTransition()
 
   function submit() {
     const content = draft.trim()
     if (!content || pending) return
+    setError(null)
     setPendingText(content)
     setDraft('')
     startTransition(async () => {
       const result = await sendMessage(conversationId, content)
       setPendingText(null)
       if (!result.ok) {
-        toast.error(result.error)
+        setError(result.error)
         setDraft(content)
+        return
+      }
+      router.refresh()
+    })
+  }
+
+  function changeMode(value: string) {
+    if (!isConversationMode(value) || value === currentMode) return
+    const previous = currentMode
+    setCurrentMode(value)
+    startTransition(async () => {
+      const result = await setConversationMode(conversationId, value)
+      if (!result.ok) {
+        setCurrentMode(previous)
+        toast.error(result.error)
         return
       }
       router.refresh()
@@ -72,7 +103,17 @@ export function ChatThread({
   const hasMessages = initialMessages.length > 0 || pendingText !== null
 
   return (
-    <div className="flex h-[calc(100svh-15rem)] min-h-96 flex-col gap-4">
+    <div className="flex h-[calc(100svh-15rem)] min-h-96 flex-col gap-3">
+      <Tabs value={currentMode} onValueChange={changeMode}>
+        <TabsList aria-label="Modo de la conversación">
+          {CONVERSATION_MODES.map((m) => (
+            <TabsTrigger key={m} value={m} disabled={pending}>
+              {MODE_LABELS[m]}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
       <div className="min-h-0 flex-1 rounded-xl border bg-card">
         {hasMessages ? (
           <MessageScrollerProvider>
@@ -81,13 +122,15 @@ export function ChatThread({
                 <MessageScrollerContent className="gap-4 p-4">
                   {initialMessages.map((m) => (
                     <MessageScrollerItem key={m.id}>
-                      <ChatBubble role={m.role} content={m.content} />
+                      <ChatBubble message={m} />
                     </MessageScrollerItem>
                   ))}
                   {pendingText ? (
                     <>
                       <MessageScrollerItem scrollAnchor>
-                        <ChatBubble role="user" content={pendingText} />
+                        <ChatBubble
+                          message={{ id: 'pending', role: 'user', content: pendingText, actions: [] }}
+                        />
                       </MessageScrollerItem>
                       <MessageScrollerItem>
                         <div
@@ -112,6 +155,16 @@ export function ChatThread({
           />
         )}
       </div>
+
+      {error ? (
+        <Alert variant="destructive" role="alert">
+          <AlertCircle />
+          <AlertTitle>No pudimos obtener la respuesta</AlertTitle>
+          <AlertDescription>
+            {error} Tu mensaje sigue en el cuadro de texto para reenviarlo.
+          </AlertDescription>
+        </Alert>
+      ) : null}
 
       <form
         onSubmit={(e) => {
@@ -143,8 +196,8 @@ export function ChatThread({
   )
 }
 
-function ChatBubble({ role, content }: { role: string; content: string }) {
-  const isUser = role === 'user'
+function ChatBubble({ message }: { message: ChatMessage }) {
+  const isUser = message.role === 'user'
   return (
     <Message align={isUser ? 'end' : 'start'}>
       {!isUser ? (
@@ -156,10 +209,15 @@ function ChatBubble({ role, content }: { role: string; content: string }) {
           </Avatar>
         </MessageAvatar>
       ) : null}
-      <MessageContent>
+      <MessageContent className="gap-2">
         <Bubble variant={isUser ? 'default' : 'secondary'} align={isUser ? 'end' : 'start'}>
-          <BubbleContent className="whitespace-pre-wrap">{content}</BubbleContent>
+          <BubbleContent className={isUser ? 'whitespace-pre-wrap' : undefined}>
+            {isUser ? message.content : <Markdown>{message.content}</Markdown>}
+          </BubbleContent>
         </Bubble>
+        {message.actions.map((action) => (
+          <AgentActionCard key={action.id} action={action} />
+        ))}
       </MessageContent>
     </Message>
   )

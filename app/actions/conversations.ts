@@ -25,7 +25,7 @@ export async function createConversation(
   }
 
   const row = await db.conversation.create({
-    data: { userId, subjectId: ownedSubjectId },
+    data: { userId, subjectId: ownedSubjectId, mode: 'free' },
     select: { id: true },
   })
 
