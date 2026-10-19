@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { APICallError, generateText, NoObjectGeneratedError, Output, RetryError, type LanguageModel } from 'ai'
-import { getGatewayFallback, getLlmServerConfig } from '@/lib/llm/config'
+import { getLlmFallback, getLlmServerConfig } from '@/lib/llm/config'
 import {
   agentActionSchema,
   agentResponseSchema,
@@ -142,9 +142,9 @@ export async function runAgent({
       result = await generate(config.model)
     } catch (error) {
       const status = providerStatus(error)
-      if (config.provider !== 'opencode-zen' || ![401, 402, 403].includes(status ?? 0)) throw error
-      console.error(`[llm] OpenCode Zen rechazó la clave (HTTP ${status}); se usa el AI Gateway.`)
-      const fallback = getGatewayFallback()
+      const fallback = [401, 402, 403].includes(status ?? 0) ? getLlmFallback(config.provider) : null
+      if (!fallback) throw error
+      console.error(`[llm] ${config.provider} rechazó la clave (HTTP ${status}); se usa ${fallback.provider}.`)
       modelId = fallback.modelId
       result = await generate(fallback.model)
     }
