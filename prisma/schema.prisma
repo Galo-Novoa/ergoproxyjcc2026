@@ -29,6 +29,7 @@ model User {
   messages      Message[]
   questionNodes QuestionNode[]
   conversationFiles ConversationFile[]
+  agentActions  AgentAction[]
 
   @@map("user")
 }
@@ -196,11 +197,13 @@ model Document {
 }
 
 // Las conversaciones y sus mensajes son siempre privados de su dueño.
+// mode: 'theory' | 'practice' | 'free'
 model Conversation {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String
   subjectId String?  @db.Uuid
   title     String   @default("Nueva conversación")
+  mode      String   @default("free")
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -209,6 +212,7 @@ model Conversation {
   messages      Message[]
   fileLinks     ConversationFile[]
   questionNodes QuestionNode[]
+  agentActions  AgentAction[]
 
   @@index([userId], map: "conversations_user_idx")
   @@index([subjectId], map: "conversations_subject_idx")
@@ -230,21 +234,50 @@ model ConversationFile {
 }
 
 // role: 'user' | 'assistant' | 'system'
+// content: texto visible (Markdown). description: alias corto del tema (solo asistente).
+// metadata: datos estructurados de la respuesta (modelo, recuperación, acciones descartadas).
 model Message {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   conversationId String       @db.Uuid
   userId         String
   role           String
   content        String
+  description    String?
+  metadata       Json?
   createdAt      DateTime     @default(now()) @db.Timestamp(6)
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   questionNodes QuestionNode[]
+  agentActions  AgentAction[]
 
   @@index([conversationId], map: "messages_conversation_idx")
   @@index([userId], map: "messages_user_idx")
   @@map("messages")
+}
+
+// Acciones que el agente PROPONE. Nunca se ejecutan solas: pasan a 'accepted'
+// únicamente cuando el usuario las confirma y el backend las revalida.
+// type: 'propose_history_branch' (ampliable) · status: 'proposed' | 'accepted' | 'dismissed'
+model AgentAction {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  conversationId String       @db.Uuid
+  messageId      String       @db.Uuid
+  type           String
+  payload        Json
+  status         String       @default("proposed")
+  resultNodeId   String?      @db.Uuid
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  resolvedAt     DateTime?    @db.Timestamp(6)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  message        Message      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "agent_actions_user_idx")
+  @@index([conversationId], map: "agent_actions_conversation_idx")
+  @@index([messageId], map: "agent_actions_message_idx")
+  @@map("agent_actions")
 }
 
 // Nodos del mapa conceptual: cada duda es un nodo; `parentId` arma el árbol.
