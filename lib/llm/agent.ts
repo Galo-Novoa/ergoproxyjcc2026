@@ -1,7 +1,7 @@
 import 'server-only'
 
-import { generateText, NoObjectGeneratedError, Output } from 'ai'
-import { getLlmServerConfig } from '@/lib/llm/config'
+import { APICallError, generateText, NoObjectGeneratedError, Output, RetryError, type LanguageModel } from 'ai'
+import { getGatewayFallback, getLlmServerConfig } from '@/lib/llm/config'
 import {
   agentActionSchema,
   agentResponseSchema,
@@ -108,6 +108,11 @@ function recover(
 
 export class AgentError extends Error {}
 
+function providerStatus(error: unknown): number | undefined {
+  const cause = RetryError.isInstance(error) ? error.lastError : error
+  return APICallError.isInstance(cause) ? cause.statusCode : undefined
+}
+
 export async function runAgent({
   mode,
   nodes,
@@ -117,22 +122,39 @@ export async function runAgent({
   nodes: KnownNode[]
   history: { role: 'user' | 'assistant'; content: string }[]
 }): Promise<AgentResult> {
-  const { model, modelId } = getLlmServerConfig()
+  const config = getLlmServerConfig()
+  const system = buildSystemPrompt(mode, nodes)
 
-  try {
-    const result = await generateText({
+  const generate = (model: LanguageModel) =>
+    generateText({
       model,
-      system: buildSystemPrompt(mode, nodes),
+      system,
       messages: history,
       output: Output.object({ schema: agentResponseSchema }),
       timeout: 60_000,
     })
+
+  let { modelId } = config
+
+  try {
+    let result
+    try {
+      result = await generate(config.model)
+    } catch (error) {
+      const status = providerStatus(error)
+      if (config.provider !== 'opencode-zen' || ![401, 402, 403].includes(status ?? 0)) throw error
+      console.error(`[llm] OpenCode Zen rechazó la clave (HTTP ${status}); se usa el AI Gateway.`)
+      const fallback = getGatewayFallback()
+      modelId = fallback.modelId
+      result = await generate(fallback.model)
+    }
     const { output, description, actions } = result.output
     return {
       response: { output, description, actions },
       metadata: { model: modelId, recovery: 'none', droppedActions: 0 },
     }
   } catch (error) {
+    console.error('[llm] Falló la generación:', error instanceof Error ? error.message : error)
     if (NoObjectGeneratedError.isInstance(error)) {
       const recovered = recover(error.text)
       if (recovered) {

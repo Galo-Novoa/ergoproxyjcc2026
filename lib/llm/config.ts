@@ -34,6 +34,11 @@ export function getLlmServerConfig(): { model: LanguageModel; modelId: string; p
   return { model: modelId, modelId, provider: 'gateway' }
 }
 
+/** Modelo del AI Gateway, usado cuando OpenCode Zen rechaza la clave. */
+export function getGatewayFallback(): { model: LanguageModel; modelId: string } {
+  return { model: GATEWAY_DEFAULT_MODEL, modelId: GATEWAY_DEFAULT_MODEL }
+}
+
 export type LlmStatus = { configured: boolean; model: string | null }
 
 /** Versión segura para pasar a componentes. */
