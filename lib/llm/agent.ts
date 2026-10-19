@@ -130,7 +130,7 @@ export async function runAgent({
     const { output, description, actions } = result.output
     return {
       response: { output, description, actions },
-      metadata: { model, recovery: 'none', droppedActions: 0 },
+      metadata: { model: modelId, recovery: 'none', droppedActions: 0 },
     }
   } catch (error) {
     if (NoObjectGeneratedError.isInstance(error)) {
@@ -138,7 +138,7 @@ export async function runAgent({
       if (recovered) {
         return {
           response: recovered.response,
-          metadata: { model, recovery: recovered.kind, droppedActions: recovered.dropped },
+          metadata: { model: modelId, recovery: recovered.kind, droppedActions: recovered.dropped },
         }
       }
       throw new AgentError('El modelo devolvió una respuesta que no pudimos interpretar. Probá de nuevo.')
