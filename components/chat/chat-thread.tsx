@@ -7,7 +7,9 @@ import { toast } from 'sonner'
 import { setConversationMode } from '@/app/actions/agent-actions'
 import { sendMessage } from '@/app/actions/chat'
 import { AgentActionCard, type AgentActionView } from '@/components/chat/agent-action-card'
+import { FilePicker, type ChatFile } from '@/components/chat/file-picker'
 import { Markdown } from '@/components/chat/markdown'
+import { MessageSources } from '@/components/chat/message-sources'
 import { EmptyState } from '@/components/shared/empty-state'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -31,25 +33,30 @@ import {
   MODE_LABELS,
   type ConversationMode,
 } from '@/lib/llm/contract'
+import type { RagMetadata } from '@/lib/rag/types'
 
 export type ChatMessage = {
   id: string
   role: string
   content: string
   actions: AgentActionView[]
+  rag: RagMetadata | null
 }
 
 export function ChatThread({
   conversationId,
   mode,
   initialMessages,
+  files,
 }: {
   conversationId: string
   mode: ConversationMode
   initialMessages: ChatMessage[]
+  files: ChatFile[]
 }) {
   const router = useRouter()
   const [draft, setDraft] = useState('')
+  const [selectedFileIds, setSelectedFileIds] = useState<string[]>([])
   const [pendingText, setPendingText] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [currentMode, setCurrentMode] = useState(mode)
@@ -62,7 +69,7 @@ export function ChatThread({
     setPendingText(content)
     setDraft('')
     startTransition(async () => {
-      const result = await sendMessage(conversationId, content)
+      const result = await sendMessage(conversationId, content, selectedFileIds)
       setPendingText(null)
       if (!result.ok) {
         setError(result.error)
@@ -129,7 +136,13 @@ export function ChatThread({
                     <>
                       <MessageScrollerItem scrollAnchor>
                         <ChatBubble
-                          message={{ id: 'pending', role: 'user', content: pendingText, actions: [] }}
+                          message={{
+                            id: 'pending',
+                            role: 'user',
+                            content: pendingText,
+                            actions: [],
+                            rag: null,
+                          }}
                         />
                       </MessageScrollerItem>
                       <MessageScrollerItem>
@@ -166,6 +179,13 @@ export function ChatThread({
         </Alert>
       ) : null}
 
+      <FilePicker
+        files={files}
+        selectedIds={selectedFileIds}
+        onChange={setSelectedFileIds}
+        disabled={pending}
+      />
+
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -198,6 +218,7 @@ export function ChatThread({
 
 function ChatBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user'
+  const citationPrefix = `src-${message.id}`
   return (
     <Message align={isUser ? 'end' : 'start'}>
       {!isUser ? (
@@ -212,9 +233,16 @@ function ChatBubble({ message }: { message: ChatMessage }) {
       <MessageContent className="gap-2">
         <Bubble variant={isUser ? 'default' : 'secondary'} align={isUser ? 'end' : 'start'}>
           <BubbleContent className={isUser ? 'whitespace-pre-wrap' : undefined}>
-            {isUser ? message.content : <Markdown>{message.content}</Markdown>}
+            {isUser ? (
+              message.content
+            ) : (
+              <Markdown citationPrefix={message.rag ? citationPrefix : undefined}>
+                {message.content}
+              </Markdown>
+            )}
           </BubbleContent>
         </Bubble>
+        {message.rag ? <MessageSources rag={message.rag} anchorPrefix={citationPrefix} /> : null}
         {message.actions.map((action) => (
           <AgentActionCard key={action.id} action={action} />
         ))}

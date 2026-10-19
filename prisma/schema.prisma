@@ -25,6 +25,7 @@ model User {
   subjects      Subject[]
   files         File[]
   filePages     FilePage[]
+  fileChunks    FileChunk[]
   documents     Document[]
   conversations Conversation[]
   messages      Message[]
@@ -172,6 +173,14 @@ model File {
   pageCount      Int?
   textPageCount  Int?
   processedAt    DateTime?     @db.Timestamp(6)
+  // Indexación para RAG. indexStatus: 'pending' | 'indexing' | 'indexed' | 'failed' | 'unavailable'
+  //   - unavailable: falta pgvector o su migración (ver lib/rag/vector.ts).
+  // embeddingModel: modelo con el que se generaron los embeddings de sus fragmentos.
+  indexStatus    String        @default("pending")
+  indexError     String?
+  chunkCount     Int           @default(0)
+  indexedAt      DateTime?     @db.Timestamp(6)
+  embeddingModel String?
   createdAt      DateTime      @default(now()) @db.Timestamp(6)
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
@@ -181,6 +190,7 @@ model File {
   conversationLinks ConversationFile[]
   questionNodes     QuestionNode[]
   pages             FilePage[]
+  chunks            FileChunk[]
 
   @@index([userId], map: "files_user_idx")
   @@index([subjectId], map: "files_subject_idx")
@@ -204,6 +214,32 @@ model FilePage {
   @@unique([fileId, pageNumber], map: "file_pages_file_page_key")
   @@index([userId], map: "file_pages_user_idx")
   @@map("file_pages")
+}
+
+// Fragmento de una página para RAG. No cruza páginas, así que `pageNumber` es exacto al citar.
+// userId / organizationId / visibility / subjectId copian los de su archivo: la recuperación
+// los vuelve a exigir como defensa adicional a los permisos del archivo (lib/authz.ts).
+// La columna `embedding vector(1536)` la crea la migración 5_pgvector y solo se usa con SQL
+// (lib/rag/*): Prisma no la maneja, por eso no figura en el modelo.
+model FileChunk {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fileId         String   @db.Uuid
+  userId         String
+  organizationId String?  @db.Uuid
+  visibility     String   @default("private")
+  subjectId      String?  @db.Uuid
+  pageNumber     Int
+  chunkIndex     Int
+  content        String
+  embeddingModel String?
+  createdAt      DateTime @default(now()) @db.Timestamp(6)
+  file           File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, pageNumber, chunkIndex], map: "file_chunks_file_page_chunk_key")
+  @@index([userId], map: "file_chunks_user_idx")
+  @@index([subjectId], map: "file_chunks_subject_idx")
+  @@map("file_chunks")
 }
 
 // kind: 'note' | 'summary'

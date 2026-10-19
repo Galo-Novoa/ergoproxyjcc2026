@@ -87,6 +87,11 @@ export type File = Prisma.FileModel
  */
 export type FilePage = Prisma.FilePageModel
 /**
+ * Model FileChunk
+ * 
+ */
+export type FileChunk = Prisma.FileChunkModel
+/**
  * Model Document
  * 
  */

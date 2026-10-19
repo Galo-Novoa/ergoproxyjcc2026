@@ -7,9 +7,10 @@ import { DemoBadge } from '@/components/shared/demo-badge'
 import { PageHeader } from '@/components/shared/page-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { getConversationWithMessages } from '@/lib/data/queries'
+import { getConversationWithMessages, listChatFiles } from '@/lib/data/queries'
 import { getLlmStatus } from '@/lib/llm/config'
 import { isConversationMode } from '@/lib/llm/contract'
+import { parseRagMetadata } from '@/lib/rag/types'
 import { requireUser } from '@/lib/session'
 
 export const metadata: Metadata = { title: 'Conversación' }
@@ -21,7 +22,10 @@ export default async function ConversationPage({
 }) {
   const { id } = await params
   const user = await requireUser()
-  const data = await getConversationWithMessages(user.id, id)
+  const [data, files] = await Promise.all([
+    getConversationWithMessages(user.id, id),
+    listChatFiles(user.id),
+  ])
   if (!data) notFound()
   const llm = getLlmStatus()
 
@@ -47,10 +51,12 @@ export default async function ConversationPage({
       <ChatThread
         conversationId={id}
         mode={isConversationMode(data.conversation.mode) ? data.conversation.mode : 'free'}
+        files={files}
         initialMessages={data.messages.map((m) => ({
           id: m.id,
           role: m.role,
           content: m.content,
+          rag: parseRagMetadata(m.metadata),
           actions: m.agentActions.map((a) => ({
             id: a.id,
             status: a.status,

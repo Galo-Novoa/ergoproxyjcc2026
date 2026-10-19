@@ -406,6 +406,7 @@ export const ModelName = {
   Subject: 'Subject',
   File: 'File',
   FilePage: 'FilePage',
+  FileChunk: 'FileChunk',
   Document: 'Document',
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
@@ -427,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "fileChunk" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1097,6 +1098,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FileChunk: {
+      payload: Prisma.$FileChunkPayload<ExtArgs>
+      fields: Prisma.FileChunkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FileChunkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FileChunkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        findFirst: {
+          args: Prisma.FileChunkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FileChunkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        findMany: {
+          args: Prisma.FileChunkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>[]
+        }
+        create: {
+          args: Prisma.FileChunkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        createMany: {
+          args: Prisma.FileChunkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FileChunkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>[]
+        }
+        delete: {
+          args: Prisma.FileChunkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        update: {
+          args: Prisma.FileChunkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        deleteMany: {
+          args: Prisma.FileChunkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FileChunkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FileChunkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>[]
+        }
+        upsert: {
+          args: Prisma.FileChunkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileChunkPayload>
+        }
+        aggregate: {
+          args: Prisma.FileChunkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFileChunk>
+        }
+        groupBy: {
+          args: Prisma.FileChunkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileChunkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FileChunkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileChunkCountAggregateOutputType> | number
+        }
+      }
+    }
     Document: {
       payload: Prisma.$DocumentPayload<ExtArgs>
       fields: Prisma.DocumentFieldRefs
@@ -1696,6 +1771,11 @@ export const FileScalarFieldEnum = {
   pageCount: 'pageCount',
   textPageCount: 'textPageCount',
   processedAt: 'processedAt',
+  indexStatus: 'indexStatus',
+  indexError: 'indexError',
+  chunkCount: 'chunkCount',
+  indexedAt: 'indexedAt',
+  embeddingModel: 'embeddingModel',
   createdAt: 'createdAt'
 } as const
 
@@ -1712,6 +1792,23 @@ export const FilePageScalarFieldEnum = {
 } as const
 
 export type FilePageScalarFieldEnum = (typeof FilePageScalarFieldEnum)[keyof typeof FilePageScalarFieldEnum]
+
+
+export const FileChunkScalarFieldEnum = {
+  id: 'id',
+  fileId: 'fileId',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  visibility: 'visibility',
+  subjectId: 'subjectId',
+  pageNumber: 'pageNumber',
+  chunkIndex: 'chunkIndex',
+  content: 'content',
+  embeddingModel: 'embeddingModel',
+  createdAt: 'createdAt'
+} as const
+
+export type FileChunkScalarFieldEnum = (typeof FileChunkScalarFieldEnum)[keyof typeof FileChunkScalarFieldEnum]
 
 
 export const DocumentScalarFieldEnum = {
@@ -2094,6 +2191,7 @@ export type GlobalOmitConfig = {
   subject?: Prisma.SubjectOmit
   file?: Prisma.FileOmit
   filePage?: Prisma.FilePageOmit
+  fileChunk?: Prisma.FileChunkOmit
   document?: Prisma.DocumentOmit
   conversation?: Prisma.ConversationOmit
   conversationFile?: Prisma.ConversationFileOmit

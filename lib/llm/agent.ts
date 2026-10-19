@@ -13,6 +13,8 @@ import {
   type MessageMetadata,
   type RecoveryKind,
 } from '@/lib/llm/contract'
+import { buildRagPrompt } from '@/lib/rag/prompt'
+import type { RetrievalResult } from '@/lib/rag/retrieve'
 
 export type KnownNode = { id: string; question: string }
 
@@ -26,7 +28,7 @@ const MODE_GUIDANCE: Record<ConversationMode, string> = {
   free: 'Modo Libre: respondé de forma flexible según lo que pregunte el estudiante.',
 }
 
-function buildSystemPrompt(mode: ConversationMode, nodes: KnownNode[]) {
+function buildSystemPrompt(mode: ConversationMode, nodes: KnownNode[], rag: RetrievalResult | undefined) {
   const nodeList = nodes.length
     ? nodes.map((n) => `- ${n.id}: ${n.question}`).join('\n')
     : '(todavía no hay nodos)'
@@ -34,14 +36,16 @@ function buildSystemPrompt(mode: ConversationMode, nodes: KnownNode[]) {
   return [
     'Sos un tutor para estudiantes de ingeniería y ciencias exactas de la FCEIA (UNR). Respondé en español rioplatense, con claridad y paso a paso.',
     MODE_GUIDANCE[mode],
-    'Tu respuesta es un objeto JSON con tres campos:',
+    'Tu respuesta es un objeto JSON con cuatro campos:',
     '- output: el texto visible para el estudiante, en Markdown (podés usar listas, tablas y bloques de código).',
     '- description: alias corto (2 a 5 palabras, máximo 80 caracteres) del concepto o problema específico tratado, por ejemplo «Sustitución en integrales». Nunca copies la pregunta completa.',
+    '- grounding: "documents", "mixed", "general" o "insufficient" según cuánto de la respuesta se apoya en los documentos del estudiante (criterios abajo). Sin fragmentos de documentos, usá "general" o "insufficient".',
     '- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Solo proponé una rama cuando la respuesta abre un subtema que merece su propio nodo en el mapa de dudas.',
     'Única acción disponible: {"type":"propose_history_branch","parent_node_id":<id de la lista o null>,"title":<alias corto>,"description":<tema específico de la rama>}.',
     'Usá en parent_node_id solo un id de la lista de nodos existentes, o null. Nunca inventes ids. Las acciones son propuestas: el estudiante decide si las acepta.',
     'Nodos existentes del mapa de dudas:',
     nodeList,
+    rag ? buildRagPrompt(rag) : '',
   ].join('\n')
 }
 
@@ -93,6 +97,7 @@ function recover(
       response: {
         output: lenient.data.output,
         description: lenient.data.description ?? null,
+        grounding: lenient.data.grounding ?? 'general',
         actions: valid,
       },
       dropped,
@@ -103,7 +108,11 @@ function recover(
   // Si el texto parece un JSON roto, no se lo muestra tal cual al estudiante.
   if (json !== undefined || /^\s*[{[]/.test(stripFences(text))) return null
 
-  return { response: { output: text, description: null, actions: [] }, dropped: 0, kind: 'plain_text' }
+  return {
+    response: { output: text, description: null, grounding: 'general', actions: [] },
+    dropped: 0,
+    kind: 'plain_text',
+  }
 }
 
 export class AgentError extends Error {}
@@ -117,13 +126,15 @@ export async function runAgent({
   mode,
   nodes,
   history,
+  rag,
 }: {
   mode: ConversationMode
   nodes: KnownNode[]
   history: { role: 'user' | 'assistant'; content: string }[]
+  rag?: RetrievalResult
 }): Promise<AgentResult> {
   const config = getLlmServerConfig()
-  const system = buildSystemPrompt(mode, nodes)
+  const system = buildSystemPrompt(mode, nodes, rag)
 
   const generate = (model: LanguageModel) =>
     generateText({
@@ -148,9 +159,9 @@ export async function runAgent({
       modelId = fallback.modelId
       result = await generate(fallback.model)
     }
-    const { output, description, actions } = result.output
+    const { output, description, grounding, actions } = result.output
     return {
-      response: { output, description, actions },
+      response: { output, description, grounding, actions },
       metadata: { model: modelId, recovery: 'none', droppedActions: 0 },
     }
   } catch (error) {

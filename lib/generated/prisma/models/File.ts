@@ -30,12 +30,14 @@ export type FileAvgAggregateOutputType = {
   sizeBytes: number | null
   pageCount: number | null
   textPageCount: number | null
+  chunkCount: number | null
 }
 
 export type FileSumAggregateOutputType = {
   sizeBytes: number | null
   pageCount: number | null
   textPageCount: number | null
+  chunkCount: number | null
 }
 
 export type FileMinAggregateOutputType = {
@@ -57,6 +59,11 @@ export type FileMinAggregateOutputType = {
   pageCount: number | null
   textPageCount: number | null
   processedAt: Date | null
+  indexStatus: string | null
+  indexError: string | null
+  chunkCount: number | null
+  indexedAt: Date | null
+  embeddingModel: string | null
   createdAt: Date | null
 }
 
@@ -79,6 +86,11 @@ export type FileMaxAggregateOutputType = {
   pageCount: number | null
   textPageCount: number | null
   processedAt: Date | null
+  indexStatus: string | null
+  indexError: string | null
+  chunkCount: number | null
+  indexedAt: Date | null
+  embeddingModel: string | null
   createdAt: Date | null
 }
 
@@ -101,6 +113,11 @@ export type FileCountAggregateOutputType = {
   pageCount: number
   textPageCount: number
   processedAt: number
+  indexStatus: number
+  indexError: number
+  chunkCount: number
+  indexedAt: number
+  embeddingModel: number
   createdAt: number
   _all: number
 }
@@ -110,12 +127,14 @@ export type FileAvgAggregateInputType = {
   sizeBytes?: true
   pageCount?: true
   textPageCount?: true
+  chunkCount?: true
 }
 
 export type FileSumAggregateInputType = {
   sizeBytes?: true
   pageCount?: true
   textPageCount?: true
+  chunkCount?: true
 }
 
 export type FileMinAggregateInputType = {
@@ -137,6 +156,11 @@ export type FileMinAggregateInputType = {
   pageCount?: true
   textPageCount?: true
   processedAt?: true
+  indexStatus?: true
+  indexError?: true
+  chunkCount?: true
+  indexedAt?: true
+  embeddingModel?: true
   createdAt?: true
 }
 
@@ -159,6 +183,11 @@ export type FileMaxAggregateInputType = {
   pageCount?: true
   textPageCount?: true
   processedAt?: true
+  indexStatus?: true
+  indexError?: true
+  chunkCount?: true
+  indexedAt?: true
+  embeddingModel?: true
   createdAt?: true
 }
 
@@ -181,6 +210,11 @@ export type FileCountAggregateInputType = {
   pageCount?: true
   textPageCount?: true
   processedAt?: true
+  indexStatus?: true
+  indexError?: true
+  chunkCount?: true
+  indexedAt?: true
+  embeddingModel?: true
   createdAt?: true
   _all?: true
 }
@@ -290,6 +324,11 @@ export type FileGroupByOutputType = {
   pageCount: number | null
   textPageCount: number | null
   processedAt: Date | null
+  indexStatus: string
+  indexError: string | null
+  chunkCount: number
+  indexedAt: Date | null
+  embeddingModel: string | null
   createdAt: Date
   _count: FileCountAggregateOutputType | null
   _avg: FileAvgAggregateOutputType | null
@@ -335,6 +374,11 @@ export type FileWhereInput = {
   pageCount?: Prisma.IntNullableFilter<"File"> | number | null
   textPageCount?: Prisma.IntNullableFilter<"File"> | number | null
   processedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  indexStatus?: Prisma.StringFilter<"File"> | string
+  indexError?: Prisma.StringNullableFilter<"File"> | string | null
+  chunkCount?: Prisma.IntFilter<"File"> | number
+  indexedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  embeddingModel?: Prisma.StringNullableFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationNullableScalarRelationFilter, Prisma.OrganizationWhereInput> | null
@@ -343,6 +387,7 @@ export type FileWhereInput = {
   conversationLinks?: Prisma.ConversationFileListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   pages?: Prisma.FilePageListRelationFilter
+  chunks?: Prisma.FileChunkListRelationFilter
 }
 
 export type FileOrderByWithRelationInput = {
@@ -364,6 +409,11 @@ export type FileOrderByWithRelationInput = {
   pageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   textPageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  indexError?: Prisma.SortOrderInput | Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
+  indexedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  embeddingModel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -372,6 +422,7 @@ export type FileOrderByWithRelationInput = {
   conversationLinks?: Prisma.ConversationFileOrderByRelationAggregateInput
   questionNodes?: Prisma.QuestionNodeOrderByRelationAggregateInput
   pages?: Prisma.FilePageOrderByRelationAggregateInput
+  chunks?: Prisma.FileChunkOrderByRelationAggregateInput
 }
 
 export type FileWhereUniqueInput = Prisma.AtLeast<{
@@ -396,6 +447,11 @@ export type FileWhereUniqueInput = Prisma.AtLeast<{
   pageCount?: Prisma.IntNullableFilter<"File"> | number | null
   textPageCount?: Prisma.IntNullableFilter<"File"> | number | null
   processedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  indexStatus?: Prisma.StringFilter<"File"> | string
+  indexError?: Prisma.StringNullableFilter<"File"> | string | null
+  chunkCount?: Prisma.IntFilter<"File"> | number
+  indexedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  embeddingModel?: Prisma.StringNullableFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationNullableScalarRelationFilter, Prisma.OrganizationWhereInput> | null
@@ -404,6 +460,7 @@ export type FileWhereUniqueInput = Prisma.AtLeast<{
   conversationLinks?: Prisma.ConversationFileListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   pages?: Prisma.FilePageListRelationFilter
+  chunks?: Prisma.FileChunkListRelationFilter
 }, "id">
 
 export type FileOrderByWithAggregationInput = {
@@ -425,6 +482,11 @@ export type FileOrderByWithAggregationInput = {
   pageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   textPageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  indexError?: Prisma.SortOrderInput | Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
+  indexedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  embeddingModel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.FileCountOrderByAggregateInput
   _avg?: Prisma.FileAvgOrderByAggregateInput
@@ -455,6 +517,11 @@ export type FileScalarWhereWithAggregatesInput = {
   pageCount?: Prisma.IntNullableWithAggregatesFilter<"File"> | number | null
   textPageCount?: Prisma.IntNullableWithAggregatesFilter<"File"> | number | null
   processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"File"> | Date | string | null
+  indexStatus?: Prisma.StringWithAggregatesFilter<"File"> | string
+  indexError?: Prisma.StringNullableWithAggregatesFilter<"File"> | string | null
+  chunkCount?: Prisma.IntWithAggregatesFilter<"File"> | number
+  indexedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"File"> | Date | string | null
+  embeddingModel?: Prisma.StringNullableWithAggregatesFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"File"> | Date | string
 }
 
@@ -474,6 +541,11 @@ export type FileCreateInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -482,6 +554,7 @@ export type FileCreateInput = {
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateInput = {
@@ -503,11 +576,17 @@ export type FileUncheckedCreateInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileUpdateInput = {
@@ -526,6 +605,11 @@ export type FileUpdateInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -534,6 +618,7 @@ export type FileUpdateInput = {
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateInput = {
@@ -555,11 +640,17 @@ export type FileUncheckedUpdateInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileCreateManyInput = {
@@ -581,6 +672,11 @@ export type FileCreateManyInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
 }
 
@@ -600,6 +696,11 @@ export type FileUpdateManyMutationInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -622,6 +723,11 @@ export type FileUncheckedUpdateManyInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -654,6 +760,11 @@ export type FileCountOrderByAggregateInput = {
   pageCount?: Prisma.SortOrder
   textPageCount?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  indexError?: Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
+  indexedAt?: Prisma.SortOrder
+  embeddingModel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -661,6 +772,7 @@ export type FileAvgOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
   textPageCount?: Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
 }
 
 export type FileMaxOrderByAggregateInput = {
@@ -682,6 +794,11 @@ export type FileMaxOrderByAggregateInput = {
   pageCount?: Prisma.SortOrder
   textPageCount?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  indexError?: Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
+  indexedAt?: Prisma.SortOrder
+  embeddingModel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -704,6 +821,11 @@ export type FileMinOrderByAggregateInput = {
   pageCount?: Prisma.SortOrder
   textPageCount?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
+  indexStatus?: Prisma.SortOrder
+  indexError?: Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
+  indexedAt?: Prisma.SortOrder
+  embeddingModel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -711,6 +833,7 @@ export type FileSumOrderByAggregateInput = {
   sizeBytes?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
   textPageCount?: Prisma.SortOrder
+  chunkCount?: Prisma.SortOrder
 }
 
 export type FileScalarRelationFilter = {
@@ -879,6 +1002,20 @@ export type FileUpdateOneRequiredWithoutPagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FileUpdateToOneWithWhereWithoutPagesInput, Prisma.FileUpdateWithoutPagesInput>, Prisma.FileUncheckedUpdateWithoutPagesInput>
 }
 
+export type FileCreateNestedOneWithoutChunksInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutChunksInput, Prisma.FileUncheckedCreateWithoutChunksInput>
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutChunksInput
+  connect?: Prisma.FileWhereUniqueInput
+}
+
+export type FileUpdateOneRequiredWithoutChunksNestedInput = {
+  create?: Prisma.XOR<Prisma.FileCreateWithoutChunksInput, Prisma.FileUncheckedCreateWithoutChunksInput>
+  connectOrCreate?: Prisma.FileCreateOrConnectWithoutChunksInput
+  upsert?: Prisma.FileUpsertWithoutChunksInput
+  connect?: Prisma.FileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FileUpdateToOneWithWhereWithoutChunksInput, Prisma.FileUpdateWithoutChunksInput>, Prisma.FileUncheckedUpdateWithoutChunksInput>
+}
+
 export type FileCreateNestedOneWithoutDocumentsInput = {
   create?: Prisma.XOR<Prisma.FileCreateWithoutDocumentsInput, Prisma.FileUncheckedCreateWithoutDocumentsInput>
   connectOrCreate?: Prisma.FileCreateOrConnectWithoutDocumentsInput
@@ -941,6 +1078,11 @@ export type FileCreateWithoutUserInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFilesInput
@@ -948,6 +1090,7 @@ export type FileCreateWithoutUserInput = {
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutUserInput = {
@@ -968,11 +1111,17 @@ export type FileUncheckedCreateWithoutUserInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutUserInput = {
@@ -1023,6 +1172,11 @@ export type FileScalarWhereInput = {
   pageCount?: Prisma.IntNullableFilter<"File"> | number | null
   textPageCount?: Prisma.IntNullableFilter<"File"> | number | null
   processedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  indexStatus?: Prisma.StringFilter<"File"> | string
+  indexError?: Prisma.StringNullableFilter<"File"> | string | null
+  chunkCount?: Prisma.IntFilter<"File"> | number
+  indexedAt?: Prisma.DateTimeNullableFilter<"File"> | Date | string | null
+  embeddingModel?: Prisma.StringNullableFilter<"File"> | string | null
   createdAt?: Prisma.DateTimeFilter<"File"> | Date | string
 }
 
@@ -1042,6 +1196,11 @@ export type FileCreateWithoutOrganizationInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFilesInput
@@ -1049,6 +1208,7 @@ export type FileCreateWithoutOrganizationInput = {
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutOrganizationInput = {
@@ -1069,11 +1229,17 @@ export type FileUncheckedCreateWithoutOrganizationInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutOrganizationInput = {
@@ -1118,6 +1284,11 @@ export type FileCreateWithoutSubjectInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -1125,6 +1296,7 @@ export type FileCreateWithoutSubjectInput = {
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutSubjectInput = {
@@ -1145,11 +1317,17 @@ export type FileUncheckedCreateWithoutSubjectInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutSubjectInput = {
@@ -1194,6 +1372,11 @@ export type FileCreateWithoutPagesInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -1201,6 +1384,7 @@ export type FileCreateWithoutPagesInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutPagesInput = {
@@ -1222,10 +1406,16 @@ export type FileUncheckedCreateWithoutPagesInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutPagesInput = {
@@ -1260,6 +1450,11 @@ export type FileUpdateWithoutPagesInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -1267,6 +1462,7 @@ export type FileUpdateWithoutPagesInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutPagesInput = {
@@ -1288,10 +1484,156 @@ export type FileUncheckedUpdateWithoutPagesInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
+}
+
+export type FileCreateWithoutChunksInput = {
+  id?: string
+  visibility?: string
+  name: string
+  mimeType: string
+  sizeBytes?: number
+  storageUrl?: string | null
+  storagePath?: string | null
+  status?: string
+  errorMessage?: string | null
+  kind?: string | null
+  kindSource?: string | null
+  kindReason?: string | null
+  pageCount?: number | null
+  textPageCount?: number | null
+  processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutFilesInput
+  organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
+  subject?: Prisma.SubjectCreateNestedOneWithoutFilesInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceFileInput
+  conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
+  pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+}
+
+export type FileUncheckedCreateWithoutChunksInput = {
+  id?: string
+  userId: string
+  organizationId?: string | null
+  visibility?: string
+  subjectId?: string | null
+  name: string
+  mimeType: string
+  sizeBytes?: number
+  storageUrl?: string | null
+  storagePath?: string | null
+  status?: string
+  errorMessage?: string | null
+  kind?: string | null
+  kindSource?: string | null
+  kindReason?: string | null
+  pageCount?: number | null
+  textPageCount?: number | null
+  processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
+  createdAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
+  conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
+  pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+}
+
+export type FileCreateOrConnectWithoutChunksInput = {
+  where: Prisma.FileWhereUniqueInput
+  create: Prisma.XOR<Prisma.FileCreateWithoutChunksInput, Prisma.FileUncheckedCreateWithoutChunksInput>
+}
+
+export type FileUpsertWithoutChunksInput = {
+  update: Prisma.XOR<Prisma.FileUpdateWithoutChunksInput, Prisma.FileUncheckedUpdateWithoutChunksInput>
+  create: Prisma.XOR<Prisma.FileCreateWithoutChunksInput, Prisma.FileUncheckedCreateWithoutChunksInput>
+  where?: Prisma.FileWhereInput
+}
+
+export type FileUpdateToOneWithWhereWithoutChunksInput = {
+  where?: Prisma.FileWhereInput
+  data: Prisma.XOR<Prisma.FileUpdateWithoutChunksInput, Prisma.FileUncheckedUpdateWithoutChunksInput>
+}
+
+export type FileUpdateWithoutChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storagePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kindSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kindReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
+  organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
+  subject?: Prisma.SubjectUpdateOneWithoutFilesNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutSourceFileNestedInput
+  conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
+  pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+}
+
+export type FileUncheckedUpdateWithoutChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  storageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storagePath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  errorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kindSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kindReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
+  conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
+  pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileCreateWithoutDocumentsInput = {
@@ -1310,6 +1652,11 @@ export type FileCreateWithoutDocumentsInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -1317,6 +1664,7 @@ export type FileCreateWithoutDocumentsInput = {
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutDocumentsInput = {
@@ -1338,10 +1686,16 @@ export type FileUncheckedCreateWithoutDocumentsInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutDocumentsInput = {
@@ -1376,6 +1730,11 @@ export type FileUpdateWithoutDocumentsInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -1383,6 +1742,7 @@ export type FileUpdateWithoutDocumentsInput = {
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutDocumentsInput = {
@@ -1404,10 +1764,16 @@ export type FileUncheckedUpdateWithoutDocumentsInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileCreateWithoutConversationLinksInput = {
@@ -1426,6 +1792,11 @@ export type FileCreateWithoutConversationLinksInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -1433,6 +1804,7 @@ export type FileCreateWithoutConversationLinksInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSourceFileInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutConversationLinksInput = {
@@ -1454,10 +1826,16 @@ export type FileUncheckedCreateWithoutConversationLinksInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutConversationLinksInput = {
@@ -1492,6 +1870,11 @@ export type FileUpdateWithoutConversationLinksInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -1499,6 +1882,7 @@ export type FileUpdateWithoutConversationLinksInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSourceFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutConversationLinksInput = {
@@ -1520,10 +1904,16 @@ export type FileUncheckedUpdateWithoutConversationLinksInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileCreateWithoutQuestionNodesInput = {
@@ -1542,6 +1932,11 @@ export type FileCreateWithoutQuestionNodesInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFilesInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutFilesInput
@@ -1549,6 +1944,7 @@ export type FileCreateWithoutQuestionNodesInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkCreateNestedManyWithoutFileInput
 }
 
 export type FileUncheckedCreateWithoutQuestionNodesInput = {
@@ -1570,10 +1966,16 @@ export type FileUncheckedCreateWithoutQuestionNodesInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceFileInput
   conversationLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutFileInput
   pages?: Prisma.FilePageUncheckedCreateNestedManyWithoutFileInput
+  chunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutFileInput
 }
 
 export type FileCreateOrConnectWithoutQuestionNodesInput = {
@@ -1608,6 +2010,11 @@ export type FileUpdateWithoutQuestionNodesInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -1615,6 +2022,7 @@ export type FileUpdateWithoutQuestionNodesInput = {
   documents?: Prisma.DocumentUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutQuestionNodesInput = {
@@ -1636,10 +2044,16 @@ export type FileUncheckedUpdateWithoutQuestionNodesInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileCreateManyUserInput = {
@@ -1660,6 +2074,11 @@ export type FileCreateManyUserInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
 }
 
@@ -1679,6 +2098,11 @@ export type FileUpdateWithoutUserInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFilesNestedInput
@@ -1686,6 +2110,7 @@ export type FileUpdateWithoutUserInput = {
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutUserInput = {
@@ -1706,11 +2131,17 @@ export type FileUncheckedUpdateWithoutUserInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateManyWithoutUserInput = {
@@ -1731,6 +2162,11 @@ export type FileUncheckedUpdateManyWithoutUserInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1752,6 +2188,11 @@ export type FileCreateManyOrganizationInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
 }
 
@@ -1771,6 +2212,11 @@ export type FileUpdateWithoutOrganizationInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFilesNestedInput
@@ -1778,6 +2224,7 @@ export type FileUpdateWithoutOrganizationInput = {
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutOrganizationInput = {
@@ -1798,11 +2245,17 @@ export type FileUncheckedUpdateWithoutOrganizationInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1823,6 +2276,11 @@ export type FileUncheckedUpdateManyWithoutOrganizationInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1844,6 +2302,11 @@ export type FileCreateManySubjectInput = {
   pageCount?: number | null
   textPageCount?: number | null
   processedAt?: Date | string | null
+  indexStatus?: string
+  indexError?: string | null
+  chunkCount?: number
+  indexedAt?: Date | string | null
+  embeddingModel?: string | null
   createdAt?: Date | string
 }
 
@@ -1863,6 +2326,11 @@ export type FileUpdateWithoutSubjectInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFilesNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutFilesNestedInput
@@ -1870,6 +2338,7 @@ export type FileUpdateWithoutSubjectInput = {
   conversationLinks?: Prisma.ConversationFileUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateWithoutSubjectInput = {
@@ -1890,11 +2359,17 @@ export type FileUncheckedUpdateWithoutSubjectInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceFileNestedInput
   conversationLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutFileNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutFileNestedInput
   pages?: Prisma.FilePageUncheckedUpdateManyWithoutFileNestedInput
+  chunks?: Prisma.FileChunkUncheckedUpdateManyWithoutFileNestedInput
 }
 
 export type FileUncheckedUpdateManyWithoutSubjectInput = {
@@ -1915,6 +2390,11 @@ export type FileUncheckedUpdateManyWithoutSubjectInput = {
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   textPageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  indexStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  indexError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
+  indexedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  embeddingModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1928,6 +2408,7 @@ export type FileCountOutputType = {
   conversationLinks: number
   questionNodes: number
   pages: number
+  chunks: number
 }
 
 export type FileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1935,6 +2416,7 @@ export type FileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   conversationLinks?: boolean | FileCountOutputTypeCountConversationLinksArgs
   questionNodes?: boolean | FileCountOutputTypeCountQuestionNodesArgs
   pages?: boolean | FileCountOutputTypeCountPagesArgs
+  chunks?: boolean | FileCountOutputTypeCountChunksArgs
 }
 
 /**
@@ -1975,6 +2457,13 @@ export type FileCountOutputTypeCountPagesArgs<ExtArgs extends runtime.Types.Exte
   where?: Prisma.FilePageWhereInput
 }
 
+/**
+ * FileCountOutputType without action
+ */
+export type FileCountOutputTypeCountChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FileChunkWhereInput
+}
+
 
 export type FileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1995,6 +2484,11 @@ export type FileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   pageCount?: boolean
   textPageCount?: boolean
   processedAt?: boolean
+  indexStatus?: boolean
+  indexError?: boolean
+  chunkCount?: boolean
+  indexedAt?: boolean
+  embeddingModel?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.File$organizationArgs<ExtArgs>
@@ -2003,6 +2497,7 @@ export type FileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   conversationLinks?: boolean | Prisma.File$conversationLinksArgs<ExtArgs>
   questionNodes?: boolean | Prisma.File$questionNodesArgs<ExtArgs>
   pages?: boolean | Prisma.File$pagesArgs<ExtArgs>
+  chunks?: boolean | Prisma.File$chunksArgs<ExtArgs>
   _count?: boolean | Prisma.FileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["file"]>
 
@@ -2025,6 +2520,11 @@ export type FileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   pageCount?: boolean
   textPageCount?: boolean
   processedAt?: boolean
+  indexStatus?: boolean
+  indexError?: boolean
+  chunkCount?: boolean
+  indexedAt?: boolean
+  embeddingModel?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.File$organizationArgs<ExtArgs>
@@ -2050,6 +2550,11 @@ export type FileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   pageCount?: boolean
   textPageCount?: boolean
   processedAt?: boolean
+  indexStatus?: boolean
+  indexError?: boolean
+  chunkCount?: boolean
+  indexedAt?: boolean
+  embeddingModel?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.File$organizationArgs<ExtArgs>
@@ -2075,10 +2580,15 @@ export type FileSelectScalar = {
   pageCount?: boolean
   textPageCount?: boolean
   processedAt?: boolean
+  indexStatus?: boolean
+  indexError?: boolean
+  chunkCount?: boolean
+  indexedAt?: boolean
+  embeddingModel?: boolean
   createdAt?: boolean
 }
 
-export type FileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "visibility" | "subjectId" | "name" | "mimeType" | "sizeBytes" | "storageUrl" | "storagePath" | "status" | "errorMessage" | "kind" | "kindSource" | "kindReason" | "pageCount" | "textPageCount" | "processedAt" | "createdAt", ExtArgs["result"]["file"]>
+export type FileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "organizationId" | "visibility" | "subjectId" | "name" | "mimeType" | "sizeBytes" | "storageUrl" | "storagePath" | "status" | "errorMessage" | "kind" | "kindSource" | "kindReason" | "pageCount" | "textPageCount" | "processedAt" | "indexStatus" | "indexError" | "chunkCount" | "indexedAt" | "embeddingModel" | "createdAt", ExtArgs["result"]["file"]>
 export type FileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.File$organizationArgs<ExtArgs>
@@ -2087,6 +2597,7 @@ export type FileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   conversationLinks?: boolean | Prisma.File$conversationLinksArgs<ExtArgs>
   questionNodes?: boolean | Prisma.File$questionNodesArgs<ExtArgs>
   pages?: boolean | Prisma.File$pagesArgs<ExtArgs>
+  chunks?: boolean | Prisma.File$chunksArgs<ExtArgs>
   _count?: boolean | Prisma.FileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2110,6 +2621,7 @@ export type $FilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     conversationLinks: Prisma.$ConversationFilePayload<ExtArgs>[]
     questionNodes: Prisma.$QuestionNodePayload<ExtArgs>[]
     pages: Prisma.$FilePagePayload<ExtArgs>[]
+    chunks: Prisma.$FileChunkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2130,6 +2642,11 @@ export type $FilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     pageCount: number | null
     textPageCount: number | null
     processedAt: Date | null
+    indexStatus: string
+    indexError: string | null
+    chunkCount: number
+    indexedAt: Date | null
+    embeddingModel: string | null
     createdAt: Date
   }, ExtArgs["result"]["file"]>
   composites: {}
@@ -2532,6 +3049,7 @@ export interface Prisma__FileClient<T, Null = never, ExtArgs extends runtime.Typ
   conversationLinks<T extends Prisma.File$conversationLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.File$conversationLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questionNodes<T extends Prisma.File$questionNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.File$questionNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pages<T extends Prisma.File$pagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.File$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FilePagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  chunks<T extends Prisma.File$chunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.File$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FileChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2579,6 +3097,11 @@ export interface FileFieldRefs {
   readonly pageCount: Prisma.FieldRef<"File", 'Int'>
   readonly textPageCount: Prisma.FieldRef<"File", 'Int'>
   readonly processedAt: Prisma.FieldRef<"File", 'DateTime'>
+  readonly indexStatus: Prisma.FieldRef<"File", 'String'>
+  readonly indexError: Prisma.FieldRef<"File", 'String'>
+  readonly chunkCount: Prisma.FieldRef<"File", 'Int'>
+  readonly indexedAt: Prisma.FieldRef<"File", 'DateTime'>
+  readonly embeddingModel: Prisma.FieldRef<"File", 'String'>
   readonly createdAt: Prisma.FieldRef<"File", 'DateTime'>
 }
     
@@ -3112,6 +3635,30 @@ export type File$pagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.FilePageScalarFieldEnum | Prisma.FilePageScalarFieldEnum[]
+}
+
+/**
+ * File.chunks
+ */
+export type File$chunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FileChunk
+   */
+  select?: Prisma.FileChunkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FileChunk
+   */
+  omit?: Prisma.FileChunkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileChunkInclude<ExtArgs> | null
+  where?: Prisma.FileChunkWhereInput
+  orderBy?: Prisma.FileChunkOrderByWithRelationInput | Prisma.FileChunkOrderByWithRelationInput[]
+  cursor?: Prisma.FileChunkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FileChunkScalarFieldEnum | Prisma.FileChunkScalarFieldEnum[]
 }
 
 /**

@@ -2,6 +2,7 @@ import 'server-only'
 import { get } from '@vercel/blob'
 import { writeScope } from '@/lib/authz'
 import { db } from '@/lib/db'
+import { indexFile } from '@/lib/rag/index-file'
 import { classifyDocument } from './classify'
 import {
   MAX_FILE_SIZE_BYTES,
@@ -139,6 +140,8 @@ export async function processFile(fileId: string, userId: string): Promise<Proce
         },
       }),
     ])
+    // Un fallo al indexar no invalida el archivo: queda registrado en indexStatus y se reintenta a mano.
+    await indexFile(file.id)
     return { ok: true, status: 'ready' }
   } catch (error) {
     const message =

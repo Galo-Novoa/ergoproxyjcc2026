@@ -141,6 +141,18 @@ export async function listFiles(userId: string, subjectId?: string) {
   return rows.map(({ subject, ...file }) => ({ ...file, subjectName: subject?.name ?? null }))
 }
 
+/** Archivos que el chat puede consultar: legibles por la persona y ya indexados. */
+export async function listChatFiles(userId: string) {
+  const scope = await readScope(userId)
+  const rows = await db.file.findMany({
+    where: { AND: [scope, { status: 'ready', indexStatus: 'indexed' }] },
+    select: { id: true, name: true, subject: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  })
+  return rows.map((f) => ({ id: f.id, name: f.name, subjectName: f.subject?.name ?? null }))
+}
+
 export async function listDocuments(userId: string, subjectId?: string) {
   const scope = await readScope(userId)
   const rows = await db.document.findMany({

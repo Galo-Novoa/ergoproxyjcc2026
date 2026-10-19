@@ -7,6 +7,7 @@ import { readScope, writeScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
 import { MAX_FILE_SIZE_BYTES, filePathnameFor } from '@/lib/files/constants'
+import { indexFile } from '@/lib/rag/index-file'
 import { demoModeBlock, getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
 
@@ -141,6 +142,28 @@ export async function setFileKind(
 
   revalidatePath('/', 'layout')
   return { ok: true }
+}
+
+/** Indexa (o reindexa) un archivo listo para que el chat pueda recuperar fragmentos de él. */
+export async function reindexFile(fileId: string): Promise<ActionResult> {
+  const blocked = demoModeBlock()
+  if (blocked) return blocked
+  const userId = await getUserId()
+  if (!isUuid(fileId)) return { ok: false, error: 'No encontramos el archivo.' }
+
+  const scope = await writeScope(userId)
+  const file = await db.file.findFirst({
+    where: { AND: [scope, { id: fileId }] },
+    select: { id: true, status: true },
+  })
+  if (!file) return { ok: false, error: 'No encontramos el archivo.' }
+  if (file.status !== 'ready') {
+    return { ok: false, error: 'El archivo todavía no tiene texto para indexar.' }
+  }
+
+  const result = await indexFile(file.id)
+  revalidatePath('/', 'layout')
+  return result.ok ? { ok: true } : { ok: false, error: result.error }
 }
 
 export async function deleteFile(fileId: string): Promise<ActionResult> {

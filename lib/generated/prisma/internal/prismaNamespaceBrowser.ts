@@ -60,6 +60,7 @@ export const ModelName = {
   Subject: 'Subject',
   File: 'File',
   FilePage: 'FilePage',
+  FileChunk: 'FileChunk',
   Document: 'Document',
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
@@ -200,6 +201,11 @@ export const FileScalarFieldEnum = {
   pageCount: 'pageCount',
   textPageCount: 'textPageCount',
   processedAt: 'processedAt',
+  indexStatus: 'indexStatus',
+  indexError: 'indexError',
+  chunkCount: 'chunkCount',
+  indexedAt: 'indexedAt',
+  embeddingModel: 'embeddingModel',
   createdAt: 'createdAt'
 } as const
 
@@ -216,6 +222,23 @@ export const FilePageScalarFieldEnum = {
 } as const
 
 export type FilePageScalarFieldEnum = (typeof FilePageScalarFieldEnum)[keyof typeof FilePageScalarFieldEnum]
+
+
+export const FileChunkScalarFieldEnum = {
+  id: 'id',
+  fileId: 'fileId',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  visibility: 'visibility',
+  subjectId: 'subjectId',
+  pageNumber: 'pageNumber',
+  chunkIndex: 'chunkIndex',
+  content: 'content',
+  embeddingModel: 'embeddingModel',
+  createdAt: 'createdAt'
+} as const
+
+export type FileChunkScalarFieldEnum = (typeof FileChunkScalarFieldEnum)[keyof typeof FileChunkScalarFieldEnum]
 
 
 export const DocumentScalarFieldEnum = {

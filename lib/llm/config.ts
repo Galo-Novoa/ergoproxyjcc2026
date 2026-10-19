@@ -27,7 +27,7 @@ function opencodeZen(apiKey: string, modelId: string): LlmSelection {
   return { model: opencode.chatModel(modelId), modelId, provider: 'opencode-zen' }
 }
 
-function openRouterKey() {
+export function openRouterKey() {
   return (
     process.env.OPENROUTER_API_KEY?.trim() ||
     process.env.VERCEL_API_KEY_2?.trim() ||

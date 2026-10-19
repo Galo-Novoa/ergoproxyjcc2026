@@ -4,7 +4,7 @@ import { FileText, RotateCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { deleteFile, setFileKind } from '@/app/actions/files'
+import { deleteFile, reindexFile, setFileKind } from '@/app/actions/files'
 import { ConfirmDeleteButton } from '@/components/shared/confirm-delete-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -73,9 +73,20 @@ function FileRow({ file }: { file: FileItem }) {
     }
   }
 
+  function handleReindex() {
+    startTransition(async () => {
+      const result = await reindexFile(file.id)
+      if (!result.ok) toast.error(result.error)
+      else toast.success('Archivo indexado para el chat.')
+      router.refresh()
+    })
+  }
+
   async function handleDelete() {
     return deleteFile(file.id)
   }
+
+  const indexed = file.indexStatus === 'indexed'
 
   return (
     <li className="flex flex-col gap-2 px-4 py-3">
@@ -135,6 +146,34 @@ function FileRow({ file }: { file: FileItem }) {
           </Select>
           {file.kindReason ? (
             <span className="text-sm text-muted-foreground">{file.kindReason}</span>
+          ) : null}
+        </div>
+      ) : null}
+
+      {file.status === 'ready' ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pl-7">
+          <Badge variant={indexed ? 'secondary' : 'outline'}>
+            {file.indexStatus === 'indexing' || pending ? (
+              <Spinner data-icon="inline-start" />
+            ) : null}
+            {indexed
+              ? `Indexado · ${file.chunkCount} fragmentos`
+              : file.indexStatus === 'failed'
+                ? 'Indexación fallida'
+                : file.indexStatus === 'unavailable'
+                  ? 'Indexación no disponible'
+                  : 'Sin indexar'}
+          </Badge>
+          {!indexed ? (
+            <Button variant="outline" size="sm" onClick={handleReindex} disabled={pending}>
+              <RotateCw data-icon="inline-start" />
+              {file.indexStatus === 'failed' || file.indexStatus === 'unavailable'
+                ? 'Reintentar indexación'
+                : 'Indexar para el chat'}
+            </Button>
+          ) : null}
+          {file.indexError && !indexed ? (
+            <span className="text-sm text-destructive">{file.indexError}</span>
           ) : null}
         </div>
       ) : null}

@@ -18,6 +18,9 @@ export type FileItem = {
   pageCount: number | null
   textPageCount: number | null
   errorMessage: string | null
+  indexStatus: string
+  indexError: string | null
+  chunkCount: number
   subjectName: string | null
   createdLabel: string
   // Carga o procesamiento colgados: se ofrece reintentar o borrar.
@@ -35,6 +38,9 @@ type FileRow = {
   pageCount: number | null
   textPageCount: number | null
   errorMessage: string | null
+  indexStatus: string
+  indexError: string | null
+  chunkCount: number
   createdAt: Date
   processedAt: Date | null
   subjectName?: string | null
@@ -71,6 +77,9 @@ export function toFileItem(row: FileRow, now: Date): FileItem {
     pageCount: row.pageCount,
     textPageCount: row.textPageCount,
     errorMessage: row.errorMessage,
+    indexStatus: row.indexStatus,
+    indexError: row.indexError,
+    chunkCount: row.chunkCount,
     subjectName: row.subjectName ?? null,
     createdLabel: formatRelative(row.createdAt, now),
     stale,

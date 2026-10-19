@@ -37,6 +37,12 @@ const loadMemberships = cache(async (userId: string) => {
   }))
 })
 
+/** Organizaciones cuyos recursos compartidos puede leer la persona (para consultas SQL crudas). */
+export async function readableOrganizationIds(userId: string) {
+  const memberships = await loadMemberships(userId)
+  return memberships.map((m) => m.organizationId)
+}
+
 export async function readScope(userId: string): Promise<Scope> {
   const memberships = await loadMemberships(userId)
   const organizationIds = memberships.map((m) => m.organizationId)

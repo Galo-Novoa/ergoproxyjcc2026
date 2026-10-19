@@ -204,6 +204,7 @@ export type UserWhereInput = {
   subjects?: Prisma.SubjectListRelationFilter
   files?: Prisma.FileListRelationFilter
   filePages?: Prisma.FilePageListRelationFilter
+  fileChunks?: Prisma.FileChunkListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
   conversations?: Prisma.ConversationListRelationFilter
   messages?: Prisma.MessageListRelationFilter
@@ -226,6 +227,7 @@ export type UserOrderByWithRelationInput = {
   subjects?: Prisma.SubjectOrderByRelationAggregateInput
   files?: Prisma.FileOrderByRelationAggregateInput
   filePages?: Prisma.FilePageOrderByRelationAggregateInput
+  fileChunks?: Prisma.FileChunkOrderByRelationAggregateInput
   documents?: Prisma.DocumentOrderByRelationAggregateInput
   conversations?: Prisma.ConversationOrderByRelationAggregateInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
@@ -251,6 +253,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   subjects?: Prisma.SubjectListRelationFilter
   files?: Prisma.FileListRelationFilter
   filePages?: Prisma.FilePageListRelationFilter
+  fileChunks?: Prisma.FileChunkListRelationFilter
   documents?: Prisma.DocumentListRelationFilter
   conversations?: Prisma.ConversationListRelationFilter
   messages?: Prisma.MessageListRelationFilter
@@ -299,6 +302,7 @@ export type UserCreateInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -321,6 +325,7 @@ export type UserUncheckedCreateInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -343,6 +348,7 @@ export type UserUpdateInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -365,6 +371,7 @@ export type UserUncheckedUpdateInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -538,6 +545,20 @@ export type UserUpdateOneRequiredWithoutFilePagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFilePagesInput, Prisma.UserUpdateWithoutFilePagesInput>, Prisma.UserUncheckedUpdateWithoutFilePagesInput>
 }
 
+export type UserCreateNestedOneWithoutFileChunksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFileChunksInput, Prisma.UserUncheckedCreateWithoutFileChunksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFileChunksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutFileChunksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFileChunksInput, Prisma.UserUncheckedCreateWithoutFileChunksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFileChunksInput
+  upsert?: Prisma.UserUpsertWithoutFileChunksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFileChunksInput, Prisma.UserUpdateWithoutFileChunksInput>, Prisma.UserUncheckedUpdateWithoutFileChunksInput>
+}
+
 export type UserCreateNestedOneWithoutDocumentsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutDocumentsInput, Prisma.UserUncheckedCreateWithoutDocumentsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocumentsInput
@@ -635,6 +656,7 @@ export type UserCreateWithoutSessionsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -656,6 +678,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -693,6 +716,7 @@ export type UserUpdateWithoutSessionsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -714,6 +738,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -735,6 +760,7 @@ export type UserCreateWithoutAccountsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -756,6 +782,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -793,6 +820,7 @@ export type UserUpdateWithoutAccountsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -814,6 +842,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -835,6 +864,7 @@ export type UserCreateWithoutMembershipsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -856,6 +886,7 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -893,6 +924,7 @@ export type UserUpdateWithoutMembershipsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -914,6 +946,7 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -935,6 +968,7 @@ export type UserCreateWithoutSubjectsInput = {
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -956,6 +990,7 @@ export type UserUncheckedCreateWithoutSubjectsInput = {
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -993,6 +1028,7 @@ export type UserUpdateWithoutSubjectsInput = {
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1014,6 +1050,7 @@ export type UserUncheckedUpdateWithoutSubjectsInput = {
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1035,6 +1072,7 @@ export type UserCreateWithoutFilesInput = {
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -1056,6 +1094,7 @@ export type UserUncheckedCreateWithoutFilesInput = {
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -1093,6 +1132,7 @@ export type UserUpdateWithoutFilesInput = {
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1114,6 +1154,7 @@ export type UserUncheckedUpdateWithoutFilesInput = {
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1135,6 +1176,7 @@ export type UserCreateWithoutFilePagesInput = {
   memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -1156,6 +1198,7 @@ export type UserUncheckedCreateWithoutFilePagesInput = {
   memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -1193,6 +1236,7 @@ export type UserUpdateWithoutFilePagesInput = {
   memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1214,6 +1258,111 @@ export type UserUncheckedUpdateWithoutFilePagesInput = {
   memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUncheckedUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutFileChunksInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
+  files?: Prisma.FileCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutFileChunksInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutFileChunksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutFileChunksInput, Prisma.UserUncheckedCreateWithoutFileChunksInput>
+}
+
+export type UserUpsertWithoutFileChunksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutFileChunksInput, Prisma.UserUncheckedUpdateWithoutFileChunksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutFileChunksInput, Prisma.UserUncheckedCreateWithoutFileChunksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutFileChunksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutFileChunksInput, Prisma.UserUncheckedUpdateWithoutFileChunksInput>
+}
+
+export type UserUpdateWithoutFileChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutFileChunksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1236,6 +1385,7 @@ export type UserCreateWithoutDocumentsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
@@ -1257,6 +1407,7 @@ export type UserUncheckedCreateWithoutDocumentsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
@@ -1294,6 +1445,7 @@ export type UserUpdateWithoutDocumentsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
@@ -1315,6 +1467,7 @@ export type UserUncheckedUpdateWithoutDocumentsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
@@ -1336,6 +1489,7 @@ export type UserCreateWithoutConversationsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
@@ -1357,6 +1511,7 @@ export type UserUncheckedCreateWithoutConversationsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
@@ -1394,6 +1549,7 @@ export type UserUpdateWithoutConversationsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
@@ -1415,6 +1571,7 @@ export type UserUncheckedUpdateWithoutConversationsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
@@ -1436,6 +1593,7 @@ export type UserCreateWithoutConversationFilesInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -1457,6 +1615,7 @@ export type UserUncheckedCreateWithoutConversationFilesInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -1494,6 +1653,7 @@ export type UserUpdateWithoutConversationFilesInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1515,6 +1675,7 @@ export type UserUncheckedUpdateWithoutConversationFilesInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1536,6 +1697,7 @@ export type UserCreateWithoutMessagesInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
@@ -1557,6 +1719,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
@@ -1594,6 +1757,7 @@ export type UserUpdateWithoutMessagesInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
@@ -1615,6 +1779,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
@@ -1636,6 +1801,7 @@ export type UserCreateWithoutAgentActionsInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -1657,6 +1823,7 @@ export type UserUncheckedCreateWithoutAgentActionsInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -1694,6 +1861,7 @@ export type UserUpdateWithoutAgentActionsInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1715,6 +1883,7 @@ export type UserUncheckedUpdateWithoutAgentActionsInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1736,6 +1905,7 @@ export type UserCreateWithoutQuestionNodesInput = {
   subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
   files?: Prisma.FileCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutUserInput
@@ -1757,6 +1927,7 @@ export type UserUncheckedCreateWithoutQuestionNodesInput = {
   subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
   files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
   filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
@@ -1794,6 +1965,7 @@ export type UserUpdateWithoutQuestionNodesInput = {
   subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
@@ -1815,6 +1987,7 @@ export type UserUncheckedUpdateWithoutQuestionNodesInput = {
   subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
   files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
   filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
@@ -1834,6 +2007,7 @@ export type UserCountOutputType = {
   subjects: number
   files: number
   filePages: number
+  fileChunks: number
   documents: number
   conversations: number
   messages: number
@@ -1849,6 +2023,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   subjects?: boolean | UserCountOutputTypeCountSubjectsArgs
   files?: boolean | UserCountOutputTypeCountFilesArgs
   filePages?: boolean | UserCountOutputTypeCountFilePagesArgs
+  fileChunks?: boolean | UserCountOutputTypeCountFileChunksArgs
   documents?: boolean | UserCountOutputTypeCountDocumentsArgs
   conversations?: boolean | UserCountOutputTypeCountConversationsArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
@@ -1912,6 +2087,13 @@ export type UserCountOutputTypeCountFilePagesArgs<ExtArgs extends runtime.Types.
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountFileChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FileChunkWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentWhereInput
 }
@@ -1966,6 +2148,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   subjects?: boolean | Prisma.User$subjectsArgs<ExtArgs>
   files?: boolean | Prisma.User$filesArgs<ExtArgs>
   filePages?: boolean | Prisma.User$filePagesArgs<ExtArgs>
+  fileChunks?: boolean | Prisma.User$fileChunksArgs<ExtArgs>
   documents?: boolean | Prisma.User$documentsArgs<ExtArgs>
   conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
@@ -2013,6 +2196,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   subjects?: boolean | Prisma.User$subjectsArgs<ExtArgs>
   files?: boolean | Prisma.User$filesArgs<ExtArgs>
   filePages?: boolean | Prisma.User$filePagesArgs<ExtArgs>
+  fileChunks?: boolean | Prisma.User$fileChunksArgs<ExtArgs>
   documents?: boolean | Prisma.User$documentsArgs<ExtArgs>
   conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
@@ -2033,6 +2217,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     subjects: Prisma.$SubjectPayload<ExtArgs>[]
     files: Prisma.$FilePayload<ExtArgs>[]
     filePages: Prisma.$FilePagePayload<ExtArgs>[]
+    fileChunks: Prisma.$FileChunkPayload<ExtArgs>[]
     documents: Prisma.$DocumentPayload<ExtArgs>[]
     conversations: Prisma.$ConversationPayload<ExtArgs>[]
     messages: Prisma.$MessagePayload<ExtArgs>[]
@@ -2448,6 +2633,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   subjects<T extends Prisma.User$subjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   files<T extends Prisma.User$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   filePages<T extends Prisma.User$filePagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$filePagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FilePagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  fileChunks<T extends Prisma.User$fileChunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$fileChunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FileChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   documents<T extends Prisma.User$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   conversations<T extends Prisma.User$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3024,6 +3210,30 @@ export type User$filePagesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.FilePageScalarFieldEnum | Prisma.FilePageScalarFieldEnum[]
+}
+
+/**
+ * User.fileChunks
+ */
+export type User$fileChunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FileChunk
+   */
+  select?: Prisma.FileChunkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FileChunk
+   */
+  omit?: Prisma.FileChunkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileChunkInclude<ExtArgs> | null
+  where?: Prisma.FileChunkWhereInput
+  orderBy?: Prisma.FileChunkOrderByWithRelationInput | Prisma.FileChunkOrderByWithRelationInput[]
+  cursor?: Prisma.FileChunkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FileChunkScalarFieldEnum | Prisma.FileChunkScalarFieldEnum[]
 }
 
 /**
