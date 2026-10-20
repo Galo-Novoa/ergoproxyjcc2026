@@ -6,6 +6,8 @@ import { nextNodePosition } from '@/lib/data/tree-layout'
 import { db } from '@/lib/db'
 import { applyFolderProposal, FolderError, type FolderSourceRef } from '@/lib/folder/server'
 import { isConversationMode, parseProposalPayload } from '@/lib/llm/contract'
+import { materializeGeneratedFile } from '@/lib/tools/generate-file'
+import { validateMermaid } from '@/lib/tools/mermaid'
 import { demoModeBlock, getUserId } from '@/lib/session'
 import { loadTree } from '@/lib/tree/branch'
 import { pathTo } from '@/lib/tree/compose'
@@ -66,6 +68,12 @@ export async function resolveAgentAction(
   }
   if (proposal.type === 'propose_question_node') {
     return acceptQuestionNode(userId, action as ActionRow, proposal)
+  }
+  if (proposal.type === 'propose_diagram') {
+    return acceptDiagram(userId, action as ActionRow, proposal)
+  }
+  if (proposal.type === 'generate_file') {
+    return acceptGeneratedFile(userId, action as ActionRow, proposal)
   }
   return acceptConversationBranch(userId, action as ActionRow, proposal)
 }
@@ -274,6 +282,100 @@ export async function setActiveNode(
     where: { id: conversationId, userId },
     data: { activeNodeId: nodeId },
   })
+  revalidatePath('/', 'layout')
+  return { ok: true }
+}
+
+/**
+ * Guarda un diagrama propuesto como apunte de la Carpeta. Revalida la sintaxis
+ * Mermaid (pudo cambiar desde la propuesta) y exige un workspace (materia).
+ */
+async function acceptDiagram(
+  userId: string,
+  action: ActionRow,
+  proposal: { title: string; source: string },
+): Promise<ActionResult<{ nodeId?: string }>> {
+  const subjectId = action.conversation.subjectId
+  if (!subjectId) {
+    return { ok: false, error: 'La conversación no pertenece a una materia, así que no hay Carpeta.' }
+  }
+  const check = validateMermaid(proposal.source)
+  if (!check.ok) return { ok: false, error: 'El diagrama ya no es válido. Descartá la propuesta.' }
+
+  const historyNode = action.message.nodeId
+    ? await db.conversationNode.findFirst({
+        where: { id: action.message.nodeId, conversationId: action.conversationId, userId },
+        select: { id: true, alias: true },
+      })
+    : null
+  const source: FolderSourceRef = {
+    conversationId: action.conversationId,
+    messageId: action.message.id,
+    historyNodeId: historyNode?.id ?? null,
+    questionNodeId: null,
+    label: historyNode ? `${action.conversation.title} › ${historyNode.alias}` : action.conversation.title,
+  }
+
+  const nodeId = await db.$transaction(async (tx) => {
+    if (!(await claim(tx, userId, action.id))) return null
+    const count = await tx.folderNode.count({ where: { userId, subjectId } })
+    const node = await tx.folderNode.create({
+      data: {
+        userId,
+        subjectId,
+        type: 'note',
+        title: proposal.title.slice(0, 120),
+        contentMd: `\`\`\`mermaid\n${check.source}\n\`\`\``,
+        origin: 'ai',
+        ...nextNodePosition({ parent: null, siblingCount: count }),
+      },
+      select: { id: true },
+    })
+    await tx.folderSource.create({
+      data: {
+        nodeId: node.id,
+        userId,
+        conversationId: source.conversationId,
+        messageId: source.messageId,
+        historyNodeId: source.historyNodeId,
+        questionNodeId: source.questionNodeId,
+        label: source.label.slice(0, 200),
+      },
+    })
+    await tx.agentAction.update({ where: { id: action.id }, data: { resultNodeId: node.id } })
+    return node.id
+  })
+  if (!nodeId) return { ok: false, error: ALREADY_RESOLVED }
+
+  revalidatePath('/', 'layout')
+  return { ok: true, data: { nodeId } }
+}
+
+/**
+ * Genera el archivo descargable: sube el contenido real a Blob (o lo guarda en la
+ * base) y registra el `GeneratedFile`. Nunca devuelve un enlace ficticio.
+ */
+async function acceptGeneratedFile(
+  userId: string,
+  action: ActionRow,
+  proposal: { format: 'md' | 'csv' | 'txt'; file_name: string; content: string },
+): Promise<ActionResult<{ nodeId?: string }>> {
+  const result = await materializeGeneratedFile({
+    userId,
+    conversationId: action.conversationId,
+    messageId: action.message.id,
+    name: proposal.file_name,
+    format: proposal.format,
+    content: proposal.content,
+  })
+  if (!result.ok) return { ok: false, error: result.error }
+
+  const { count } = await db.agentAction.updateMany({
+    where: { id: action.id, userId, status: 'proposed' },
+    data: { status: 'accepted', resolvedAt: new Date() },
+  })
+  if (count === 0) return { ok: false, error: ALREADY_RESOLVED }
+
   revalidatePath('/', 'layout')
   return { ok: true }
 }

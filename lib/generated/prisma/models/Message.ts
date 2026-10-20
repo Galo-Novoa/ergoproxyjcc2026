@@ -259,6 +259,8 @@ export type MessageWhereInput = {
   agentActions?: Prisma.AgentActionListRelationFilter
   anchoredNodes?: Prisma.ConversationNodeListRelationFilter
   folderSources?: Prisma.FolderSourceListRelationFilter
+  generatedFiles?: Prisma.GeneratedFileListRelationFilter
+  toolCalls?: Prisma.ToolCallListRelationFilter
 }
 
 export type MessageOrderByWithRelationInput = {
@@ -279,6 +281,8 @@ export type MessageOrderByWithRelationInput = {
   agentActions?: Prisma.AgentActionOrderByRelationAggregateInput
   anchoredNodes?: Prisma.ConversationNodeOrderByRelationAggregateInput
   folderSources?: Prisma.FolderSourceOrderByRelationAggregateInput
+  generatedFiles?: Prisma.GeneratedFileOrderByRelationAggregateInput
+  toolCalls?: Prisma.ToolCallOrderByRelationAggregateInput
 }
 
 export type MessageWhereUniqueInput = Prisma.AtLeast<{
@@ -302,6 +306,8 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   agentActions?: Prisma.AgentActionListRelationFilter
   anchoredNodes?: Prisma.ConversationNodeListRelationFilter
   folderSources?: Prisma.FolderSourceListRelationFilter
+  generatedFiles?: Prisma.GeneratedFileListRelationFilter
+  toolCalls?: Prisma.ToolCallListRelationFilter
 }, "id">
 
 export type MessageOrderByWithAggregationInput = {
@@ -353,6 +359,8 @@ export type MessageCreateInput = {
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateInput = {
@@ -370,6 +378,8 @@ export type MessageUncheckedCreateInput = {
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUpdateInput = {
@@ -387,6 +397,8 @@ export type MessageUpdateInput = {
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateInput = {
@@ -404,6 +416,8 @@ export type MessageUncheckedUpdateInput = {
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageCreateManyInput = {
@@ -703,6 +717,38 @@ export type MessageUpdateOneWithoutFolderSourcesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutFolderSourcesInput, Prisma.MessageUpdateWithoutFolderSourcesInput>, Prisma.MessageUncheckedUpdateWithoutFolderSourcesInput>
 }
 
+export type MessageCreateNestedOneWithoutGeneratedFilesInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutGeneratedFilesInput, Prisma.MessageUncheckedCreateWithoutGeneratedFilesInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutGeneratedFilesInput
+  connect?: Prisma.MessageWhereUniqueInput
+}
+
+export type MessageUpdateOneWithoutGeneratedFilesNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutGeneratedFilesInput, Prisma.MessageUncheckedCreateWithoutGeneratedFilesInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutGeneratedFilesInput
+  upsert?: Prisma.MessageUpsertWithoutGeneratedFilesInput
+  disconnect?: Prisma.MessageWhereInput | boolean
+  delete?: Prisma.MessageWhereInput | boolean
+  connect?: Prisma.MessageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutGeneratedFilesInput, Prisma.MessageUpdateWithoutGeneratedFilesInput>, Prisma.MessageUncheckedUpdateWithoutGeneratedFilesInput>
+}
+
+export type MessageCreateNestedOneWithoutToolCallsInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutToolCallsInput, Prisma.MessageUncheckedCreateWithoutToolCallsInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutToolCallsInput
+  connect?: Prisma.MessageWhereUniqueInput
+}
+
+export type MessageUpdateOneWithoutToolCallsNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutToolCallsInput, Prisma.MessageUncheckedCreateWithoutToolCallsInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutToolCallsInput
+  upsert?: Prisma.MessageUpsertWithoutToolCallsInput
+  disconnect?: Prisma.MessageWhereInput | boolean
+  delete?: Prisma.MessageWhereInput | boolean
+  connect?: Prisma.MessageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutToolCallsInput, Prisma.MessageUpdateWithoutToolCallsInput>, Prisma.MessageUncheckedUpdateWithoutToolCallsInput>
+}
+
 export type MessageCreateWithoutUserInput = {
   id?: string
   role: string
@@ -717,6 +763,8 @@ export type MessageCreateWithoutUserInput = {
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutUserInput = {
@@ -733,6 +781,8 @@ export type MessageUncheckedCreateWithoutUserInput = {
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutUserInput = {
@@ -791,6 +841,8 @@ export type MessageCreateWithoutConversationInput = {
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutConversationInput = {
@@ -807,6 +859,8 @@ export type MessageUncheckedCreateWithoutConversationInput = {
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutConversationInput = {
@@ -849,6 +903,8 @@ export type MessageCreateWithoutAgentActionsInput = {
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutAgentActionsInput = {
@@ -865,6 +921,8 @@ export type MessageUncheckedCreateWithoutAgentActionsInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutAgentActionsInput = {
@@ -897,6 +955,8 @@ export type MessageUpdateWithoutAgentActionsInput = {
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutAgentActionsInput = {
@@ -913,6 +973,8 @@ export type MessageUncheckedUpdateWithoutAgentActionsInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageCreateWithoutAnchoredNodesInput = {
@@ -929,6 +991,8 @@ export type MessageCreateWithoutAnchoredNodesInput = {
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutAnchoredNodesInput = {
@@ -945,6 +1009,8 @@ export type MessageUncheckedCreateWithoutAnchoredNodesInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutAnchoredNodesInput = {
@@ -966,6 +1032,8 @@ export type MessageCreateWithoutNodeInput = {
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutNodeInput = {
@@ -982,6 +1050,8 @@ export type MessageUncheckedCreateWithoutNodeInput = {
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutNodeInput = {
@@ -1019,6 +1089,8 @@ export type MessageUpdateWithoutAnchoredNodesInput = {
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutAnchoredNodesInput = {
@@ -1035,6 +1107,8 @@ export type MessageUncheckedUpdateWithoutAnchoredNodesInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUpsertWithWhereUniqueWithoutNodeInput = {
@@ -1067,6 +1141,8 @@ export type MessageCreateWithoutQuestionNodesInput = {
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutQuestionNodesInput = {
@@ -1083,6 +1159,8 @@ export type MessageUncheckedCreateWithoutQuestionNodesInput = {
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutQuestionNodesInput = {
@@ -1115,6 +1193,8 @@ export type MessageUpdateWithoutQuestionNodesInput = {
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutQuestionNodesInput = {
@@ -1131,6 +1211,8 @@ export type MessageUncheckedUpdateWithoutQuestionNodesInput = {
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageCreateWithoutFolderSourcesInput = {
@@ -1147,6 +1229,8 @@ export type MessageCreateWithoutFolderSourcesInput = {
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
 }
 
 export type MessageUncheckedCreateWithoutFolderSourcesInput = {
@@ -1163,6 +1247,8 @@ export type MessageUncheckedCreateWithoutFolderSourcesInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
 }
 
 export type MessageCreateOrConnectWithoutFolderSourcesInput = {
@@ -1195,6 +1281,8 @@ export type MessageUpdateWithoutFolderSourcesInput = {
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutFolderSourcesInput = {
@@ -1211,6 +1299,184 @@ export type MessageUncheckedUpdateWithoutFolderSourcesInput = {
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageCreateWithoutGeneratedFilesInput = {
+  id?: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutMessageInput
+}
+
+export type MessageUncheckedCreateWithoutGeneratedFilesInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
+  createdAt?: Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutMessageInput
+}
+
+export type MessageCreateOrConnectWithoutGeneratedFilesInput = {
+  where: Prisma.MessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageCreateWithoutGeneratedFilesInput, Prisma.MessageUncheckedCreateWithoutGeneratedFilesInput>
+}
+
+export type MessageUpsertWithoutGeneratedFilesInput = {
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutGeneratedFilesInput, Prisma.MessageUncheckedUpdateWithoutGeneratedFilesInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutGeneratedFilesInput, Prisma.MessageUncheckedCreateWithoutGeneratedFilesInput>
+  where?: Prisma.MessageWhereInput
+}
+
+export type MessageUpdateToOneWithWhereWithoutGeneratedFilesInput = {
+  where?: Prisma.MessageWhereInput
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutGeneratedFilesInput, Prisma.MessageUncheckedUpdateWithoutGeneratedFilesInput>
+}
+
+export type MessageUpdateWithoutGeneratedFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageUncheckedUpdateWithoutGeneratedFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageCreateWithoutToolCallsInput = {
+  id?: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutMessageInput
+}
+
+export type MessageUncheckedCreateWithoutToolCallsInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
+  createdAt?: Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutMessageInput
+}
+
+export type MessageCreateOrConnectWithoutToolCallsInput = {
+  where: Prisma.MessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageCreateWithoutToolCallsInput, Prisma.MessageUncheckedCreateWithoutToolCallsInput>
+}
+
+export type MessageUpsertWithoutToolCallsInput = {
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutToolCallsInput, Prisma.MessageUncheckedUpdateWithoutToolCallsInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutToolCallsInput, Prisma.MessageUncheckedCreateWithoutToolCallsInput>
+  where?: Prisma.MessageWhereInput
+}
+
+export type MessageUpdateToOneWithWhereWithoutToolCallsInput = {
+  where?: Prisma.MessageWhereInput
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutToolCallsInput, Prisma.MessageUncheckedUpdateWithoutToolCallsInput>
+}
+
+export type MessageUpdateWithoutToolCallsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageUncheckedUpdateWithoutToolCallsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageCreateManyUserInput = {
@@ -1239,6 +1505,8 @@ export type MessageUpdateWithoutUserInput = {
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutUserInput = {
@@ -1255,6 +1523,8 @@ export type MessageUncheckedUpdateWithoutUserInput = {
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateManyWithoutUserInput = {
@@ -1295,6 +1565,8 @@ export type MessageUpdateWithoutConversationInput = {
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutConversationInput = {
@@ -1311,6 +1583,8 @@ export type MessageUncheckedUpdateWithoutConversationInput = {
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateManyWithoutConversationInput = {
@@ -1351,6 +1625,8 @@ export type MessageUpdateWithoutNodeInput = {
   agentActions?: Prisma.AgentActionUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateWithoutNodeInput = {
@@ -1367,6 +1643,8 @@ export type MessageUncheckedUpdateWithoutNodeInput = {
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutMessageNestedInput
   anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutMessageNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageUncheckedUpdateManyWithoutNodeInput = {
@@ -1391,6 +1669,8 @@ export type MessageCountOutputType = {
   agentActions: number
   anchoredNodes: number
   folderSources: number
+  generatedFiles: number
+  toolCalls: number
 }
 
 export type MessageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1398,6 +1678,8 @@ export type MessageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   agentActions?: boolean | MessageCountOutputTypeCountAgentActionsArgs
   anchoredNodes?: boolean | MessageCountOutputTypeCountAnchoredNodesArgs
   folderSources?: boolean | MessageCountOutputTypeCountFolderSourcesArgs
+  generatedFiles?: boolean | MessageCountOutputTypeCountGeneratedFilesArgs
+  toolCalls?: boolean | MessageCountOutputTypeCountToolCallsArgs
 }
 
 /**
@@ -1438,6 +1720,20 @@ export type MessageCountOutputTypeCountFolderSourcesArgs<ExtArgs extends runtime
   where?: Prisma.FolderSourceWhereInput
 }
 
+/**
+ * MessageCountOutputType without action
+ */
+export type MessageCountOutputTypeCountGeneratedFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GeneratedFileWhereInput
+}
+
+/**
+ * MessageCountOutputType without action
+ */
+export type MessageCountOutputTypeCountToolCallsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ToolCallWhereInput
+}
+
 
 export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1457,6 +1753,8 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   agentActions?: boolean | Prisma.Message$agentActionsArgs<ExtArgs>
   anchoredNodes?: boolean | Prisma.Message$anchoredNodesArgs<ExtArgs>
   folderSources?: boolean | Prisma.Message$folderSourcesArgs<ExtArgs>
+  generatedFiles?: boolean | Prisma.Message$generatedFilesArgs<ExtArgs>
+  toolCalls?: boolean | Prisma.Message$toolCallsArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
 
@@ -1514,6 +1812,8 @@ export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   agentActions?: boolean | Prisma.Message$agentActionsArgs<ExtArgs>
   anchoredNodes?: boolean | Prisma.Message$anchoredNodesArgs<ExtArgs>
   folderSources?: boolean | Prisma.Message$folderSourcesArgs<ExtArgs>
+  generatedFiles?: boolean | Prisma.Message$generatedFilesArgs<ExtArgs>
+  toolCalls?: boolean | Prisma.Message$toolCallsArgs<ExtArgs>
   _count?: boolean | Prisma.MessageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1537,6 +1837,8 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     agentActions: Prisma.$AgentActionPayload<ExtArgs>[]
     anchoredNodes: Prisma.$ConversationNodePayload<ExtArgs>[]
     folderSources: Prisma.$FolderSourcePayload<ExtArgs>[]
+    generatedFiles: Prisma.$GeneratedFilePayload<ExtArgs>[]
+    toolCalls: Prisma.$ToolCallPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1956,6 +2258,8 @@ export interface Prisma__MessageClient<T, Null = never, ExtArgs extends runtime.
   agentActions<T extends Prisma.Message$agentActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$agentActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   anchoredNodes<T extends Prisma.Message$anchoredNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$anchoredNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   folderSources<T extends Prisma.Message$folderSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$folderSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  generatedFiles<T extends Prisma.Message$generatedFilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$generatedFilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeneratedFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  toolCalls<T extends Prisma.Message$toolCallsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Message$toolCallsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolCallPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2508,6 +2812,54 @@ export type Message$folderSourcesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.FolderSourceScalarFieldEnum | Prisma.FolderSourceScalarFieldEnum[]
+}
+
+/**
+ * Message.generatedFiles
+ */
+export type Message$generatedFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GeneratedFile
+   */
+  select?: Prisma.GeneratedFileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GeneratedFile
+   */
+  omit?: Prisma.GeneratedFileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GeneratedFileInclude<ExtArgs> | null
+  where?: Prisma.GeneratedFileWhereInput
+  orderBy?: Prisma.GeneratedFileOrderByWithRelationInput | Prisma.GeneratedFileOrderByWithRelationInput[]
+  cursor?: Prisma.GeneratedFileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GeneratedFileScalarFieldEnum | Prisma.GeneratedFileScalarFieldEnum[]
+}
+
+/**
+ * Message.toolCalls
+ */
+export type Message$toolCallsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ToolCall
+   */
+  select?: Prisma.ToolCallSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ToolCall
+   */
+  omit?: Prisma.ToolCallOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ToolCallInclude<ExtArgs> | null
+  where?: Prisma.ToolCallWhereInput
+  orderBy?: Prisma.ToolCallOrderByWithRelationInput | Prisma.ToolCallOrderByWithRelationInput[]
+  cursor?: Prisma.ToolCallWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ToolCallScalarFieldEnum | Prisma.ToolCallScalarFieldEnum[]
 }
 
 /**

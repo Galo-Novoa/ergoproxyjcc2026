@@ -70,7 +70,9 @@ export const ModelName = {
   QuestionNode: 'QuestionNode',
   FolderNode: 'FolderNode',
   FolderEdge: 'FolderEdge',
-  FolderSource: 'FolderSource'
+  FolderSource: 'FolderSource',
+  GeneratedFile: 'GeneratedFile',
+  ToolCall: 'ToolCall'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -401,6 +403,44 @@ export const FolderSourceScalarFieldEnum = {
 } as const
 
 export type FolderSourceScalarFieldEnum = (typeof FolderSourceScalarFieldEnum)[keyof typeof FolderSourceScalarFieldEnum]
+
+
+export const GeneratedFileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  name: 'name',
+  format: 'format',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  storagePath: 'storagePath',
+  storageUrl: 'storageUrl',
+  content: 'content',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type GeneratedFileScalarFieldEnum = (typeof GeneratedFileScalarFieldEnum)[keyof typeof GeneratedFileScalarFieldEnum]
+
+
+export const ToolCallScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  tool: 'tool',
+  kind: 'kind',
+  status: 'status',
+  signature: 'signature',
+  args: 'args',
+  result: 'result',
+  error: 'error',
+  createdAt: 'createdAt'
+} as const
+
+export type ToolCallScalarFieldEnum = (typeof ToolCallScalarFieldEnum)[keyof typeof ToolCallScalarFieldEnum]
 
 
 export const SortOrder = {

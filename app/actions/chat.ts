@@ -8,7 +8,7 @@ import { db } from '@/lib/db'
 import { MAX_NODES_PER_WORKSPACE } from '@/lib/folder/config'
 import { loadFolderIndex, prepareFolderProposals } from '@/lib/folder/server'
 import { AgentError, runAgent } from '@/lib/llm/agent'
-import { isConversationMode } from '@/lib/llm/contract'
+import { isConversationMode, type ToolsMetadata } from '@/lib/llm/contract'
 import { applyGrounding } from '@/lib/rag/ground'
 import { retrieveContext } from '@/lib/rag/retrieve'
 import { demoModeBlock, getUserId } from '@/lib/session'
@@ -16,6 +16,10 @@ import { getStudyPrioritiesForPrompt } from '@/lib/study/server'
 import { classifyIntent } from '@/lib/jev/classify'
 import { decideFabricSkill } from '@/lib/jev/skill-map'
 import { applyFabricToProposals } from '@/lib/fabric/apply'
+import { detectToolNeeds } from '@/lib/tools/intent'
+import { executeReadTool } from '@/lib/tools/executor'
+import { prepareToolProposals } from '@/lib/tools/prepare'
+import { isWebSearchConfigured } from '@/lib/tools/web-search'
 import { ensureRootNode, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
 import { composeContext, inheritedSize } from '@/lib/tree/compose'
 import {
@@ -133,6 +137,34 @@ export async function sendMessage(
       : Promise.resolve(null),
   ])
 
+  // Herramientas del turno. La búsqueda web es de SOLO LECTURA: se ejecuta acá, antes
+  // del agente, y sus resultados entran al prompt como un canal distinto del RAG. Si no
+  // hay proveedor configurado, NO se busca ni se afirma que se buscó.
+  const toolNeeds = detectToolNeeds(content)
+  let webOutcome = undefined
+  if (toolNeeds.web && toolNeeds.webQuery) {
+    if (isWebSearchConfigured()) {
+      const outcome = await executeReadTool({
+        tool: 'web_search',
+        args: { query: toolNeeds.webQuery, limit: 5 },
+        userId,
+        conversationId,
+        messageId: null,
+      })
+      webOutcome = outcome.web
+    } else {
+      // Deja registro de que se pidió y no había proveedor (nunca se miente al usuario).
+      webOutcome = { configured: false as const, results: [] as [], error: null }
+      await executeReadTool({
+        tool: 'web_search',
+        args: { query: toolNeeds.webQuery, limit: 5 },
+        userId,
+        conversationId,
+        messageId: null,
+      })
+    }
+  }
+
   // Si el modelo falla no se guarda nada: el usuario conserva su borrador y puede reintentar.
   // Jev (clasificador de intención) corre en paralelo con el agente: su resultado sólo se
   // usa para elegir la skill de Fabric que transforma el contenido de la Carpeta.
@@ -160,6 +192,7 @@ export async function sendMessage(
           truncated: context.truncated,
         },
         focusNode,
+        tools: { web: webOutcome, wantsFile: toolNeeds.file, wantsDiagram: toolNeeds.diagram },
       }),
       classifyIntent(content, lastUserQuestion),
     ])
@@ -224,8 +257,20 @@ export async function sendMessage(
     sourceNote,
   })
 
-  const actions = [...branchActions, ...questionActions, ...fabricApplied.proposals]
-  const droppedActions = result.metadata.droppedActions + (proposed.length - actions.length)
+  // Propuestas de herramientas (diagrama, archivo): el servidor valida el esquema, el
+  // código Mermaid y el contenido del archivo antes de ofrecérselas a la persona.
+  const toolProposals = prepareToolProposals(
+    proposed.filter((a) => a.type === 'propose_diagram' || a.type === 'generate_file'),
+  )
+
+  const actions = [
+    ...branchActions,
+    ...questionActions,
+    ...fabricApplied.proposals,
+    ...toolProposals.valid,
+  ]
+  const droppedActions =
+    result.metadata.droppedActions + (proposed.length - actions.length) + toolProposals.dropped
   const grounded = applyGrounding(result.response.output, result.response.grounding, retrieval)
   const fabricMeta = fabricApplied.results.length
     ? {
@@ -237,6 +282,18 @@ export async function sendMessage(
         applied: fabricApplied.results.length,
       }
     : undefined
+  const toolsMeta: ToolsMetadata | undefined =
+    webOutcome || toolProposals.valid.length
+      ? {
+          webSearch: {
+            configured: webOutcome?.configured ?? false,
+            ran: Boolean(webOutcome?.configured && !webOutcome.error),
+            error: webOutcome?.error ?? null,
+            sources: (webOutcome?.results ?? []).map((r, i) => ({ ref: i + 1, ...r })),
+          },
+          proposals: toolProposals.valid.map((a) => a.type),
+        }
+      : undefined
   const newTitle =
     conversation.title === DEFAULT_TITLE && result.response.description
       ? result.response.description
@@ -252,7 +309,7 @@ export async function sendMessage(
         role: 'assistant',
         content: grounded.output,
         description: result.response.description,
-        metadata: { ...result.metadata, droppedActions, rag: grounded.rag, fabric: fabricMeta },
+        metadata: { ...result.metadata, droppedActions, rag: grounded.rag, fabric: fabricMeta, tools: toolsMeta },
       },
       select: { id: true },
     })

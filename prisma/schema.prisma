@@ -36,6 +36,8 @@ model User {
   folderNodes   FolderNode[]
   folderEdges   FolderEdge[]
   folderSources FolderSource[]
+  generatedFiles GeneratedFile[]
+  toolCalls     ToolCall[]
 
   @@map("user")
 }
@@ -292,6 +294,8 @@ model Conversation {
   agentActions  AgentAction[]
   nodes         ConversationNode[]
   folderSources FolderSource[]
+  generatedFiles GeneratedFile[]
+  toolCalls     ToolCall[]
 
   @@index([userId], map: "conversations_user_idx")
   @@index([subjectId], map: "conversations_subject_idx")
@@ -336,6 +340,8 @@ model Message {
   agentActions  AgentAction[]
   anchoredNodes ConversationNode[] @relation("NodeAnchor")
   folderSources FolderSource[]
+  generatedFiles GeneratedFile[]
+  toolCalls     ToolCall[]
 
   @@index([conversationId], map: "messages_conversation_idx")
   @@index([nodeId, seq], map: "messages_node_seq_idx")
@@ -514,4 +520,61 @@ model FolderSource {
   @@index([conversationId], map: "folder_sources_conversation_idx")
   @@index([userId], map: "folder_sources_user_idx")
   @@map("folder_sources")
+}
+
+// Archivo generado por el agente a pedido del usuario. El binario vive en Vercel Blob
+// (privado); acá solo hay metadatos. La descarga es real: se sirve el blob autenticado.
+// format: 'md' | 'csv' | 'txt' | 'mermaid'
+// status: 'ready' | 'failed'
+model GeneratedFile {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  conversationId String?      @db.Uuid
+  messageId      String?      @db.Uuid
+  name           String
+  format         String
+  mimeType       String
+  sizeBytes      Int          @default(0)
+  storagePath    String?
+  storageUrl     String?
+  content        String?
+  status         String       @default("ready")
+  errorMessage   String?
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  message        Message?     @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@index([userId], map: "generated_files_user_idx")
+  @@index([conversationId], map: "generated_files_conversation_idx")
+  @@index([messageId], map: "generated_files_message_idx")
+  @@map("generated_files")
+}
+
+// Auditoría de cada llamada a una herramienta del agente. Deja registro del resultado y
+// del error, y sirve para no repetir la misma acción por reintentos de generación
+// (clave `signature` única por conversación + mensaje).
+// kind: 'read' | 'write' | 'propose'
+// status: 'ok' | 'error' | 'skipped_duplicate' | 'not_configured'
+model ToolCall {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  conversationId String?      @db.Uuid
+  messageId      String?      @db.Uuid
+  tool           String
+  kind           String
+  status         String
+  signature      String
+  args           Json?
+  result         Json?
+  error          String?
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  message        Message?     @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@index([userId], map: "tool_calls_user_idx")
+  @@index([conversationId], map: "tool_calls_conversation_idx")
+  @@index([signature], map: "tool_calls_signature_idx")
+  @@map("tool_calls")
 }

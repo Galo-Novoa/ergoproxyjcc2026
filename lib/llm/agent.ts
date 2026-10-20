@@ -25,6 +25,14 @@ import {
 } from '@/lib/folder/config'
 import { FOLDER_OPERATIONS, FOLDER_OPERATION_LABELS } from '@/lib/folder/schema'
 import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
+import {
+  GENERATED_FILE_FORMATS,
+  GENERATED_FILE_NAME_MAX,
+  MERMAID_DIAGRAM_TYPES,
+  TOOL_LABELS,
+} from '@/lib/tools/config'
+import { buildWebPrompt } from '@/lib/tools/prompt'
+import type { WebSearchOutcome } from '@/lib/tools/web-search'
 
 export type FolderPromptInfo = {
   canPropose: boolean
@@ -54,6 +62,20 @@ export type QuestionMapPromptInfo = {
 }
 
 export type AgentResult = { response: AgentResponse; metadata: MessageMetadata }
+
+/**
+ * Contexto de las herramientas para el prompt. Las de lectura (web) ya se ejecutaron
+ * en el servidor; las de escritura/propuesta se explican para que el modelo las use
+ * como PROPUESTAS (nunca se ejecutan solas).
+ */
+export type ToolsPromptInfo = {
+  /** Resultado real de la búsqueda web, si el usuario la pidió y hay proveedor. */
+  web?: WebSearchOutcome
+  /** ¿El usuario pidió generar un archivo descargable? */
+  wantsFile?: boolean
+  /** ¿El usuario pidió un diagrama? */
+  wantsDiagram?: boolean
+}
 
 const MODE_GUIDANCE: Record<ConversationMode, string> = {
   theory:
@@ -142,6 +164,33 @@ function buildQuestionMapPrompt(questions: QuestionMapPromptInfo) {
   return lines.join('\n')
 }
 
+/**
+ * Herramientas del agente. Las de escritura (Carpeta, rama, archivo) se explican
+ * como PROPUESTAS: el modelo las sugiere y la persona confirma. Los diagramas se
+ * ofrecen siempre (son útiles para explicar); los archivos, solo si los piden.
+ */
+function buildToolsPrompt(tools: ToolsPromptInfo | undefined) {
+  const lines: string[] = []
+  lines.push(
+    `Herramientas disponibles (solo como propuestas; nunca se ejecutan solas): ${TOOL_LABELS.propose_diagram}, ${TOOL_LABELS.generate_file}. Además, la ${TOOL_LABELS.propose_folder_change} y las ramas de arriba.`,
+  )
+  lines.push(
+    `- Diagrama: {"type":"propose_diagram","diagram_type":<${MERMAID_DIAGRAM_TYPES.join(' | ')}>,"title":<título>, "source":<código Mermaid válido Y editable>,"reason":<por qué ayuda>}. Proponelo cuando un diagrama aclare la explicación (flujos, relaciones, secuencias). El estudiante lo puede editar y guardar como apunte.`,
+  )
+  if (tools?.wantsFile) {
+    lines.push(
+      `- Archivo: el estudiante pidió un archivo descargable. Proponé {"type":"generate_file","format":<${GENERATED_FILE_FORMATS.join(' | ')}>,"file_name":<hasta ${GENERATED_FILE_NAME_MAX} caracteres>,"content":<contenido completo y real del archivo>,"reason":<por qué>}. El contenido debe ser el archivo entero (Markdown, CSV o texto), no un resumen. No digas que el archivo está descargado: se genera cuando el estudiante lo confirme.`,
+    )
+  } else {
+    lines.push(
+      '- Si el estudiante pide guardar o exportar algo como archivo, proponé "generate_file" con el contenido completo.',
+    )
+  }
+  const webOutcome = tools?.web
+  if (webOutcome) lines.push(buildWebPrompt(webOutcome))
+  return lines.join('\n')
+}
+
 function buildSystemPrompt(
   mode: ConversationMode,
   branch: BranchPromptInfo,
@@ -149,6 +198,7 @@ function buildSystemPrompt(
   questions: QuestionMapPromptInfo,
   rag: RetrievalResult | undefined,
   focusNode: { id: string; question: string } | null,
+  tools: ToolsPromptInfo | undefined,
 ) {
   return [
     'Sos un tutor para estudiantes de ingeniería y ciencias exactas de la FCEIA (UNR). Respondé en español rioplatense, con claridad y paso a paso.',
@@ -163,6 +213,7 @@ function buildSystemPrompt(
       : 'Esta conversación ya no admite más ramas: no propongas acciones propose_history_branch.',
     buildQuestionMapPrompt(questions),
     buildFolderPrompt(folder),
+    buildToolsPrompt(tools),
     buildBranchPrompt(branch),
     rag ? buildRagPrompt(rag) : '',
     focusNode
@@ -254,6 +305,7 @@ export async function runAgent({
   history,
   rag,
   focusNode = null,
+  tools,
 }: {
   mode: ConversationMode
   branch: BranchPromptInfo
@@ -263,9 +315,11 @@ export async function runAgent({
   rag?: RetrievalResult
   /** Nodo del mapa de dudas desde el que el estudiante decidió continuar, si eligió uno. */
   focusNode?: { id: string; question: string } | null
+  /** Herramientas del turno (búsqueda web ya ejecutada, intención de archivo/diagrama). */
+  tools?: ToolsPromptInfo
 }): Promise<AgentResult> {
   const config = getLlmServerConfig()
-  const system = buildSystemPrompt(mode, branch, folder, questions, rag, focusNode)
+  const system = buildSystemPrompt(mode, branch, folder, questions, rag, focusNode, tools)
 
   const generate = (model: LanguageModel) =>
     generateText({

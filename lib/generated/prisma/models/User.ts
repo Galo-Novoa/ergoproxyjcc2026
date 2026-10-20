@@ -215,6 +215,8 @@ export type UserWhereInput = {
   folderNodes?: Prisma.FolderNodeListRelationFilter
   folderEdges?: Prisma.FolderEdgeListRelationFilter
   folderSources?: Prisma.FolderSourceListRelationFilter
+  generatedFiles?: Prisma.GeneratedFileListRelationFilter
+  toolCalls?: Prisma.ToolCallListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -242,6 +244,8 @@ export type UserOrderByWithRelationInput = {
   folderNodes?: Prisma.FolderNodeOrderByRelationAggregateInput
   folderEdges?: Prisma.FolderEdgeOrderByRelationAggregateInput
   folderSources?: Prisma.FolderSourceOrderByRelationAggregateInput
+  generatedFiles?: Prisma.GeneratedFileOrderByRelationAggregateInput
+  toolCalls?: Prisma.ToolCallOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -272,6 +276,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   folderNodes?: Prisma.FolderNodeListRelationFilter
   folderEdges?: Prisma.FolderEdgeListRelationFilter
   folderSources?: Prisma.FolderSourceListRelationFilter
+  generatedFiles?: Prisma.GeneratedFileListRelationFilter
+  toolCalls?: Prisma.ToolCallListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -325,6 +331,8 @@ export type UserCreateInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -352,6 +360,8 @@ export type UserUncheckedCreateInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -379,6 +389,8 @@ export type UserUpdateInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -406,6 +418,8 @@ export type UserUncheckedUpdateInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -727,6 +741,34 @@ export type UserUpdateOneRequiredWithoutFolderSourcesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFolderSourcesInput, Prisma.UserUpdateWithoutFolderSourcesInput>, Prisma.UserUncheckedUpdateWithoutFolderSourcesInput>
 }
 
+export type UserCreateNestedOneWithoutGeneratedFilesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGeneratedFilesInput, Prisma.UserUncheckedCreateWithoutGeneratedFilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGeneratedFilesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutGeneratedFilesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGeneratedFilesInput, Prisma.UserUncheckedCreateWithoutGeneratedFilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGeneratedFilesInput
+  upsert?: Prisma.UserUpsertWithoutGeneratedFilesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGeneratedFilesInput, Prisma.UserUpdateWithoutGeneratedFilesInput>, Prisma.UserUncheckedUpdateWithoutGeneratedFilesInput>
+}
+
+export type UserCreateNestedOneWithoutToolCallsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutToolCallsInput, Prisma.UserUncheckedCreateWithoutToolCallsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutToolCallsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutToolCallsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutToolCallsInput, Prisma.UserUncheckedCreateWithoutToolCallsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutToolCallsInput
+  upsert?: Prisma.UserUpsertWithoutToolCallsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutToolCallsInput, Prisma.UserUpdateWithoutToolCallsInput>, Prisma.UserUncheckedUpdateWithoutToolCallsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -751,6 +793,8 @@ export type UserCreateWithoutSessionsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -777,6 +821,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -819,6 +865,8 @@ export type UserUpdateWithoutSessionsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -845,6 +893,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -871,6 +921,8 @@ export type UserCreateWithoutAccountsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -897,6 +949,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -939,6 +993,8 @@ export type UserUpdateWithoutAccountsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -965,6 +1021,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -991,6 +1049,8 @@ export type UserCreateWithoutMembershipsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -1017,6 +1077,8 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -1059,6 +1121,8 @@ export type UserUpdateWithoutMembershipsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -1085,6 +1149,8 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSubjectsInput = {
@@ -1111,6 +1177,8 @@ export type UserCreateWithoutSubjectsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSubjectsInput = {
@@ -1137,6 +1205,8 @@ export type UserUncheckedCreateWithoutSubjectsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSubjectsInput = {
@@ -1179,6 +1249,8 @@ export type UserUpdateWithoutSubjectsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubjectsInput = {
@@ -1205,6 +1277,8 @@ export type UserUncheckedUpdateWithoutSubjectsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFilesInput = {
@@ -1231,6 +1305,8 @@ export type UserCreateWithoutFilesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFilesInput = {
@@ -1257,6 +1333,8 @@ export type UserUncheckedCreateWithoutFilesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFilesInput = {
@@ -1299,6 +1377,8 @@ export type UserUpdateWithoutFilesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFilesInput = {
@@ -1325,6 +1405,8 @@ export type UserUncheckedUpdateWithoutFilesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFilePagesInput = {
@@ -1351,6 +1433,8 @@ export type UserCreateWithoutFilePagesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFilePagesInput = {
@@ -1377,6 +1461,8 @@ export type UserUncheckedCreateWithoutFilePagesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFilePagesInput = {
@@ -1419,6 +1505,8 @@ export type UserUpdateWithoutFilePagesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFilePagesInput = {
@@ -1445,6 +1533,8 @@ export type UserUncheckedUpdateWithoutFilePagesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFileChunksInput = {
@@ -1471,6 +1561,8 @@ export type UserCreateWithoutFileChunksInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFileChunksInput = {
@@ -1497,6 +1589,8 @@ export type UserUncheckedCreateWithoutFileChunksInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFileChunksInput = {
@@ -1539,6 +1633,8 @@ export type UserUpdateWithoutFileChunksInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFileChunksInput = {
@@ -1565,6 +1661,8 @@ export type UserUncheckedUpdateWithoutFileChunksInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDocumentsInput = {
@@ -1591,6 +1689,8 @@ export type UserCreateWithoutDocumentsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -1617,6 +1717,8 @@ export type UserUncheckedCreateWithoutDocumentsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -1659,6 +1761,8 @@ export type UserUpdateWithoutDocumentsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -1685,6 +1789,8 @@ export type UserUncheckedUpdateWithoutDocumentsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutConversationsInput = {
@@ -1711,6 +1817,8 @@ export type UserCreateWithoutConversationsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversationsInput = {
@@ -1737,6 +1845,8 @@ export type UserUncheckedCreateWithoutConversationsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversationsInput = {
@@ -1779,6 +1889,8 @@ export type UserUpdateWithoutConversationsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversationsInput = {
@@ -1805,6 +1917,8 @@ export type UserUncheckedUpdateWithoutConversationsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutConversationFilesInput = {
@@ -1831,6 +1945,8 @@ export type UserCreateWithoutConversationFilesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversationFilesInput = {
@@ -1857,6 +1973,8 @@ export type UserUncheckedCreateWithoutConversationFilesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversationFilesInput = {
@@ -1899,6 +2017,8 @@ export type UserUpdateWithoutConversationFilesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversationFilesInput = {
@@ -1925,6 +2045,8 @@ export type UserUncheckedUpdateWithoutConversationFilesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -1951,6 +2073,8 @@ export type UserCreateWithoutMessagesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -1977,6 +2101,8 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -2019,6 +2145,8 @@ export type UserUpdateWithoutMessagesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -2045,6 +2173,8 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAgentActionsInput = {
@@ -2071,6 +2201,8 @@ export type UserCreateWithoutAgentActionsInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAgentActionsInput = {
@@ -2097,6 +2229,8 @@ export type UserUncheckedCreateWithoutAgentActionsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAgentActionsInput = {
@@ -2139,6 +2273,8 @@ export type UserUpdateWithoutAgentActionsInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentActionsInput = {
@@ -2165,6 +2301,8 @@ export type UserUncheckedUpdateWithoutAgentActionsInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutConversationNodesInput = {
@@ -2191,6 +2329,8 @@ export type UserCreateWithoutConversationNodesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversationNodesInput = {
@@ -2217,6 +2357,8 @@ export type UserUncheckedCreateWithoutConversationNodesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversationNodesInput = {
@@ -2259,6 +2401,8 @@ export type UserUpdateWithoutConversationNodesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversationNodesInput = {
@@ -2285,6 +2429,8 @@ export type UserUncheckedUpdateWithoutConversationNodesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutQuestionNodesInput = {
@@ -2311,6 +2457,8 @@ export type UserCreateWithoutQuestionNodesInput = {
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutQuestionNodesInput = {
@@ -2337,6 +2485,8 @@ export type UserUncheckedCreateWithoutQuestionNodesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutQuestionNodesInput = {
@@ -2379,6 +2529,8 @@ export type UserUpdateWithoutQuestionNodesInput = {
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuestionNodesInput = {
@@ -2405,6 +2557,8 @@ export type UserUncheckedUpdateWithoutQuestionNodesInput = {
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFolderNodesInput = {
@@ -2431,6 +2585,8 @@ export type UserCreateWithoutFolderNodesInput = {
   conversationNodes?: Prisma.ConversationNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFolderNodesInput = {
@@ -2457,6 +2613,8 @@ export type UserUncheckedCreateWithoutFolderNodesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFolderNodesInput = {
@@ -2499,6 +2657,8 @@ export type UserUpdateWithoutFolderNodesInput = {
   conversationNodes?: Prisma.ConversationNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFolderNodesInput = {
@@ -2525,6 +2685,8 @@ export type UserUncheckedUpdateWithoutFolderNodesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFolderEdgesInput = {
@@ -2551,6 +2713,8 @@ export type UserCreateWithoutFolderEdgesInput = {
   conversationNodes?: Prisma.ConversationNodeCreateNestedManyWithoutUserInput
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFolderEdgesInput = {
@@ -2577,6 +2741,8 @@ export type UserUncheckedCreateWithoutFolderEdgesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutUserInput
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFolderEdgesInput = {
@@ -2619,6 +2785,8 @@ export type UserUpdateWithoutFolderEdgesInput = {
   conversationNodes?: Prisma.ConversationNodeUpdateManyWithoutUserNestedInput
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFolderEdgesInput = {
@@ -2645,6 +2813,8 @@ export type UserUncheckedUpdateWithoutFolderEdgesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutUserNestedInput
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFolderSourcesInput = {
@@ -2671,6 +2841,8 @@ export type UserCreateWithoutFolderSourcesInput = {
   conversationNodes?: Prisma.ConversationNodeCreateNestedManyWithoutUserInput
   folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFolderSourcesInput = {
@@ -2697,6 +2869,8 @@ export type UserUncheckedCreateWithoutFolderSourcesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutUserInput
   folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
   folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFolderSourcesInput = {
@@ -2739,6 +2913,8 @@ export type UserUpdateWithoutFolderSourcesInput = {
   conversationNodes?: Prisma.ConversationNodeUpdateManyWithoutUserNestedInput
   folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFolderSourcesInput = {
@@ -2765,6 +2941,264 @@ export type UserUncheckedUpdateWithoutFolderSourcesInput = {
   conversationNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutUserNestedInput
   folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
   folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutGeneratedFilesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
+  files?: Prisma.FileCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutUserInput
+  conversationNodes?: Prisma.ConversationNodeCreateNestedManyWithoutUserInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
+  folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutGeneratedFilesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutUserInput
+  conversationNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutUserInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
+  folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  toolCalls?: Prisma.ToolCallUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutGeneratedFilesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGeneratedFilesInput, Prisma.UserUncheckedCreateWithoutGeneratedFilesInput>
+}
+
+export type UserUpsertWithoutGeneratedFilesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGeneratedFilesInput, Prisma.UserUncheckedUpdateWithoutGeneratedFilesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGeneratedFilesInput, Prisma.UserUncheckedCreateWithoutGeneratedFilesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGeneratedFilesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGeneratedFilesInput, Prisma.UserUncheckedUpdateWithoutGeneratedFilesInput>
+}
+
+export type UserUpdateWithoutGeneratedFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutUserNestedInput
+  conversationNodes?: Prisma.ConversationNodeUpdateManyWithoutUserNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
+  folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGeneratedFilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUncheckedUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutUserNestedInput
+  conversationNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutUserNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
+  folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  toolCalls?: Prisma.ToolCallUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutToolCallsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectCreateNestedManyWithoutUserInput
+  files?: Prisma.FileCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutUserInput
+  conversationNodes?: Prisma.ConversationNodeCreateNestedManyWithoutUserInput
+  folderNodes?: Prisma.FolderNodeCreateNestedManyWithoutUserInput
+  folderEdges?: Prisma.FolderEdgeCreateNestedManyWithoutUserInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutToolCallsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  subjects?: Prisma.SubjectUncheckedCreateNestedManyWithoutUserInput
+  files?: Prisma.FileUncheckedCreateNestedManyWithoutUserInput
+  filePages?: Prisma.FilePageUncheckedCreateNestedManyWithoutUserInput
+  fileChunks?: Prisma.FileChunkUncheckedCreateNestedManyWithoutUserInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutUserInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutUserInput
+  conversationFiles?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutUserInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutUserInput
+  conversationNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutUserInput
+  folderNodes?: Prisma.FolderNodeUncheckedCreateNestedManyWithoutUserInput
+  folderEdges?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutUserInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutUserInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutToolCallsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutToolCallsInput, Prisma.UserUncheckedCreateWithoutToolCallsInput>
+}
+
+export type UserUpsertWithoutToolCallsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutToolCallsInput, Prisma.UserUncheckedUpdateWithoutToolCallsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutToolCallsInput, Prisma.UserUncheckedCreateWithoutToolCallsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutToolCallsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutToolCallsInput, Prisma.UserUncheckedUpdateWithoutToolCallsInput>
+}
+
+export type UserUpdateWithoutToolCallsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutUserNestedInput
+  conversationNodes?: Prisma.ConversationNodeUpdateManyWithoutUserNestedInput
+  folderNodes?: Prisma.FolderNodeUpdateManyWithoutUserNestedInput
+  folderEdges?: Prisma.FolderEdgeUpdateManyWithoutUserNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutToolCallsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  subjects?: Prisma.SubjectUncheckedUpdateManyWithoutUserNestedInput
+  files?: Prisma.FileUncheckedUpdateManyWithoutUserNestedInput
+  filePages?: Prisma.FilePageUncheckedUpdateManyWithoutUserNestedInput
+  fileChunks?: Prisma.FileChunkUncheckedUpdateManyWithoutUserNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutUserNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutUserNestedInput
+  conversationFiles?: Prisma.ConversationFileUncheckedUpdateManyWithoutUserNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutUserNestedInput
+  conversationNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutUserNestedInput
+  folderNodes?: Prisma.FolderNodeUncheckedUpdateManyWithoutUserNestedInput
+  folderEdges?: Prisma.FolderEdgeUncheckedUpdateManyWithoutUserNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutUserNestedInput
+  generatedFiles?: Prisma.GeneratedFileUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2790,6 +3224,8 @@ export type UserCountOutputType = {
   folderNodes: number
   folderEdges: number
   folderSources: number
+  generatedFiles: number
+  toolCalls: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2810,6 +3246,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   folderNodes?: boolean | UserCountOutputTypeCountFolderNodesArgs
   folderEdges?: boolean | UserCountOutputTypeCountFolderEdgesArgs
   folderSources?: boolean | UserCountOutputTypeCountFolderSourcesArgs
+  generatedFiles?: boolean | UserCountOutputTypeCountGeneratedFilesArgs
+  toolCalls?: boolean | UserCountOutputTypeCountToolCallsArgs
 }
 
 /**
@@ -2941,6 +3379,20 @@ export type UserCountOutputTypeCountFolderSourcesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.FolderSourceWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountGeneratedFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GeneratedFileWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountToolCallsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ToolCallWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2967,6 +3419,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   folderNodes?: boolean | Prisma.User$folderNodesArgs<ExtArgs>
   folderEdges?: boolean | Prisma.User$folderEdgesArgs<ExtArgs>
   folderSources?: boolean | Prisma.User$folderSourcesArgs<ExtArgs>
+  generatedFiles?: boolean | Prisma.User$generatedFilesArgs<ExtArgs>
+  toolCalls?: boolean | Prisma.User$toolCallsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3019,6 +3473,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   folderNodes?: boolean | Prisma.User$folderNodesArgs<ExtArgs>
   folderEdges?: boolean | Prisma.User$folderEdgesArgs<ExtArgs>
   folderSources?: boolean | Prisma.User$folderSourcesArgs<ExtArgs>
+  generatedFiles?: boolean | Prisma.User$generatedFilesArgs<ExtArgs>
+  toolCalls?: boolean | Prisma.User$toolCallsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3044,6 +3500,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     folderNodes: Prisma.$FolderNodePayload<ExtArgs>[]
     folderEdges: Prisma.$FolderEdgePayload<ExtArgs>[]
     folderSources: Prisma.$FolderSourcePayload<ExtArgs>[]
+    generatedFiles: Prisma.$GeneratedFilePayload<ExtArgs>[]
+    toolCalls: Prisma.$ToolCallPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3464,6 +3922,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   folderNodes<T extends Prisma.User$folderNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$folderNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   folderEdges<T extends Prisma.User$folderEdgesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$folderEdgesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderEdgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   folderSources<T extends Prisma.User$folderSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$folderSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  generatedFiles<T extends Prisma.User$generatedFilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$generatedFilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeneratedFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  toolCalls<T extends Prisma.User$toolCallsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$toolCallsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ToolCallPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4298,6 +4758,54 @@ export type User$folderSourcesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.FolderSourceScalarFieldEnum | Prisma.FolderSourceScalarFieldEnum[]
+}
+
+/**
+ * User.generatedFiles
+ */
+export type User$generatedFilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GeneratedFile
+   */
+  select?: Prisma.GeneratedFileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GeneratedFile
+   */
+  omit?: Prisma.GeneratedFileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GeneratedFileInclude<ExtArgs> | null
+  where?: Prisma.GeneratedFileWhereInput
+  orderBy?: Prisma.GeneratedFileOrderByWithRelationInput | Prisma.GeneratedFileOrderByWithRelationInput[]
+  cursor?: Prisma.GeneratedFileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GeneratedFileScalarFieldEnum | Prisma.GeneratedFileScalarFieldEnum[]
+}
+
+/**
+ * User.toolCalls
+ */
+export type User$toolCallsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ToolCall
+   */
+  select?: Prisma.ToolCallSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ToolCall
+   */
+  omit?: Prisma.ToolCallOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ToolCallInclude<ExtArgs> | null
+  where?: Prisma.ToolCallWhereInput
+  orderBy?: Prisma.ToolCallOrderByWithRelationInput | Prisma.ToolCallOrderByWithRelationInput[]
+  cursor?: Prisma.ToolCallWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ToolCallScalarFieldEnum | Prisma.ToolCallScalarFieldEnum[]
 }
 
 /**

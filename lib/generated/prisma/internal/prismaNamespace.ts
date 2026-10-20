@@ -416,7 +416,9 @@ export const ModelName = {
   QuestionNode: 'QuestionNode',
   FolderNode: 'FolderNode',
   FolderEdge: 'FolderEdge',
-  FolderSource: 'FolderSource'
+  FolderSource: 'FolderSource',
+  GeneratedFile: 'GeneratedFile',
+  ToolCall: 'ToolCall'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -432,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "fileChunk" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "conversationNode" | "questionNode" | "folderNode" | "folderEdge" | "folderSource"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "filePage" | "fileChunk" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "conversationNode" | "questionNode" | "folderNode" | "folderEdge" | "folderSource" | "generatedFile" | "toolCall"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1916,6 +1918,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GeneratedFile: {
+      payload: Prisma.$GeneratedFilePayload<ExtArgs>
+      fields: Prisma.GeneratedFileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GeneratedFileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GeneratedFileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        findFirst: {
+          args: Prisma.GeneratedFileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GeneratedFileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        findMany: {
+          args: Prisma.GeneratedFileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>[]
+        }
+        create: {
+          args: Prisma.GeneratedFileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        createMany: {
+          args: Prisma.GeneratedFileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GeneratedFileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>[]
+        }
+        delete: {
+          args: Prisma.GeneratedFileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        update: {
+          args: Prisma.GeneratedFileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        deleteMany: {
+          args: Prisma.GeneratedFileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GeneratedFileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GeneratedFileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>[]
+        }
+        upsert: {
+          args: Prisma.GeneratedFileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GeneratedFilePayload>
+        }
+        aggregate: {
+          args: Prisma.GeneratedFileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGeneratedFile>
+        }
+        groupBy: {
+          args: Prisma.GeneratedFileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GeneratedFileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GeneratedFileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GeneratedFileCountAggregateOutputType> | number
+        }
+      }
+    }
+    ToolCall: {
+      payload: Prisma.$ToolCallPayload<ExtArgs>
+      fields: Prisma.ToolCallFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ToolCallFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ToolCallFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        findFirst: {
+          args: Prisma.ToolCallFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ToolCallFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        findMany: {
+          args: Prisma.ToolCallFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>[]
+        }
+        create: {
+          args: Prisma.ToolCallCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        createMany: {
+          args: Prisma.ToolCallCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ToolCallCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>[]
+        }
+        delete: {
+          args: Prisma.ToolCallDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        update: {
+          args: Prisma.ToolCallUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        deleteMany: {
+          args: Prisma.ToolCallDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ToolCallUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ToolCallUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>[]
+        }
+        upsert: {
+          args: Prisma.ToolCallUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ToolCallPayload>
+        }
+        aggregate: {
+          args: Prisma.ToolCallAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateToolCall>
+        }
+        groupBy: {
+          args: Prisma.ToolCallGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolCallGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ToolCallCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ToolCallCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2269,6 +2419,44 @@ export const FolderSourceScalarFieldEnum = {
 export type FolderSourceScalarFieldEnum = (typeof FolderSourceScalarFieldEnum)[keyof typeof FolderSourceScalarFieldEnum]
 
 
+export const GeneratedFileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  name: 'name',
+  format: 'format',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  storagePath: 'storagePath',
+  storageUrl: 'storageUrl',
+  content: 'content',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type GeneratedFileScalarFieldEnum = (typeof GeneratedFileScalarFieldEnum)[keyof typeof GeneratedFileScalarFieldEnum]
+
+
+export const ToolCallScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  tool: 'tool',
+  kind: 'kind',
+  status: 'status',
+  signature: 'signature',
+  args: 'args',
+  result: 'result',
+  error: 'error',
+  createdAt: 'createdAt'
+} as const
+
+export type ToolCallScalarFieldEnum = (typeof ToolCallScalarFieldEnum)[keyof typeof ToolCallScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2584,6 +2772,8 @@ export type GlobalOmitConfig = {
   folderNode?: Prisma.FolderNodeOmit
   folderEdge?: Prisma.FolderEdgeOmit
   folderSource?: Prisma.FolderSourceOmit
+  generatedFile?: Prisma.GeneratedFileOmit
+  toolCall?: Prisma.ToolCallOmit
 }
 
 /* Types for Logging */

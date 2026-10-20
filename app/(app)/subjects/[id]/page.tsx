@@ -85,6 +85,7 @@ export default async function SubjectChatPage({
           },
         ]
       }
+      if (proposal.type !== 'propose_folder_change') return []
 
       return [
         {

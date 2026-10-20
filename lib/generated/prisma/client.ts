@@ -145,3 +145,13 @@ export type FolderEdge = Prisma.FolderEdgeModel
  * queda inactiva.
  */
 export type FolderSource = Prisma.FolderSourceModel
+/**
+ * Model GeneratedFile
+ * 
+ */
+export type GeneratedFile = Prisma.GeneratedFileModel
+/**
+ * Model ToolCall
+ * 
+ */
+export type ToolCall = Prisma.ToolCallModel

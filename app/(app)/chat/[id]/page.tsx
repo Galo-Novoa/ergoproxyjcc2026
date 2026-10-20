@@ -8,8 +8,9 @@ import { PageHeader } from '@/components/shared/page-header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { getConversationHeader, isUuid, listChatFiles } from '@/lib/data/queries'
+import { db } from '@/lib/db'
 import { getLlmStatus } from '@/lib/llm/config'
-import { isConversationMode } from '@/lib/llm/contract'
+import { isConversationMode, parseProposalPayload } from '@/lib/llm/contract'
 import { parseRagMetadata } from '@/lib/rag/types'
 import { requireUser } from '@/lib/session'
 import { ensureRootNode, listMapNodes, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
@@ -38,6 +39,15 @@ export default async function ConversationPage({
     listMapNodes(id, user.id),
   ])
   const llm = getLlmStatus()
+
+  // Archivos generados del hilo: se muestran como descarga real en la acción que los produjo.
+  const generatedFiles = await db.generatedFile.findMany({
+    where: { userId: user.id, conversationId: id },
+    select: { id: true, name: true, messageId: true },
+  })
+  const fileByMessageAndName = new Map(
+    generatedFiles.map((f) => [`${f.messageId}:${f.name}`, f.id] as const),
+  )
 
   return (
     <div className="flex flex-col gap-2">
@@ -72,12 +82,19 @@ export default async function ConversationPage({
           content: m.content,
           inherited,
           rag: parseRagMetadata(m.metadata),
-          actions: m.agentActions.map((a) => ({
-            id: a.id,
-            status: a.status,
-            payload: a.payload,
-            resultNodeId: a.resultNodeId,
-          })),
+          actions: m.agentActions.map((a) => {
+            const proposal = parseProposalPayload(a.payload)
+            const fileName =
+              proposal?.type === 'generate_file' ? proposal.file_name : null
+            return {
+              id: a.id,
+              status: a.status,
+              payload: a.payload,
+              resultNodeId: a.resultNodeId,
+              resultFileId:
+                fileName ? (fileByMessageAndName.get(`${m.id}:${fileName}`) ?? null) : null,
+            }
+          }),
         }))}
       />
     </div>

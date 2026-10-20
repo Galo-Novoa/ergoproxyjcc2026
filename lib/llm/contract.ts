@@ -17,6 +17,12 @@ import {
   type FolderNodeType,
 } from '@/lib/folder/config'
 import { ALIAS_MAX } from '@/lib/tree/config'
+import {
+  generateFileSchema,
+  proposeDiagramSchema,
+  type GenerateFileProposal,
+  type DiagramProposal,
+} from '@/lib/tools/schema'
 
 export const CONVERSATION_MODES = ['theory', 'practice', 'free'] as const
 export type ConversationMode = (typeof CONVERSATION_MODES)[number]
@@ -65,10 +71,14 @@ export const agentActionSchema = z.union([
   proposeHistoryBranchSchema,
   proposeQuestionNodeSchema,
   proposeFolderChangeSchema,
+  proposeDiagramSchema,
+  generateFileSchema,
 ])
 export type BranchProposal = z.infer<typeof proposeHistoryBranchSchema>
 export type QuestionNodeProposal = z.infer<typeof proposeQuestionNodeSchema>
 export type AgentActionProposal = z.infer<typeof agentActionSchema>
+
+export type { DiagramProposal, GenerateFileProposal }
 
 /**
  * Lee el payload guardado de una propuesta. Migra en el camino las formas antiguas:
@@ -118,7 +128,13 @@ export const agentResponseSchema = z.object({
   description: z.string().trim().min(1).max(80),
   grounding: z.enum(GROUNDING_VALUES),
   actions: z.array(
-    z.union([proposeHistoryBranchSchema, proposeQuestionNodeSchema, proposeFolderChangePlain]),
+    z.union([
+      proposeHistoryBranchSchema,
+      proposeQuestionNodeSchema,
+      proposeFolderChangePlain,
+      proposeDiagramSchema,
+      generateFileSchema,
+    ]),
   ),
 })
 
@@ -151,10 +167,30 @@ export type FabricMetadata = {
   applied: number
 }
 
+/** Fuente de la búsqueda web (canal distinto del RAG). */
+export type WebSource = {
+  ref: number
+  title: string
+  url: string
+  snippet: string
+}
+
+/** Registro de las herramientas ejecutadas en el turno (solo lectura y propuestas). */
+export type ToolsMetadata = {
+  webSearch: {
+    configured: boolean
+    ran: boolean
+    error: string | null
+    sources: WebSource[]
+  }
+  proposals: string[]
+}
+
 export type MessageMetadata = {
   model: string
   recovery: RecoveryKind
   droppedActions: number
   rag?: RagMetadata
   fabric?: FabricMetadata
+  tools?: ToolsMetadata
 }
