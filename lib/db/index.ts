@@ -4,10 +4,19 @@ import { PrismaClient } from '@/lib/generated/prisma/client'
 
 const globalForDb = globalThis as unknown as { prisma?: PrismaClient }
 
+/**
+ * Conexiones simultáneas del pool. DATABASE_POOL_MAX=1 hace falta con `prisma dev` (Postgres local
+ * sobre PGlite): cierra las conexiones de más y las consultas en paralelo fallan con ConnectionClosed.
+ */
+function poolMax() {
+  const parsed = Number.parseInt(process.env.DATABASE_POOL_MAX ?? '', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 5
+}
+
 function createClient() {
   const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL,
-    max: 5,
+    max: poolMax(),
   })
   return new PrismaClient({ adapter })
 }
