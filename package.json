@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
+    "test": "vitest run",
     "start": "next start"
   },
   "packageManager": "pnpm@10.34.3",
@@ -47,6 +48,7 @@
     "postcss": "^8.5.31",
     "prisma": "7.10.1",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "5.0.5"
   }
 }

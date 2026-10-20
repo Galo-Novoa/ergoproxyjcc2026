@@ -29,6 +29,12 @@ import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
 export type FolderPromptInfo = {
   canPropose: boolean
   nodes: { id: string; title: string; type: string }[]
+  /**
+   * Temas de la Carpeta que más atención pidieron (preguntas, repeticiones,
+   * aclaraciones…), ya ordenados. Es una pista para PRIORIZAR dónde escribir más,
+   * no una orden ni una evaluación del estudiante.
+   */
+  priorities?: { nodeId: string; title: string; reasons: string[] }[]
 }
 
 export type BranchPromptInfo = {
@@ -82,7 +88,16 @@ function buildFolderPrompt(folder: FolderPromptInfo) {
   if (!folder.canPropose) {
     return 'La Carpeta del estudiante está llena: no propongas acciones de tipo propose_folder_change.'
   }
-  const shown = folder.nodes.slice(0, PROMPT_INDEX_LIMIT)
+  const priorities = folder.priorities ?? []
+  // Los temas prioritarios tienen que estar sí o sí en la lista: el agente solo
+  // puede usar ids que figuren ahí. Se muestran primero, sin duplicar.
+  const priorityIds = new Set(priorities.map((p) => p.nodeId))
+  const shown = [
+    ...folder.nodes.filter((n) => priorityIds.has(n.id)),
+    ...folder.nodes.filter((n) => !priorityIds.has(n.id)),
+  ].slice(0, PROMPT_INDEX_LIMIT)
+  const shownIds = new Set(shown.map((n) => n.id))
+  const visiblePriorities = priorities.filter((p) => shownIds.has(p.nodeId))
   const kinds = Object.entries(FOLDER_NODE_LABELS)
     .map(([type, label]) => `${type} (${label})`)
     .join(', ')
@@ -105,6 +120,14 @@ function buildFolderPrompt(folder: FolderPromptInfo) {
       ? `Apuntes existentes en la Carpeta:\n${shown.map((n) => `- ${n.id} · ${n.type} · ${n.title}`).join('\n')}`
       : 'La Carpeta todavía no tiene apuntes.',
   )
+  if (visiblePriorities.length) {
+    lines.push(
+      'Temas a los que el estudiante les dedicó MÁS atención (medido por cuántas veces preguntó, volvió sobre el tema o pidió aclaraciones; no es una nota ni una evaluación). Cuando propongas cambios en la Carpeta, PRIORIZÁ estos temas: preferí ampliar el apunte que ya existe (append_content) o crear uno nuevo antes que tocar los demás, y desarrollá su contenido con más detalle.',
+      `Temas prioritarios:\n${visiblePriorities
+        .map((p) => `- ${p.nodeId} · ${p.title}${p.reasons.length ? ` (${p.reasons.join(', ')})` : ''}`)
+        .join('\n')}`,
+    )
+  }
   return lines.join('\n')
 }
 

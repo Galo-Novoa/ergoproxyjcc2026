@@ -12,6 +12,7 @@ import { isConversationMode } from '@/lib/llm/contract'
 import { applyGrounding } from '@/lib/rag/ground'
 import { retrieveContext } from '@/lib/rag/retrieve'
 import { demoModeBlock, getUserId } from '@/lib/session'
+import { getStudyPrioritiesForPrompt } from '@/lib/study/server'
 import { ensureRootNode, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
 import { composeContext, inheritedSize } from '@/lib/tree/compose'
 import {
@@ -109,6 +110,10 @@ export async function sendMessage(
 
   const folderIndex = await loadFolderIndex(userId, conversation.subjectId)
 
+  // Dificultad estimada por tema de la Carpeta: pista para que el agente priorice
+  // dónde escribir más. Es de solo lectura y nunca decide nada por sí sola.
+  const studyPriorities = await getStudyPrioritiesForPrompt(userId, conversation.subjectId)
+
   // Mapa de dudas de la materia: el agente puede proponer nodos nuevos colgando de uno existente.
   const [questionNodes, focusNode] = await Promise.all([
     db.questionNode.findMany({
@@ -134,6 +139,7 @@ export async function sendMessage(
       folder: {
         canPropose: folderIndex.nodes.length < MAX_NODES_PER_WORKSPACE,
         nodes: folderIndex.nodes,
+        priorities: studyPriorities,
       },
       questions: { canPropose: true, nodes: questionNodes },
       rag: retrieval,
