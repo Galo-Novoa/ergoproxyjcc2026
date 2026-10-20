@@ -141,9 +141,20 @@ export type AgentResponse = {
 /** Estrategia de recuperación aplicada a la respuesta del proveedor. */
 export type RecoveryKind = 'none' | 'extracted_json' | 'plain_text'
 
+/** Registro de la transformación de Fabric aplicada al contenido de la Carpeta (si hubo). */
+export type FabricMetadata = {
+  intents: string[]
+  confidence: number
+  material: string
+  skill: string | null
+  backend: string
+  applied: number
+}
+
 export type MessageMetadata = {
   model: string
   recovery: RecoveryKind
   droppedActions: number
   rag?: RagMetadata
+  fabric?: FabricMetadata
 }

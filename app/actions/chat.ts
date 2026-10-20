@@ -13,6 +13,9 @@ import { applyGrounding } from '@/lib/rag/ground'
 import { retrieveContext } from '@/lib/rag/retrieve'
 import { demoModeBlock, getUserId } from '@/lib/session'
 import { getStudyPrioritiesForPrompt } from '@/lib/study/server'
+import { classifyIntent } from '@/lib/jev/classify'
+import { decideFabricSkill } from '@/lib/jev/skill-map'
+import { applyFabricToProposals } from '@/lib/fabric/apply'
 import { ensureRootNode, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
 import { composeContext, inheritedSize } from '@/lib/tree/compose'
 import {
@@ -131,29 +134,35 @@ export async function sendMessage(
   ])
 
   // Si el modelo falla no se guarda nada: el usuario conserva su borrador y puede reintentar.
+  // Jev (clasificador de intención) corre en paralelo con el agente: su resultado sólo se
+  // usa para elegir la skill de Fabric que transforma el contenido de la Carpeta.
   let result
+  let jev
   try {
-    result = await runAgent({
-      mode,
-      history,
-      folder: {
-        canPropose: folderIndex.nodes.length < MAX_NODES_PER_WORKSPACE,
-        nodes: folderIndex.nodes,
-        priorities: studyPriorities,
-      },
-      questions: { canPropose: true, nodes: questionNodes },
-      rag: retrieval,
-      branch: {
-        alias: target.alias,
-        topic: target.topic,
-        isRoot: branch.path.length === 1,
-        summaries: context.summaries,
-        existingChildAliases,
-        canPropose,
-        truncated: context.truncated,
-      },
-      focusNode,
-    })
+    ;[result, jev] = await Promise.all([
+      runAgent({
+        mode,
+        history,
+        folder: {
+          canPropose: folderIndex.nodes.length < MAX_NODES_PER_WORKSPACE,
+          nodes: folderIndex.nodes,
+          priorities: studyPriorities,
+        },
+        questions: { canPropose: true, nodes: questionNodes },
+        rag: retrieval,
+        branch: {
+          alias: target.alias,
+          topic: target.topic,
+          isRoot: branch.path.length === 1,
+          summaries: context.summaries,
+          existingChildAliases,
+          canPropose,
+          truncated: context.truncated,
+        },
+        focusNode,
+      }),
+      classifyIntent(content, lastUserQuestion),
+    ])
   } catch (error) {
     if (error instanceof AgentError) return { ok: false, error: error.message }
     return { ok: false, error: 'No pudimos generar la respuesta. Probá de nuevo.' }
@@ -202,9 +211,32 @@ export async function sendMessage(
     conversation.subjectId,
     proposed.filter((a) => a.type === 'propose_folder_change'),
   )
-  const actions = [...branchActions, ...questionActions, ...folderPrepared.valid]
+
+  // Jev decide qué skill de Fabric conviene para transformar el contenido que irá a la
+  // Carpeta. El usuario sigue aprobando y editando: acá sólo se prepara el borrador.
+  const skillDecision = decideFabricSkill(jev)
+  const sourceNote =
+    retrieval.status === 'ok' && retrieval.sources.length
+      ? `Basado en tus documentos (${retrieval.sources.length} fragmento(s) consultado(s)).`
+      : null
+  const fabricApplied = await applyFabricToProposals(folderPrepared.valid, skillDecision.skill, {
+    material: skillDecision.material,
+    sourceNote,
+  })
+
+  const actions = [...branchActions, ...questionActions, ...fabricApplied.proposals]
   const droppedActions = result.metadata.droppedActions + (proposed.length - actions.length)
   const grounded = applyGrounding(result.response.output, result.response.grounding, retrieval)
+  const fabricMeta = fabricApplied.results.length
+    ? {
+        intents: [jev.intent],
+        confidence: jev.confidence,
+        material: skillDecision.material,
+        skill: skillDecision.skill,
+        backend: fabricApplied.results[0].backend,
+        applied: fabricApplied.results.length,
+      }
+    : undefined
   const newTitle =
     conversation.title === DEFAULT_TITLE && result.response.description
       ? result.response.description
@@ -220,7 +252,7 @@ export async function sendMessage(
         role: 'assistant',
         content: grounded.output,
         description: result.response.description,
-        metadata: { ...result.metadata, droppedActions, rag: grounded.rag },
+        metadata: { ...result.metadata, droppedActions, rag: grounded.rag, fabric: fabricMeta },
       },
       select: { id: true },
     })
