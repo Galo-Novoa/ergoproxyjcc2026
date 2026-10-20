@@ -204,6 +204,7 @@ export type ConversationWhereInput = {
   fileLinks?: Prisma.ConversationFileListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   agentActions?: Prisma.AgentActionListRelationFilter
+  folderRefs?: Prisma.FolderNodeRefListRelationFilter
 }
 
 export type ConversationOrderByWithRelationInput = {
@@ -220,6 +221,7 @@ export type ConversationOrderByWithRelationInput = {
   fileLinks?: Prisma.ConversationFileOrderByRelationAggregateInput
   questionNodes?: Prisma.QuestionNodeOrderByRelationAggregateInput
   agentActions?: Prisma.AgentActionOrderByRelationAggregateInput
+  folderRefs?: Prisma.FolderNodeRefOrderByRelationAggregateInput
 }
 
 export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -239,6 +241,7 @@ export type ConversationWhereUniqueInput = Prisma.AtLeast<{
   fileLinks?: Prisma.ConversationFileListRelationFilter
   questionNodes?: Prisma.QuestionNodeListRelationFilter
   agentActions?: Prisma.AgentActionListRelationFilter
+  folderRefs?: Prisma.FolderNodeRefListRelationFilter
 }, "id">
 
 export type ConversationOrderByWithAggregationInput = {
@@ -279,6 +282,7 @@ export type ConversationCreateInput = {
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateInput = {
@@ -293,6 +297,7 @@ export type ConversationUncheckedCreateInput = {
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUpdateInput = {
@@ -307,6 +312,7 @@ export type ConversationUpdateInput = {
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateInput = {
@@ -321,6 +327,7 @@ export type ConversationUncheckedUpdateInput = {
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationCreateManyInput = {
@@ -543,6 +550,22 @@ export type ConversationUpdateOneWithoutQuestionNodesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutQuestionNodesInput, Prisma.ConversationUpdateWithoutQuestionNodesInput>, Prisma.ConversationUncheckedUpdateWithoutQuestionNodesInput>
 }
 
+export type ConversationCreateNestedOneWithoutFolderRefsInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutFolderRefsInput, Prisma.ConversationUncheckedCreateWithoutFolderRefsInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutFolderRefsInput
+  connect?: Prisma.ConversationWhereUniqueInput
+}
+
+export type ConversationUpdateOneWithoutFolderRefsNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutFolderRefsInput, Prisma.ConversationUncheckedCreateWithoutFolderRefsInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutFolderRefsInput
+  upsert?: Prisma.ConversationUpsertWithoutFolderRefsInput
+  disconnect?: Prisma.ConversationWhereInput | boolean
+  delete?: Prisma.ConversationWhereInput | boolean
+  connect?: Prisma.ConversationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutFolderRefsInput, Prisma.ConversationUpdateWithoutFolderRefsInput>, Prisma.ConversationUncheckedUpdateWithoutFolderRefsInput>
+}
+
 export type ConversationCreateWithoutUserInput = {
   id?: string
   title?: string
@@ -554,6 +577,7 @@ export type ConversationCreateWithoutUserInput = {
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutUserInput = {
@@ -567,6 +591,7 @@ export type ConversationUncheckedCreateWithoutUserInput = {
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutUserInput = {
@@ -619,6 +644,7 @@ export type ConversationCreateWithoutSubjectInput = {
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutSubjectInput = {
@@ -632,6 +658,7 @@ export type ConversationUncheckedCreateWithoutSubjectInput = {
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutSubjectInput = {
@@ -671,6 +698,7 @@ export type ConversationCreateWithoutFileLinksInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutFileLinksInput = {
@@ -684,6 +712,7 @@ export type ConversationUncheckedCreateWithoutFileLinksInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutFileLinksInput = {
@@ -713,6 +742,7 @@ export type ConversationUpdateWithoutFileLinksInput = {
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutFileLinksInput = {
@@ -726,6 +756,7 @@ export type ConversationUncheckedUpdateWithoutFileLinksInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationCreateWithoutMessagesInput = {
@@ -739,6 +770,7 @@ export type ConversationCreateWithoutMessagesInput = {
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -752,6 +784,7 @@ export type ConversationUncheckedCreateWithoutMessagesInput = {
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutMessagesInput = {
@@ -781,6 +814,7 @@ export type ConversationUpdateWithoutMessagesInput = {
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -794,6 +828,7 @@ export type ConversationUncheckedUpdateWithoutMessagesInput = {
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationCreateWithoutAgentActionsInput = {
@@ -807,6 +842,7 @@ export type ConversationCreateWithoutAgentActionsInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutAgentActionsInput = {
@@ -820,6 +856,7 @@ export type ConversationUncheckedCreateWithoutAgentActionsInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutAgentActionsInput = {
@@ -849,6 +886,7 @@ export type ConversationUpdateWithoutAgentActionsInput = {
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutAgentActionsInput = {
@@ -862,6 +900,7 @@ export type ConversationUncheckedUpdateWithoutAgentActionsInput = {
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationCreateWithoutQuestionNodesInput = {
@@ -875,6 +914,7 @@ export type ConversationCreateWithoutQuestionNodesInput = {
   messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
   fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationUncheckedCreateWithoutQuestionNodesInput = {
@@ -888,6 +928,7 @@ export type ConversationUncheckedCreateWithoutQuestionNodesInput = {
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
   fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
   agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedCreateNestedManyWithoutConversationInput
 }
 
 export type ConversationCreateOrConnectWithoutQuestionNodesInput = {
@@ -917,6 +958,7 @@ export type ConversationUpdateWithoutQuestionNodesInput = {
   messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutQuestionNodesInput = {
@@ -929,6 +971,79 @@ export type ConversationUncheckedUpdateWithoutQuestionNodesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationCreateWithoutFolderRefsInput = {
+  id?: string
+  title?: string
+  mode?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutConversationsInput
+  subject?: Prisma.SubjectCreateNestedOneWithoutConversationsInput
+  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
+  fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationUncheckedCreateWithoutFolderRefsInput = {
+  id?: string
+  userId: string
+  subjectId?: string | null
+  title?: string
+  mode?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
+  fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationCreateOrConnectWithoutFolderRefsInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutFolderRefsInput, Prisma.ConversationUncheckedCreateWithoutFolderRefsInput>
+}
+
+export type ConversationUpsertWithoutFolderRefsInput = {
+  update: Prisma.XOR<Prisma.ConversationUpdateWithoutFolderRefsInput, Prisma.ConversationUncheckedUpdateWithoutFolderRefsInput>
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutFolderRefsInput, Prisma.ConversationUncheckedCreateWithoutFolderRefsInput>
+  where?: Prisma.ConversationWhereInput
+}
+
+export type ConversationUpdateToOneWithWhereWithoutFolderRefsInput = {
+  where?: Prisma.ConversationWhereInput
+  data: Prisma.XOR<Prisma.ConversationUpdateWithoutFolderRefsInput, Prisma.ConversationUncheckedUpdateWithoutFolderRefsInput>
+}
+
+export type ConversationUpdateWithoutFolderRefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutConversationsNestedInput
+  subject?: Prisma.SubjectUpdateOneWithoutConversationsNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
+  fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationUncheckedUpdateWithoutFolderRefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
+  fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
 }
 
@@ -952,6 +1067,7 @@ export type ConversationUpdateWithoutUserInput = {
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutUserInput = {
@@ -965,6 +1081,7 @@ export type ConversationUncheckedUpdateWithoutUserInput = {
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateManyWithoutUserInput = {
@@ -996,6 +1113,7 @@ export type ConversationUpdateWithoutSubjectInput = {
   fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateWithoutSubjectInput = {
@@ -1009,6 +1127,7 @@ export type ConversationUncheckedUpdateWithoutSubjectInput = {
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
+  folderRefs?: Prisma.FolderNodeRefUncheckedUpdateManyWithoutConversationNestedInput
 }
 
 export type ConversationUncheckedUpdateManyWithoutSubjectInput = {
@@ -1030,6 +1149,7 @@ export type ConversationCountOutputType = {
   fileLinks: number
   questionNodes: number
   agentActions: number
+  folderRefs: number
 }
 
 export type ConversationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1037,6 +1157,7 @@ export type ConversationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   fileLinks?: boolean | ConversationCountOutputTypeCountFileLinksArgs
   questionNodes?: boolean | ConversationCountOutputTypeCountQuestionNodesArgs
   agentActions?: boolean | ConversationCountOutputTypeCountAgentActionsArgs
+  folderRefs?: boolean | ConversationCountOutputTypeCountFolderRefsArgs
 }
 
 /**
@@ -1077,6 +1198,13 @@ export type ConversationCountOutputTypeCountAgentActionsArgs<ExtArgs extends run
   where?: Prisma.AgentActionWhereInput
 }
 
+/**
+ * ConversationCountOutputType without action
+ */
+export type ConversationCountOutputTypeCountFolderRefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderNodeRefWhereInput
+}
+
 
 export type ConversationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1092,6 +1220,7 @@ export type ConversationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   fileLinks?: boolean | Prisma.Conversation$fileLinksArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Conversation$questionNodesArgs<ExtArgs>
   agentActions?: boolean | Prisma.Conversation$agentActionsArgs<ExtArgs>
+  folderRefs?: boolean | Prisma.Conversation$folderRefsArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["conversation"]>
 
@@ -1137,6 +1266,7 @@ export type ConversationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   fileLinks?: boolean | Prisma.Conversation$fileLinksArgs<ExtArgs>
   questionNodes?: boolean | Prisma.Conversation$questionNodesArgs<ExtArgs>
   agentActions?: boolean | Prisma.Conversation$agentActionsArgs<ExtArgs>
+  folderRefs?: boolean | Prisma.Conversation$folderRefsArgs<ExtArgs>
   _count?: boolean | Prisma.ConversationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConversationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1157,6 +1287,7 @@ export type $ConversationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     fileLinks: Prisma.$ConversationFilePayload<ExtArgs>[]
     questionNodes: Prisma.$QuestionNodePayload<ExtArgs>[]
     agentActions: Prisma.$AgentActionPayload<ExtArgs>[]
+    folderRefs: Prisma.$FolderNodeRefPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1566,6 +1697,7 @@ export interface Prisma__ConversationClient<T, Null = never, ExtArgs extends run
   fileLinks<T extends Prisma.Conversation$fileLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$fileLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questionNodes<T extends Prisma.Conversation$questionNodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$questionNodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentActions<T extends Prisma.Conversation$agentActionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$agentActionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folderRefs<T extends Prisma.Conversation$folderRefsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Conversation$folderRefsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderNodeRefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2115,6 +2247,30 @@ export type Conversation$agentActionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.AgentActionScalarFieldEnum | Prisma.AgentActionScalarFieldEnum[]
+}
+
+/**
+ * Conversation.folderRefs
+ */
+export type Conversation$folderRefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FolderNodeRef
+   */
+  select?: Prisma.FolderNodeRefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FolderNodeRef
+   */
+  omit?: Prisma.FolderNodeRefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderNodeRefInclude<ExtArgs> | null
+  where?: Prisma.FolderNodeRefWhereInput
+  orderBy?: Prisma.FolderNodeRefOrderByWithRelationInput | Prisma.FolderNodeRefOrderByWithRelationInput[]
+  cursor?: Prisma.FolderNodeRefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderNodeRefScalarFieldEnum | Prisma.FolderNodeRefScalarFieldEnum[]
 }
 
 /**

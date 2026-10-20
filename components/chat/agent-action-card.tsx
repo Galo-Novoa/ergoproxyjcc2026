@@ -16,7 +16,9 @@ export function AgentActionCard({ action }: { action: AgentActionView }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const parsed = agentActionSchema.safeParse(action.payload)
-  if (!parsed.success) return null
+  // Esta tarjeta solo muestra ramas del historial; los cambios de Carpeta se
+  // previsualizan en components/nodo/chat-view.tsx.
+  if (!parsed.success || parsed.data.type !== 'propose_history_branch') return null
   const { title, description } = parsed.data
 
   function resolve(decision: 'accept' | 'dismiss') {

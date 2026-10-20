@@ -4,9 +4,14 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { readScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
+import { nextNodePosition } from '@/lib/data/tree-layout'
 import { db } from '@/lib/db'
+import { isDatabaseConfigured } from '@/lib/db/config'
 import { getUserId } from '@/lib/session'
 import type { ActionResult } from '@/lib/types'
+const DEMO_ERROR =
+  'Modo demo: esto necesita una base de datos conectada. Por ahora solo podés crear materias.'
+
 
 const questionSchema = z.object({
   question: z
@@ -19,6 +24,7 @@ const questionSchema = z.object({
 })
 
 export async function createQuestion(formData: FormData): Promise<ActionResult> {
+  if (!isDatabaseConfigured) return { ok: false, error: DEMO_ERROR }
   const userId = await getUserId()
   const parsed = questionSchema.safeParse({
     question: formData.get('question') ?? '',
@@ -41,22 +47,36 @@ export async function createQuestion(formData: FormData): Promise<ActionResult> 
   }
 
   let ownedParentId: string | null = null
+  let parentPosition: { posX: number; posY: number } | null = null
   if (parentId !== 'none') {
     if (!isUuid(parentId)) return { ok: false, error: 'Duda padre inválida.' }
     const parent = await db.questionNode.findFirst({
       where: { id: parentId, userId },
-      select: { id: true, subjectId: true },
+      select: { id: true, subjectId: true, posX: true, posY: true },
     })
     if (!parent) return { ok: false, error: 'No encontramos la duda padre.' }
     ownedParentId = parent.id
     ownedSubjectId = ownedSubjectId ?? parent.subjectId
+    parentPosition = { posX: parent.posX, posY: parent.posY }
   }
 
+  const siblingCount = await db.questionNode.count({
+    where: ownedParentId
+      ? { userId, parentId: ownedParentId }
+      : { userId, parentId: null, subjectId: ownedSubjectId },
+  })
+  const position = nextNodePosition({ parent: parentPosition, siblingCount })
+
   await db.questionNode.create({
-    data: { userId, question, subjectId: ownedSubjectId, parentId: ownedParentId },
+    data: {
+      userId,
+      question,
+      subjectId: ownedSubjectId,
+      parentId: ownedParentId,
+      ...position,
+    },
   })
 
-  revalidatePath('/map')
   revalidatePath('/', 'layout')
   return { ok: true }
 }
@@ -65,6 +85,7 @@ export async function setQuestionStatus(
   id: string,
   status: 'open' | 'resolved',
 ): Promise<ActionResult> {
+  if (!isDatabaseConfigured) return { ok: false, error: DEMO_ERROR }
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos la duda.' }
   const { count } = await db.questionNode.updateMany({
@@ -72,18 +93,39 @@ export async function setQuestionStatus(
     data: { status },
   })
   if (count === 0) return { ok: false, error: 'No encontramos la duda.' }
-  revalidatePath('/map')
   revalidatePath('/', 'layout')
   return { ok: true }
 }
 
 export async function deleteQuestion(id: string): Promise<ActionResult> {
+  if (!isDatabaseConfigured) return { ok: false, error: DEMO_ERROR }
   const userId = await getUserId()
   if (!isUuid(id)) return { ok: false, error: 'No encontramos la duda.' }
   // Las dudas hijas pasan a ser raíces (ON DELETE SET NULL en parentId): no quedan huérfanas.
   const { count } = await db.questionNode.deleteMany({ where: { id, userId } })
   if (count === 0) return { ok: false, error: 'No encontramos la duda.' }
-  revalidatePath('/map')
   revalidatePath('/', 'layout')
+  return { ok: true }
+}
+
+/** Guarda la posición de un nodo en el canvas del historial. Las coordenadas son porcentajes. */
+export async function moveQuestionNode(
+  id: string,
+  posX: number,
+  posY: number,
+): Promise<ActionResult> {
+  if (!isDatabaseConfigured) return { ok: false, error: DEMO_ERROR }
+  const userId = await getUserId()
+  if (!isUuid(id)) return { ok: false, error: 'No encontramos la duda.' }
+  if (!Number.isFinite(posX) || !Number.isFinite(posY)) {
+    return { ok: false, error: 'Posición inválida.' }
+  }
+  const clamp = (value: number) => Math.min(100, Math.max(0, value))
+  const { count } = await db.questionNode.updateMany({
+    where: { id, userId },
+    data: { posX: clamp(posX), posY: clamp(posY) },
+  })
+  if (count === 0) return { ok: false, error: 'No encontramos la duda.' }
+  // Sin revalidate: el canvas ya movió el nodo en el cliente y un refresh lo haría saltar.
   return { ok: true }
 }

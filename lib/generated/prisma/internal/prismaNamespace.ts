@@ -410,7 +410,10 @@ export const ModelName = {
   ConversationFile: 'ConversationFile',
   Message: 'Message',
   AgentAction: 'AgentAction',
-  QuestionNode: 'QuestionNode'
+  QuestionNode: 'QuestionNode',
+  FolderNode: 'FolderNode',
+  FolderEdge: 'FolderEdge',
+  FolderNodeRef: 'FolderNodeRef'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode"
+    modelProps: "user" | "session" | "account" | "verification" | "organization" | "membership" | "subject" | "file" | "document" | "conversation" | "conversationFile" | "message" | "agentAction" | "questionNode" | "folderNode" | "folderEdge" | "folderNodeRef"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1469,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FolderNode: {
+      payload: Prisma.$FolderNodePayload<ExtArgs>
+      fields: Prisma.FolderNodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FolderNodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FolderNodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        findFirst: {
+          args: Prisma.FolderNodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FolderNodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        findMany: {
+          args: Prisma.FolderNodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>[]
+        }
+        create: {
+          args: Prisma.FolderNodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        createMany: {
+          args: Prisma.FolderNodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FolderNodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>[]
+        }
+        delete: {
+          args: Prisma.FolderNodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        update: {
+          args: Prisma.FolderNodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        deleteMany: {
+          args: Prisma.FolderNodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FolderNodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FolderNodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>[]
+        }
+        upsert: {
+          args: Prisma.FolderNodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodePayload>
+        }
+        aggregate: {
+          args: Prisma.FolderNodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFolderNode>
+        }
+        groupBy: {
+          args: Prisma.FolderNodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderNodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FolderNodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderNodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    FolderEdge: {
+      payload: Prisma.$FolderEdgePayload<ExtArgs>
+      fields: Prisma.FolderEdgeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FolderEdgeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FolderEdgeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        findFirst: {
+          args: Prisma.FolderEdgeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FolderEdgeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        findMany: {
+          args: Prisma.FolderEdgeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>[]
+        }
+        create: {
+          args: Prisma.FolderEdgeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        createMany: {
+          args: Prisma.FolderEdgeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FolderEdgeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>[]
+        }
+        delete: {
+          args: Prisma.FolderEdgeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        update: {
+          args: Prisma.FolderEdgeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        deleteMany: {
+          args: Prisma.FolderEdgeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FolderEdgeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FolderEdgeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>[]
+        }
+        upsert: {
+          args: Prisma.FolderEdgeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderEdgePayload>
+        }
+        aggregate: {
+          args: Prisma.FolderEdgeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFolderEdge>
+        }
+        groupBy: {
+          args: Prisma.FolderEdgeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderEdgeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FolderEdgeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderEdgeCountAggregateOutputType> | number
+        }
+      }
+    }
+    FolderNodeRef: {
+      payload: Prisma.$FolderNodeRefPayload<ExtArgs>
+      fields: Prisma.FolderNodeRefFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FolderNodeRefFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FolderNodeRefFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        findFirst: {
+          args: Prisma.FolderNodeRefFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FolderNodeRefFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        findMany: {
+          args: Prisma.FolderNodeRefFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>[]
+        }
+        create: {
+          args: Prisma.FolderNodeRefCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        createMany: {
+          args: Prisma.FolderNodeRefCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FolderNodeRefCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>[]
+        }
+        delete: {
+          args: Prisma.FolderNodeRefDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        update: {
+          args: Prisma.FolderNodeRefUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        deleteMany: {
+          args: Prisma.FolderNodeRefDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FolderNodeRefUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FolderNodeRefUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>[]
+        }
+        upsert: {
+          args: Prisma.FolderNodeRefUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FolderNodeRefPayload>
+        }
+        aggregate: {
+          args: Prisma.FolderNodeRefAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFolderNodeRef>
+        }
+        groupBy: {
+          args: Prisma.FolderNodeRefGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderNodeRefGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FolderNodeRefCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FolderNodeRefCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1707,6 +1932,48 @@ export const QuestionNodeScalarFieldEnum = {
 } as const
 
 export type QuestionNodeScalarFieldEnum = (typeof QuestionNodeScalarFieldEnum)[keyof typeof QuestionNodeScalarFieldEnum]
+
+
+export const FolderNodeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  subjectId: 'subjectId',
+  title: 'title',
+  type: 'type',
+  contentMd: 'contentMd',
+  posX: 'posX',
+  posY: 'posY',
+  origin: 'origin',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FolderNodeScalarFieldEnum = (typeof FolderNodeScalarFieldEnum)[keyof typeof FolderNodeScalarFieldEnum]
+
+
+export const FolderEdgeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  fromId: 'fromId',
+  toId: 'toId',
+  kind: 'kind',
+  createdAt: 'createdAt'
+} as const
+
+export type FolderEdgeScalarFieldEnum = (typeof FolderEdgeScalarFieldEnum)[keyof typeof FolderEdgeScalarFieldEnum]
+
+
+export const FolderNodeRefScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  nodeId: 'nodeId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  questionNodeId: 'questionNodeId',
+  createdAt: 'createdAt'
+} as const
+
+export type FolderNodeRefScalarFieldEnum = (typeof FolderNodeRefScalarFieldEnum)[keyof typeof FolderNodeRefScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2004,6 +2271,9 @@ export type GlobalOmitConfig = {
   message?: Prisma.MessageOmit
   agentAction?: Prisma.AgentActionOmit
   questionNode?: Prisma.QuestionNodeOmit
+  folderNode?: Prisma.FolderNodeOmit
+  folderEdge?: Prisma.FolderEdgeOmit
+  folderNodeRef?: Prisma.FolderNodeRefOmit
 }
 
 /* Types for Logging */

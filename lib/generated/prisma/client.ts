@@ -111,3 +111,18 @@ export type AgentAction = Prisma.AgentActionModel
  * 
  */
 export type QuestionNode = Prisma.QuestionNodeModel
+/**
+ * Model FolderNode
+ * 
+ */
+export type FolderNode = Prisma.FolderNodeModel
+/**
+ * Model FolderEdge
+ * 
+ */
+export type FolderEdge = Prisma.FolderEdgeModel
+/**
+ * Model FolderNodeRef
+ * 
+ */
+export type FolderNodeRef = Prisma.FolderNodeRefModel
