@@ -20,14 +20,15 @@ import { detectToolNeeds } from '@/lib/tools/intent'
 import { executeReadTool } from '@/lib/tools/executor'
 import { prepareToolProposals } from '@/lib/tools/prepare'
 import { isWebSearchConfigured } from '@/lib/tools/web-search'
-import { ensureRootNode, loadBranch, loadTree, pickNodeId } from '@/lib/tree/branch'
-import { composeContext, inheritedSize } from '@/lib/tree/compose'
 import {
-  INHERITED_COMPACT_CHARS,
-  MAX_DEPTH,
-  MAX_NODES_PER_CONVERSATION,
-  MAX_PROPOSALS_PER_MESSAGE,
-} from '@/lib/tree/config'
+  branchForQuestionNode,
+  ensureRootNode,
+  loadBranch,
+  loadTree,
+  pickNodeId,
+} from '@/lib/tree/branch'
+import { composeContext, inheritedSize, otherBranches, type BranchNote } from '@/lib/tree/compose'
+import { INHERITED_COMPACT_CHARS, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
 import { compactOwnContext, ensureInheritedSummary } from '@/lib/tree/summarize'
 import type { ActionResult } from '@/lib/types'
 
@@ -41,9 +42,11 @@ const DEFAULT_TITLE = 'Nueva conversación'
 const MAX_SELECTED_FILES = 8
 const MAX_QUESTION_NODES = 40
 const SHORT_FOLLOW_UP_LENGTH = 60
+/** Tope del título de un nodo del historial (ver `proposeQuestionNodeSchema`). */
+const QUESTION_TITLE_MAX = 60
 const CITATION_MARKERS = /\s?\[F\d+(?:\s*[,;]\s*F?\d+)*\]/g
 
-const normalizeAlias = (alias: string) => alias.trim().toLocaleLowerCase('es')
+const normalizeTitle = (title: string) => title.trim().toLocaleLowerCase('es')
 
 export async function sendMessage(
   conversationId: string,
@@ -70,8 +73,19 @@ export async function sendMessage(
 
   // La rama sale de la conversación del usuario: un id ajeno o inexistente cae a la rama activa.
   const rootId = await ensureRootNode(conversationId, userId)
-  const tree = await loadTree(conversationId, userId)
-  const nodeId = pickNodeId(tree, rootId, rawNodeId, conversation.activeNodeId)
+  let tree = await loadTree(conversationId, userId)
+  let nodeId = pickNodeId(tree, rootId, rawNodeId, conversation.activeNodeId)
+
+  // Continuar desde un nodo del historial de dudas bifurca la conversación en la respuesta donde
+  // nació ese nodo: el agente ve el camino hasta ahí y no lo que se habló después.
+  if (rawFocusNodeId) {
+    const fork = await branchForQuestionNode(conversationId, userId, rawFocusNodeId, tree)
+    if (!fork.ok) return { ok: false, error: fork.error }
+    if (fork.nodeId) {
+      nodeId = fork.nodeId
+      tree = await loadTree(conversationId, userId)
+    }
+  }
 
   let branch = await loadBranch(conversationId, userId, nodeId, tree)
   const target = branch.path[branch.path.length - 1]
@@ -111,23 +125,30 @@ export async function sendMessage(
     selectedFileIds,
   })
 
-  const existingChildAliases = tree.filter((n) => n.parentId === nodeId).map((n) => n.alias)
-  const canPropose =
-    tree.length < MAX_NODES_PER_CONVERSATION && branch.path.length <= MAX_DEPTH
-
   const folderIndex = await loadFolderIndex(userId, conversation.subjectId)
 
   // Dificultad estimada por tema de la Carpeta: pista para que el agente priorice
   // dónde escribir más. Es de solo lectura y nunca decide nada por sí sola.
   const studyPriorities = await getStudyPrioritiesForPrompt(userId, conversation.subjectId)
 
-  // Mapa de dudas de la materia: el agente puede proponer nodos nuevos colgando de uno existente.
-  const [questionNodes, focusNode] = await Promise.all([
+  // Historial de dudas de la materia: el agente propone nodos nuevos y elige de cuál cuelgan.
+  const [questionNodes, sessionNodes, focusNode] = await Promise.all([
     db.questionNode.findMany({
       where: { userId, ...(conversation.subjectId ? { subjectId: conversation.subjectId } : {}) },
       select: { id: true, question: true },
       orderBy: { createdAt: 'desc' },
       take: MAX_QUESTION_NODES,
+    }),
+    db.questionNode.findMany({
+      where: { userId, conversationId },
+      select: {
+        id: true,
+        question: true,
+        answerSummary: true,
+        messageId: true,
+        message: { select: { nodeId: true, seq: true } },
+      },
+      orderBy: { createdAt: 'asc' },
     }),
     rawFocusNodeId && isUuid(rawFocusNodeId)
       ? db.questionNode.findFirst({
@@ -136,6 +157,25 @@ export async function sendMessage(
         })
       : Promise.resolve(null),
   ])
+
+  // Nodo actual: el último que nació en el camino de esta rama, padre natural de la próxima duda.
+  const visibleIds = new Set(branch.visible.map((v) => v.message.id))
+  const currentNode =
+    sessionNodes.findLast((n) => n.messageId !== null && visibleIds.has(n.messageId)) ?? null
+  for (const node of [currentNode, focusNode]) {
+    if (node && !questionNodes.some((n) => n.id === node.id)) {
+      questionNodes.push({ id: node.id, question: node.question })
+    }
+  }
+
+  // Las otras ramas se describen con las dudas que se resolvieron en cada una.
+  const notesByBranch = new Map<string, BranchNote[]>()
+  for (const n of sessionNodes) {
+    const branchId = n.message?.nodeId
+    if (!branchId) continue
+    const text = n.answerSummary ? `${n.question} (${n.answerSummary})` : n.question
+    notesByBranch.set(branchId, [...(notesByBranch.get(branchId) ?? []), { seq: n.message!.seq, text }])
+  }
 
   // Herramientas del turno. La búsqueda web es de SOLO LECTURA: se ejecuta acá, antes
   // del agente, y sus resultados entran al prompt como un canal distinto del RAG. Si no
@@ -180,15 +220,14 @@ export async function sendMessage(
           nodes: folderIndex.nodes,
           priorities: studyPriorities,
         },
-        questions: { canPropose: true, nodes: questionNodes },
+        questions: { canPropose: true, nodes: questionNodes, currentId: currentNode?.id ?? null },
         rag: retrieval,
         branch: {
           alias: target.alias,
           topic: target.topic,
           isRoot: branch.path.length === 1,
           summaries: context.summaries,
-          existingChildAliases,
-          canPropose,
+          otherBranches: otherBranches(tree, branch.path, notesByBranch),
           truncated: context.truncated,
         },
         focusNode,
@@ -201,21 +240,8 @@ export async function sendMessage(
     return { ok: false, error: 'No pudimos generar la respuesta. Probá de nuevo.' }
   }
 
-  // Se descartan propuestas repetidas (entre sí o con ramas que ya existen) y las que excedan los topes.
-  const taken = new Set(existingChildAliases.map(normalizeAlias))
   const proposed = result.response.actions
-  const branchActions = canPropose
-    ? proposed
-        .filter((a) => a.type === 'propose_history_branch')
-        .filter((a) => {
-          const key = normalizeAlias(a.alias)
-          if (taken.has(key)) return false
-          taken.add(key)
-          return true
-        })
-        .slice(0, MAX_PROPOSALS_PER_MESSAGE)
-    : []
-  // Los nodos del mapa de dudas solo pueden colgar de nodos del propio usuario; el resto se descarta.
+  // Los nodos del historial de dudas solo pueden colgar de nodos del propio usuario; el resto se descarta.
   const questionParentIds = [
     ...new Set(
       proposed.flatMap((a) =>
@@ -233,11 +259,24 @@ export async function sendMessage(
         ).map((n) => n.id)
       : [],
   )
-  const questionActions = proposed.filter(
-    (a) =>
-      a.type === 'propose_question_node' &&
-      (a.parent_node_id === null || ownedParents.has(a.parent_node_id)),
-  )
+  // También se descartan los repetidos (entre sí o con nodos que ya existen) y los que excedan el tope.
+  // El modelo nombra mejor la duda en `description` que en el título del nodo (tiende a titular el
+  // tema que vendría después): el primer nodo propuesto toma ese alias si entra en el tope.
+  const answerAlias = result.response.description?.trim().replace(/[.\s]+$/, '') ?? ''
+  const takenTitles = new Set(questionNodes.map((n) => normalizeTitle(n.question)))
+  const questionActions = proposed
+    .flatMap((a, index) => {
+      if (a.type !== 'propose_question_node') return []
+      if (a.parent_node_id !== null && !ownedParents.has(a.parent_node_id)) return []
+      const isFirst = proposed.findIndex((p) => p.type === 'propose_question_node') === index
+      const useAlias = isFirst && answerAlias && answerAlias.length <= QUESTION_TITLE_MAX
+      const action = useAlias ? { ...a, title: answerAlias } : a
+      const key = normalizeTitle(action.title)
+      if (takenTitles.has(key)) return []
+      takenTitles.add(key)
+      return [action]
+    })
+    .slice(0, MAX_PROPOSALS_PER_MESSAGE)
   // Las de Carpeta se validan contra los apuntes reales: ids inventados y duplicados se descartan acá.
   const folderPrepared = await prepareFolderProposals(
     userId,
@@ -264,7 +303,6 @@ export async function sendMessage(
   )
 
   const actions = [
-    ...branchActions,
     ...questionActions,
     ...fabricApplied.proposals,
     ...toolProposals.valid,

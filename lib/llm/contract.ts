@@ -50,8 +50,10 @@ export type { FolderOperation, FolderEdgeKind, FolderNodeType }
 
 /**
  * Acciones que el agente puede PROPONER. Para sumar una nueva, agregarla acá y en `resolveAgentAction`.
- * El padre de la rama de historial no lo elige el modelo: es la rama donde se hizo la propuesta
- * (lo decide el servidor).
+ *
+ * `propose_history_branch` ya no se le pide al modelo: las ramas internas se abren solas cuando el
+ * estudiante continúa desde un nodo del historial de dudas (ver `branchForQuestionNode`). Queda en el
+ * contrato para leer y resolver las propuestas viejas que siguen guardadas.
  */
 export const proposeHistoryBranchSchema = z.object({
   type: z.literal('propose_history_branch'),
@@ -136,7 +138,6 @@ export const agentResponseSchema = z.object({
   grounding: z.enum(GROUNDING_VALUES),
   actions: z.array(
     z.union([
-      proposeHistoryBranchSchema,
       proposeQuestionNodePlain,
       proposeFolderChangePlain,
       proposeDiagramSchema,

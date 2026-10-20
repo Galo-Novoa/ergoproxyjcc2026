@@ -2,9 +2,9 @@
 
 import { Check, Clock3, GitBranch, Plus, Send, Sparkles, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { Fragment, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { resolveAgentAction } from '@/app/actions/agent-actions'
+import { resolveAgentAction, setActiveNode } from '@/app/actions/agent-actions'
 import { sendMessage } from '@/app/actions/chat'
 import { createConversation } from '@/app/actions/conversations'
 import { Markdown } from '@/components/chat/markdown'
@@ -37,8 +37,13 @@ export type ChatMessage = {
   id: string
   role: string
   content: string
+  /** true si viene del camino compartido hasta la bifurcación de la rama activa. */
+  inherited: boolean
   actions: ProposedAction[]
 }
+
+/** Rama interna activa cuando no es la principal de la sesión. */
+export type ActiveBranch = { alias: string; rootId: string }
 
 export function ChatView({
   subjectId,
@@ -46,21 +51,49 @@ export function ChatView({
   activeId,
   messages,
   nodes,
+  branch,
+  initialFocusId,
 }: {
   subjectId: string
   sessions: Session[]
   activeId: string | null
   messages: ChatMessage[]
   nodes: HistoryNode[]
+  branch: ActiveBranch | null
+  initialFocusId: string | null
 }) {
   const router = useRouter()
   const [question, setQuestion] = useState('')
   const [showHistory, setShowHistory] = useState(false)
-  const [selectedNode, setSelectedNode] = useState<string | null>(null)
+  const [selectedNode, setSelectedNode] = useState<string | null>(initialFocusId)
   const [pending, startTransition] = useTransition()
 
   const activeSession = sessions.find((session) => session.id === activeId) ?? null
   const focusNode = nodes.find((node) => node.id === selectedNode) ?? null
+  const branchStart = branch ? messages.findIndex((message) => !message.inherited) : -1
+
+  /** Un nodo de otra sesión se continúa en esa sesión: ahí está el camino que lo explica. */
+  function continueFrom(id: string | null) {
+    const node = nodes.find((candidate) => candidate.id === id)
+    setShowHistory(false)
+    if (node?.conversationId && node.conversationId !== activeId) {
+      router.push(`/subjects/${subjectId}?sesion=${node.conversationId}&desde=${node.id}`)
+      return
+    }
+    setSelectedNode(id)
+  }
+
+  function backToMain() {
+    if (!activeId || !branch) return
+    startTransition(async () => {
+      const result = await setActiveNode(activeId, branch.rootId)
+      if (!result.ok) {
+        toast.error(result.error)
+        return
+      }
+      router.refresh()
+    })
+  }
 
   const openSession = (id: string) => {
     router.push(`/subjects/${subjectId}?sesion=${id}`)
@@ -94,14 +127,15 @@ export function ChatView({
         conversationId = created.data.id
       }
 
-      // nodeId vacío: la rama activa se resuelve en el servidor. selectedNode
-      // va como foco del mapa de dudas (no como rama).
+      // nodeId vacío: la rama activa se resuelve en el servidor. Si se eligió un nodo del
+      // historial, el servidor bifurca ahí y esa rama pasa a ser la activa.
       const result = await sendMessage(conversationId, text, [], null, selectedNode)
       if (!result.ok) {
         toast.error(result.error)
         return
       }
       setQuestion('')
+      setSelectedNode(null)
       if (conversationId !== activeId) openSession(conversationId)
       else router.refresh()
     })
@@ -172,94 +206,107 @@ export function ChatView({
               <p>Hacé una pregunta para empezar a construir tu mapa de aprendizaje.</p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div key={message.id} className={`message-row ${message.role === 'assistant' ? 'ai' : 'user'}`}>
-                {message.role === 'assistant' ? (
-                  <div className="ai-avatar">
-                    <GitBranch size={14} />
-                  </div>
-                ) : (
-                  <div className="user-avatar">·</div>
+            messages.map((message, index) => (
+              <Fragment key={message.id}>
+                {branch && index === branchStart && (
+                  <div className="chat-date">RAMA «{branch.alias.toUpperCase()}»</div>
                 )}
-                <div className="message-content">
-                  <span className="message-label">
-                    {message.role === 'assistant' ? 'NODO AI' : 'TÚ'}
-                  </span>
+                <div className={`message-row ${message.role === 'assistant' ? 'ai' : 'user'}`}>
                   {message.role === 'assistant' ? (
-                    <Markdown>{message.content}</Markdown>
-                  ) : (
-                    <p>{message.content}</p>
-                  )}
-                  {message.actions.map((action) => (
-                    <div key={action.id} className="action-card">
-                      {action.kind === 'history' ? (
-                        <div>
-                          <span className="message-label">RAMA PROPUESTA PARA EL HISTORIAL</span>
-                          <strong>{action.title}</strong>
-                          <p>{action.description}</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="message-label">
-                            CAMBIO PROPUESTO EN LA CARPETA · {action.operationLabel}
-                          </span>
-                          <strong>
-                            {action.title ??
-                              action.targetTitle ??
-                              'Relacionar apuntes'}
-                          </strong>
-                          <p>{action.reason}</p>
-                          {action.nodeTypeLabel && (
-                            <p className="action-meta">Tipo: {action.nodeTypeLabel}</p>
-                          )}
-                          {action.targetTitle && (
-                            <p className="action-meta">
-                              {action.relatedTitle
-                                ? `${action.targetTitle} ${action.edgeLabel ?? 'se relaciona con'} ${action.relatedTitle}`
-                                : `Sobre el apunte: ${action.targetTitle}`}
-                            </p>
-                          )}
-                          {action.contentMd && (
-                            <div className="action-preview">
-                              <Markdown>{action.contentMd}</Markdown>
-                            </div>
-                          )}
-                          {action.solutionMd && (
-                            <div className="action-preview">
-                              <span className="message-label">RESOLUCIÓN</span>
-                              <Markdown>{action.solutionMd}</Markdown>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <div className="action-buttons">
-                        <button
-                          type="button"
-                          className="button primary"
-                          onClick={() => resolve(action.id, 'accept')}
-                          disabled={pending}
-                        >
-                          <Check size={14} />{' '}
-                          {action.kind === 'history' ? 'Agregar al historial' : 'Aplicar a la Carpeta'}
-                        </button>
-                        <button
-                          type="button"
-                          className="button secondary"
-                          onClick={() => resolve(action.id, 'dismiss')}
-                          disabled={pending}
-                        >
-                          Descartar
-                        </button>
-                      </div>
+                    <div className="ai-avatar">
+                      <GitBranch size={14} />
                     </div>
-                  ))}
+                  ) : (
+                    <div className="user-avatar">·</div>
+                  )}
+                  <div className="message-content">
+                    <span className="message-label">
+                      {message.role === 'assistant' ? 'NODO AI' : 'TÚ'}
+                    </span>
+                    {message.role === 'assistant' ? (
+                      <Markdown>{message.content}</Markdown>
+                    ) : (
+                      <p>{message.content}</p>
+                    )}
+                    {message.actions.map((action) => (
+                      <div key={action.id} className="action-card">
+                        {action.kind === 'history' ? (
+                          <div>
+                            <span className="message-label">NODO PROPUESTO PARA EL HISTORIAL</span>
+                            <strong>{action.title}</strong>
+                            <p>{action.description}</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="message-label">
+                              CAMBIO PROPUESTO EN LA CARPETA · {action.operationLabel}
+                            </span>
+                            <strong>
+                              {action.title ??
+                                action.targetTitle ??
+                                'Relacionar apuntes'}
+                            </strong>
+                            <p>{action.reason}</p>
+                            {action.nodeTypeLabel && (
+                              <p className="action-meta">Tipo: {action.nodeTypeLabel}</p>
+                            )}
+                            {action.targetTitle && (
+                              <p className="action-meta">
+                                {action.relatedTitle
+                                  ? `${action.targetTitle} ${action.edgeLabel ?? 'se relaciona con'} ${action.relatedTitle}`
+                                  : `Sobre el apunte: ${action.targetTitle}`}
+                              </p>
+                            )}
+                            {action.contentMd && (
+                              <div className="action-preview">
+                                <Markdown>{action.contentMd}</Markdown>
+                              </div>
+                            )}
+                            {action.solutionMd && (
+                              <div className="action-preview">
+                                <span className="message-label">RESOLUCIÓN</span>
+                                <Markdown>{action.solutionMd}</Markdown>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <div className="action-buttons">
+                          <button
+                            type="button"
+                            className="button primary"
+                            onClick={() => resolve(action.id, 'accept')}
+                            disabled={pending}
+                          >
+                            <Check size={14} />{' '}
+                            {action.kind === 'history' ? 'Agregar al historial' : 'Aplicar a la Carpeta'}
+                          </button>
+                          <button
+                            type="button"
+                            className="button secondary"
+                            onClick={() => resolve(action.id, 'dismiss')}
+                            disabled={pending}
+                          >
+                            Descartar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </Fragment>
             ))
           )}
         </div>
 
         <div className="composer-wrap">
+          {branch && !focusNode && (
+            <div className="selected-context">
+              <GitBranch size={13} /> En la rama <strong>{branch.alias}</strong>
+              <button type="button" onClick={backToMain} disabled={pending}>
+                Volver a la principal
+              </button>
+            </div>
+          )}
           {focusNode && (
             <div className="selected-context">
               <GitBranch size={13} /> Continuando desde <strong>{focusNode.question}</strong>
@@ -296,10 +343,7 @@ export function ChatView({
           selected={selectedNode}
           setSelected={setSelectedNode}
           onClose={() => setShowHistory(false)}
-          onContinue={(id) => {
-            setSelectedNode(id)
-            setShowHistory(false)
-          }}
+          onContinue={continueFrom}
         />
       )}
     </div>

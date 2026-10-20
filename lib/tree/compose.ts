@@ -147,6 +147,48 @@ export function composeContext(
   return { summaries, messages, truncated }
 }
 
+const OTHER_BRANCHES_MAX = 8
+const OTHER_BRANCH_SUMMARY_CHARS = 300
+
+export type BranchNote = { seq: bigint; text: string }
+
+/**
+ * Ramas que se separaron del camino actual: las hermanas de cada tramo (con sus subramas) y lo que siguió
+ * en cada ancestro después de la bifurcación. Solo se describen en una línea para que el modelo sepa que
+ * existen sin mezclar sus detalles con esta rama. `notes` son las dudas registradas en cada rama del árbol
+ * interno (por id de rama), con el `seq` del mensaje donde nacieron.
+ */
+export function otherBranches(
+  nodes: TreeNode[],
+  path: TreeNode[],
+  notes: Map<string, BranchNote[]>,
+): LabeledText[] {
+  const onPath = new Set(path.map((n) => n.id))
+  const childrenOf = (id: string) => nodes.filter((n) => n.parentId === id)
+  const subtreeNotes = (node: TreeNode): string[] => [
+    ...(notes.get(node.id) ?? []).map((n) => n.text),
+    ...childrenOf(node.id).flatMap(subtreeNotes),
+  ]
+
+  const result: LabeledText[] = []
+  path.forEach((ancestor, index) => {
+    const forkSeq = path[index + 1]?.anchorSeq
+    const after = forkSeq != null ? (notes.get(ancestor.id) ?? []).filter((n) => n.seq > forkSeq) : []
+    if (after.length) {
+      result.push({
+        label: `${ancestor.alias} (continuación)`,
+        text: after.map((n) => n.text).join('; ').slice(0, OTHER_BRANCH_SUMMARY_CHARS),
+      })
+    }
+    for (const sibling of childrenOf(ancestor.id)) {
+      if (onPath.has(sibling.id)) continue
+      const text = sibling.contextSummary ?? (subtreeNotes(sibling).join('; ') || sibling.topic)
+      result.push({ label: sibling.alias, text: text.slice(0, OTHER_BRANCH_SUMMARY_CHARS) })
+    }
+  })
+  return result.slice(0, OTHER_BRANCHES_MAX)
+}
+
 /** Largo del tramo heredado que se enviaría sin resumen propio (para decidir si conviene resumirlo). */
 export function inheritedSize(
   path: TreeNode[],

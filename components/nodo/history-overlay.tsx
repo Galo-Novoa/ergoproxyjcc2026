@@ -9,6 +9,8 @@ export type HistoryNode = {
   question: string
   answerSummary: string | null
   parentId: string | null
+  /** Sesión donde nació el nodo; continuar desde él abre esa sesión. */
+  conversationId: string | null
   posX: number
   posY: number
   status: string

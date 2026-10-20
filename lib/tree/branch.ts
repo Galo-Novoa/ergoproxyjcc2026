@@ -3,7 +3,13 @@ import 'server-only'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
 import { pathTo, visibleMessages, type TreeNode } from '@/lib/tree/compose'
-import { QUESTION_PREVIEW_CHARS, ROOT_ALIAS } from '@/lib/tree/config'
+import {
+  ALIAS_MAX,
+  MAX_DEPTH,
+  MAX_NODES_PER_CONVERSATION,
+  QUESTION_PREVIEW_CHARS,
+  ROOT_ALIAS,
+} from '@/lib/tree/config'
 
 /**
  * Devuelve la raíz de la conversación, creándola si falta (conversaciones nuevas) y adoptando los mensajes
@@ -77,6 +83,77 @@ export function pickNodeId(
   if (requested && isUuid(requested) && ids.has(requested)) return requested
   if (active && ids.has(active)) return active
   return rootId
+}
+
+/** Alias de rama dentro del tope, cortado en una palabra entera para que se lea bien. */
+function shortAlias(text: string) {
+  const clean = text.trim().replace(/\s+/g, ' ')
+  if (clean.length <= ALIAS_MAX) return clean
+  const cut = clean.slice(0, ALIAS_MAX - 1)
+  const lastSpace = cut.lastIndexOf(' ')
+  return `${lastSpace > ALIAS_MAX / 2 ? cut.slice(0, lastSpace) : cut}…`
+}
+
+/**
+ * Rama interna con la que se continúa al elegir un nodo del historial de dudas. El nodo nació en una
+ * respuesta del agente: si esa respuesta es la última de su rama, se sigue ahí; si no, se abre una rama
+ * anclada en esa respuesta, que hereda el camino hasta ese punto y nada de lo que se habló después.
+ *
+ * Devuelve `nodeId: null` cuando el nodo no salió de esta conversación o su mensaje ya no existe: en ese
+ * caso el nodo solo sirve como foco del prompt.
+ */
+export async function branchForQuestionNode(
+  conversationId: string,
+  userId: string,
+  questionNodeId: string,
+  tree: TreeNode[],
+): Promise<{ ok: true; nodeId: string | null } | { ok: false; error: string }> {
+  if (!isUuid(questionNodeId)) return { ok: true, nodeId: null }
+  const questionNode = await db.questionNode.findFirst({
+    where: { id: questionNodeId, userId, conversationId },
+    select: {
+      question: true,
+      answerSummary: true,
+      message: { select: { id: true, nodeId: true, seq: true } },
+    },
+  })
+  const anchor = questionNode?.message
+  const parent = anchor?.nodeId ? tree.find((n) => n.id === anchor.nodeId) : undefined
+  if (!questionNode || !anchor || !parent) return { ok: true, nodeId: null }
+
+  const later = await db.message.count({
+    where: { conversationId, userId, nodeId: parent.id, seq: { gt: anchor.seq } },
+  })
+  if (later === 0) return { ok: true, nodeId: parent.id }
+
+  // Si un intento anterior abrió la rama y el agente falló, se reusa en vez de duplicarla.
+  const siblings = tree.filter((n) => n.parentId === parent.id)
+  const emptyFork = siblings.find((n) => n.anchorSeq === anchor.seq)
+  if (emptyFork) {
+    const used = await db.message.count({ where: { conversationId, userId, nodeId: emptyFork.id } })
+    if (used === 0) return { ok: true, nodeId: emptyFork.id }
+  }
+
+  if (tree.length >= MAX_NODES_PER_CONVERSATION) {
+    return { ok: false, error: 'Esta sesión ya tiene el máximo de ramas. Empezá una sesión nueva.' }
+  }
+  if (pathTo(tree, parent.id).length > MAX_DEPTH) {
+    return { ok: false, error: 'Esta rama ya está en el nivel máximo de profundidad.' }
+  }
+
+  const node = await db.conversationNode.create({
+    data: {
+      conversationId,
+      userId,
+      parentId: parent.id,
+      anchorMessageId: anchor.id,
+      alias: shortAlias(questionNode.question),
+      topic: questionNode.answerSummary?.trim() || questionNode.question,
+      position: siblings.length,
+    },
+    select: { id: true },
+  })
+  return { ok: true, nodeId: node.id }
 }
 
 /** Rama completa para mostrar o continuar: camino raíz→nodo y mensajes visibles con su origen. */

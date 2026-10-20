@@ -21,7 +21,6 @@ import {
   TITLE_MAX,
 } from '@/lib/folder/config'
 import { FOLDER_OPERATIONS, FOLDER_OPERATION_LABELS } from '@/lib/folder/schema'
-import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
 import {
   GENERATED_FILE_FORMATS,
   GENERATED_FILE_NAME_MAX,
@@ -47,15 +46,16 @@ export type BranchPromptInfo = {
   topic: string
   isRoot: boolean
   summaries: LabeledText[]
-  existingChildAliases: string[]
-  /** false cuando ya se alcanzó el tope de ramas o de profundidad. */
-  canPropose: boolean
+  /** Ramas que se separaron de este camino, en una línea cada una (ver `otherBranches`). */
+  otherBranches: LabeledText[]
   truncated: boolean
 }
 
 export type QuestionMapPromptInfo = {
   canPropose: boolean
   nodes: { id: string; question: string }[]
+  /** Último nodo del historial que salió de esta rama: el padre natural de la próxima duda. */
+  currentId: string | null
 }
 
 export type AgentResult = { response: AgentResponse; metadata: MessageMetadata }
@@ -97,8 +97,11 @@ function buildBranchPrompt(branch: BranchPromptInfo) {
   if (branch.truncated) {
     lines.push('Parte del historial más antiguo no está disponible; no asumas lo que no figure arriba.')
   }
-  if (branch.existingChildAliases.length) {
-    lines.push(`Ramas que ya salen de esta: ${branch.existingChildAliases.map((a) => `«${a}»`).join(', ')}. No las repitas.`)
+  if (branch.otherBranches.length) {
+    lines.push(
+      'Otras ramas que se separaron de este camino. Solo sabés de qué tratan: podés mencionarlas o remitir a ellas, pero no asumas sus detalles ni los mezcles con esta rama:',
+      ...branch.otherBranches.map((b) => `- «${b.label}»: ${b.text}`),
+    )
   }
   return lines.join('\n')
 }
@@ -150,13 +153,22 @@ function buildFolderPrompt(folder: FolderPromptInfo) {
   return lines.join('\n')
 }
 
-function buildQuestionMapPrompt(questions: QuestionMapPromptInfo) {
+function buildQuestionMapPrompt(questions: QuestionMapPromptInfo, focusNodeId: string | null) {
   if (!questions.canPropose) return ''
   const lines = [
-    'También podés proponer un nodo en el mapa de dudas de la materia: {"type":"propose_question_node","parent_node_id":<id de la lista o null>,"title":<alias corto>,"description":<tema específico>}. Usala cuando la respuesta abre un subtema que merece su propio nodo del mapa (distinto de las ramas de ESTA conversación).',
+    'Historial de dudas: es el árbol de preguntas de la materia que el estudiante ve y usa para volver a cualquier tema. Acción: {"type":"propose_question_node","parent_node_id":<id de la lista o null>,"title":<alias de 2 a 6 palabras>,"description":<qué se resolvió, en una oración>}.',
+    '- El nodo representa la duda que el estudiante ACABA de hacer y que esta respuesta resolvió; nunca un tema que podría venir después. Proponé UN nodo en cada respuesta que resuelva una duda concreta nueva (un concepto, un ejercicio, un paso o un método) que todavía no figure en la lista. No lo propongas para saludos, agradecimientos ni repreguntas que siguen dentro del mismo tema de un nodo existente.',
+    '- title: el mismo concepto que pusiste en description (por ejemplo, a «¿Qué es una derivada?» le corresponde «Definición de derivada», no «Aplicaciones de la derivada»). Nunca copies la pregunta.',
+    '- parent_node_id, en este orden: 1) si el estudiante eligió un nodo para continuar, ese; 2) si la duda profundiza o sigue la conversación reciente, el nodo marcado (actual); 3) si no, el nodo existente más general del que es un subtema (puede ser de otra sesión), prefiriendo el concepto antes que un ejemplo; 4) null si no se relaciona con ninguno.',
   ]
   if (questions.nodes.length) {
-    lines.push(`Nodos existentes del mapa de dudas:\n${questions.nodes.map((n) => `- ${n.id}: ${n.question}`).join('\n')}`)
+    const marker = (id: string) =>
+      id === focusNodeId ? ' (el estudiante continúa desde acá)' : id === questions.currentId ? ' (actual)' : ''
+    lines.push(
+      `Nodos existentes del historial de dudas:\n${questions.nodes.map((n) => `- ${n.id}: ${n.question}${marker(n.id)}`).join('\n')}`,
+    )
+  } else {
+    lines.push('El historial de dudas está vacío: el primer nodo va con parent_node_id null.')
   }
   return lines.join('\n')
 }
@@ -169,7 +181,7 @@ function buildQuestionMapPrompt(questions: QuestionMapPromptInfo) {
 function buildToolsPrompt(tools: ToolsPromptInfo | undefined) {
   const lines: string[] = []
   lines.push(
-    `Herramientas disponibles (solo como propuestas; nunca se ejecutan solas): ${TOOL_LABELS.propose_diagram}, ${TOOL_LABELS.generate_file}. Además, la ${TOOL_LABELS.propose_folder_change} y las ramas de arriba.`,
+    `Herramientas disponibles (solo como propuestas; nunca se ejecutan solas): ${TOOL_LABELS.propose_diagram}, ${TOOL_LABELS.generate_file}. Además, la ${TOOL_LABELS.propose_folder_change} y los nodos del historial de dudas.`,
   )
   lines.push(
     `- Diagrama: {"type":"propose_diagram","diagram_type":<${MERMAID_DIAGRAM_TYPES.join(' | ')}>,"title":<título>, "source":<código Mermaid válido Y editable>,"reason":<por qué ayuda>}. Proponelo cuando un diagrama aclare la explicación (flujos, relaciones, secuencias). El estudiante lo puede editar y guardar como apunte.`,
@@ -204,17 +216,14 @@ function buildSystemPrompt(
     '- output: el texto visible para el estudiante, en Markdown (podés usar listas, tablas y bloques de código).',
     '- description: alias corto (2 a 5 palabras, máximo 80 caracteres) del concepto o problema específico tratado, por ejemplo «Sustitución en integrales». Nunca copies la pregunta completa.',
     '- grounding: "documents", "mixed", "general" o "insufficient" según cuánto de la respuesta se apoya en los documentos del estudiante (criterios abajo). Sin fragmentos de documentos, usá "general" o "insufficient".',
-    '- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Las acciones son propuestas: el estudiante decide si las acepta.',
-    branch.canPropose
-      ? `Rama del historial de ESTA conversación: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, y ninguna que repita lo que ya explicaste.`
-      : 'Esta conversación ya no admite más ramas: no propongas acciones propose_history_branch.',
-    buildQuestionMapPrompt(questions),
+    '- actions: lista de acciones PROPUESTAS; el estudiante decide si las acepta. Incluí solo las que aporten (criterios abajo para cada una).',
+    buildQuestionMapPrompt(questions, focusNode?.id ?? null),
     buildFolderPrompt(folder),
     buildToolsPrompt(tools),
     buildBranchPrompt(branch),
     rag ? buildRagPrompt(rag) : '',
     focusNode
-      ? `El estudiante volvió al nodo ${focusNode.id} («${focusNode.question}») del mapa de dudas y sigue preguntando desde ahí.`
+      ? `El estudiante volvió al nodo ${focusNode.id} («${focusNode.question}») del historial de dudas y sigue preguntando desde ahí. Si la nueva duda es un subtema de ese nodo, usalo como parent_node_id.`
       : '',
   ]
     .filter(Boolean)
