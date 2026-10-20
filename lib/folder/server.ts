@@ -7,7 +7,7 @@ import {
   MAX_NODES_PER_WORKSPACE,
 } from '@/lib/folder/config'
 import {
-  canonicalRelated,
+  canonicalRelates,
   edgeExists,
   mergeContent,
   normalizeFolderProposal,
@@ -16,15 +16,17 @@ import {
   type NodeRef,
 } from '@/lib/folder/logic'
 import type { FolderProposal } from '@/lib/folder/schema'
+import { nextNodePosition } from '@/lib/data/tree-layout'
 
 export type Tx = Parameters<Parameters<typeof db.$transaction>[0]>[0]
 
 export class FolderError extends Error {}
 
 export type FolderSourceRef = {
-  conversationId: string
+  conversationId: string | null
   messageId: string | null
   historyNodeId: string | null
+  questionNodeId: string | null
   label: string
 }
 
@@ -36,7 +38,7 @@ export async function loadFolderIndex(
 ): Promise<{ nodes: NodeRef[]; edges: EdgeRef[] }> {
   const nodes = await client.folderNode.findMany({
     where: { userId, subjectId },
-    select: { id: true, title: true, kind: true },
+    select: { id: true, title: true, type: true },
     orderBy: { updatedAt: 'desc' },
   })
   if (!nodes.length) return { nodes: [], edges: [] }
@@ -65,11 +67,14 @@ export async function prepareFolderProposals(
     const result = normalizeFolderProposal(raw, ctx)
     if (!result.ok) continue
     const p = result.proposal
-    if (p.operation === 'create') {
-      if (room <= 0) continue
-      room -= 1
+    const createsNodes =
+      p.operation === 'create_node' || p.operation === 'create_exercise_with_solution'
+    if (createsNodes) {
+      const needed = p.operation === 'create_exercise_with_solution' ? 2 : 1
+      if (room < needed) continue
+      room -= needed
       // Un segundo apunte igual dentro de la misma respuesta se detecta como duplicado del primero.
-      ctx.nodes.push({ id: `pending-${valid.length}`, title: p.title ?? '', kind: p.kind ?? 'concept' })
+      ctx.nodes.push({ id: `pending-${valid.length}`, title: p.title ?? '', type: p.node_type ?? 'concept' })
     }
     valid.push(p)
   }
@@ -84,6 +89,7 @@ async function addSource(tx: Tx, userId: string, nodeId: string, source: FolderS
       conversationId: source.conversationId,
       messageId: source.messageId,
       historyNodeId: source.historyNodeId,
+      questionNodeId: source.questionNodeId,
     },
     select: { id: true },
   })
@@ -95,13 +101,14 @@ async function addSource(tx: Tx, userId: string, nodeId: string, source: FolderS
       conversationId: source.conversationId,
       messageId: source.messageId,
       historyNodeId: source.historyNodeId,
+      questionNodeId: source.questionNodeId,
       label: source.label.slice(0, LABEL_MAX),
     },
   })
 }
 
-async function addEdge(tx: Tx, userId: string, fromId: string, toId: string, kind: 'child' | 'related') {
-  const [from, to] = kind === 'related' ? canonicalRelated(fromId, toId) : [fromId, toId]
+async function addEdge(tx: Tx, userId: string, fromId: string, toId: string, kind: string) {
+  const [from, to] = kind === 'relates' ? canonicalRelates(fromId, toId) : [fromId, toId]
   await tx.folderEdge.upsert({
     where: { fromId_toId_kind: { fromId: from, toId: to, kind } },
     create: { userId, fromId: from, toId: to, kind },
@@ -125,55 +132,77 @@ export async function applyFolderProposal(
   if (!result.ok) throw new FolderError(result.reason)
   const p = result.proposal
 
-  if (p.operation === 'create') {
+  if (p.operation === 'create_node' || p.operation === 'create_exercise_with_solution') {
     if (ctx.nodes.length >= MAX_NODES_PER_WORKSPACE) {
       throw new FolderError('Esta carpeta ya tiene el máximo de apuntes.')
     }
+    const parentPosition = p.target_node_id
+      ? await tx.folderNode.findFirst({
+          where: { id: p.target_node_id },
+          select: { posX: true, posY: true },
+        })
+      : null
+    const placed = nextNodePosition({ parent: parentPosition, siblingCount: ctx.nodes.length })
+
     const node = await tx.folderNode.create({
       data: {
         userId,
         subjectId,
-        kind: p.kind ?? 'concept',
+        type: p.node_type ?? 'concept',
         title: p.title ?? '',
-        content: p.content ?? '',
+        contentMd: p.content_md ?? '',
+        origin: 'ai',
+        ...placed,
       },
       select: { id: true },
     })
-    if (p.parentNodeId) await addEdge(tx, userId, p.parentNodeId, node.id, 'child')
-    if (p.relatedNodeId) await addEdge(tx, userId, node.id, p.relatedNodeId, 'related')
+    if (p.target_node_id) await addEdge(tx, userId, p.target_node_id, node.id, 'contains')
     if (source) await addSource(tx, userId, node.id, source)
-    if (p.kind === 'exercise' && p.solution) {
+    if (p.operation === 'create_exercise_with_solution' && p.solution_md) {
+      const solutionPosition = nextNodePosition({ parent: placed, siblingCount: 0 })
       const solution = await tx.folderNode.create({
-        data: { userId, subjectId, kind: 'solution', title: `Resolución: ${p.title}`.slice(0, 120), content: p.solution },
+        data: {
+          userId,
+          subjectId,
+          type: 'solution',
+          title: `Resolución · ${p.title ?? ''}`.slice(0, 120),
+          contentMd: p.solution_md,
+          origin: 'ai',
+          ...solutionPosition,
+        },
         select: { id: true },
       })
-      await addEdge(tx, userId, node.id, solution.id, 'child')
+      await addEdge(tx, userId, solution.id, node.id, 'solves')
       if (source) await addSource(tx, userId, solution.id, source)
     }
     return { nodeId: node.id }
   }
 
-  if (p.operation === 'append') {
+  if (p.operation === 'append_content' || p.operation === 'replace_content') {
     const target = await tx.folderNode.findFirst({
-      where: { id: p.targetNodeId ?? '', userId, subjectId },
-      select: { id: true, content: true },
+      where: { id: p.target_node_id ?? '', userId, subjectId },
+      select: { id: true, contentMd: true },
     })
     if (!target) throw new FolderError('El apunte de destino ya no existe.')
-    const merged = mergeContent(target.content, p.content ?? '')
-    if (!merged.ok) throw new FolderError(merged.error)
-    if (!merged.changed) throw new FolderError('El apunte ya contiene ese contenido.')
-    await tx.folderNode.update({ where: { id: target.id }, data: { content: merged.content } })
+    let contentMd = p.content_md ?? ''
+    if (p.operation === 'append_content') {
+      const merged = mergeContent(target.contentMd, contentMd)
+      if (!merged.ok) throw new FolderError(merged.error)
+      if (!merged.changed) throw new FolderError('El apunte ya contiene ese contenido.')
+      contentMd = merged.content
+    }
+    await tx.folderNode.update({ where: { id: target.id }, data: { contentMd } })
     if (source) await addSource(tx, userId, target.id, source)
     return { nodeId: target.id }
   }
 
-  const from = p.targetNodeId as string
-  const to = p.relatedNodeId as string
-  const relation = p.relation === 'child' ? 'child' : 'related'
-  if (edgeExists(ctx.edges, from, to, relation)) throw new FolderError('Esos apuntes ya están relacionados.')
-  if (relation === 'child' && wouldCreateCycle(ctx.edges, from, to)) {
+  const from = p.target_node_id as string
+  const to = p.related_node_id as string
+  const kind = p.edge_kind ?? 'relates'
+  if (edgeExists(ctx.edges, from, to, kind)) throw new FolderError('Esos apuntes ya están relacionados.')
+  if (kind === 'contains' && wouldCreateCycle(ctx.edges, from, to)) {
     throw new FolderError('Esa relación crearía un ciclo.')
   }
-  await addEdge(tx, userId, from, to, relation)
+  await addEdge(tx, userId, from, to, kind)
   return { nodeId: from }
 }

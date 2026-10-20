@@ -17,17 +17,18 @@ import { buildRagPrompt } from '@/lib/rag/prompt'
 import type { RetrievalResult } from '@/lib/rag/retrieve'
 import type { LabeledText } from '@/lib/tree/compose'
 import {
-  FOLDER_KIND_LABELS,
+  FOLDER_EDGE_LABELS,
+  FOLDER_NODE_LABELS,
   MAX_FOLDER_PROPOSALS_PER_MESSAGE,
   PROMPT_INDEX_LIMIT,
   TITLE_MAX,
-  type FolderKind,
 } from '@/lib/folder/config'
+import { FOLDER_OPERATIONS, FOLDER_OPERATION_LABELS } from '@/lib/folder/schema'
 import { ALIAS_MAX, MAX_PROPOSALS_PER_MESSAGE } from '@/lib/tree/config'
 
 export type FolderPromptInfo = {
   canPropose: boolean
-  nodes: { id: string; title: string; kind: string }[]
+  nodes: { id: string; title: string; type: string }[]
 }
 
 export type BranchPromptInfo = {
@@ -39,6 +40,11 @@ export type BranchPromptInfo = {
   /** false cuando ya se alcanzó el tope de ramas o de profundidad. */
   canPropose: boolean
   truncated: boolean
+}
+
+export type QuestionMapPromptInfo = {
+  canPropose: boolean
+  nodes: { id: string; question: string }[]
 }
 
 export type AgentResult = { response: AgentResponse; metadata: MessageMetadata }
@@ -77,22 +83,39 @@ function buildFolderPrompt(folder: FolderPromptInfo) {
     return 'La Carpeta del estudiante está llena: no propongas acciones de tipo propose_folder_change.'
   }
   const shown = folder.nodes.slice(0, PROMPT_INDEX_LIMIT)
-  const kinds = Object.entries(FOLDER_KIND_LABELS)
+  const kinds = Object.entries(FOLDER_NODE_LABELS)
+    .map(([type, label]) => `${type} (${label})`)
+    .join(', ')
+  const edgeKinds = Object.entries(FOLDER_EDGE_LABELS)
     .map(([kind, label]) => `${kind} (${label})`)
     .join(', ')
+  const operations = FOLDER_OPERATIONS.map((op) => `${op} (${FOLDER_OPERATION_LABELS[op]})`).join(', ')
   const lines = [
-    `La Carpeta es el cuaderno ordenado del estudiante, separado de este chat. Acción disponible: {"type":"propose_folder_change","operation":"create"|"append"|"link","kind":<${kinds}>|null,"title":<hasta ${TITLE_MAX} caracteres>|null,"content":<Markdown>|null,"targetNodeId":<id>|null,"parentNodeId":<id>|null,"relatedNodeId":<id>|null,"relation":"child"|"related"|null,"solution":<Markdown>|null,"reason":<por qué conviene guardarlo>}.`,
+    `La Carpeta es el cuaderno ordenado del estudiante, separado de este chat. Acción disponible: {"type":"propose_folder_change","operation":<${operations}>,"target_node_id":<id>|null,"related_node_id":<id>|null,"edge_kind":<${edgeKinds}>|null,"node_type":<${kinds}>|null,"title":<hasta ${TITLE_MAX} caracteres>|null,"content_md":<Markdown>|null,"solution_md":<Markdown>|null,"reason":<por qué conviene guardarlo>}.`,
     `Usala SOLO cuando lo explicado tiene valor para estudiar después (una definición, los puntos clave de un tema, un ejercicio con su resolución) o cuando el estudiante pide guardarlo. Máximo ${MAX_FOLDER_PROPOSALS_PER_MESSAGE} por respuesta; la mayoría de las respuestas no necesitan ninguna.`,
-    '- create: apunte nuevo (kind, title y content obligatorios). Para un ejercicio resuelto usá kind "exercise", el enunciado en content y la resolución en solution.',
-    '- append: agrega contenido a un apunte que YA existe (targetNodeId y content). Preferilo sobre create cuando el tema ya está en la lista.',
-    '- link: relaciona dos apuntes existentes (targetNodeId y relatedNodeId, más relation: "child" si el segundo es un subtema del primero, "related" si solo se vinculan).',
-    'Usá únicamente ids de la lista; nunca inventes ids. Si la lista está vacía, solo podés usar create.',
+    '- create_node: apunte nuevo (title y content_md obligatorios; node_type opcional). En target_node_id podés poner el apunte que lo contiene, o null.',
+    '- append_content: agrega contenido a un apunte que YA existe (target_node_id y content_md). Preferilo sobre create_node cuando el tema ya está en la lista.',
+    '- replace_content: reescribe el apunte entero (target_node_id y content_md). Usalo solo si el contenido viejo quedó mal, nunca para agregar.',
+    '- relate_nodes: relaciona dos apuntes existentes (target_node_id y related_node_id, más edge_kind: "contains" si el primero contiene al segundo, "relates" si solo se vinculan, "solves" si una resolución resuelve un ejercicio).',
+    '- create_exercise_with_solution: crea el ejercicio y su resolución juntos (title, content_md = enunciado, solution_md = resolución).',
+    'Usá únicamente ids de la lista; nunca inventes ids. Si la lista está vacía, solo podés usar create_node o create_exercise_with_solution.',
   ]
   lines.push(
     shown.length
-      ? `Apuntes existentes en la Carpeta:\n${shown.map((n) => `- ${n.id} · ${n.kind} · ${n.title}`).join('\n')}`
+      ? `Apuntes existentes en la Carpeta:\n${shown.map((n) => `- ${n.id} · ${n.type} · ${n.title}`).join('\n')}`
       : 'La Carpeta todavía no tiene apuntes.',
   )
+  return lines.join('\n')
+}
+
+function buildQuestionMapPrompt(questions: QuestionMapPromptInfo) {
+  if (!questions.canPropose) return ''
+  const lines = [
+    'También podés proponer un nodo en el mapa de dudas de la materia: {"type":"propose_question_node","parent_node_id":<id de la lista o null>,"title":<alias corto>,"description":<tema específico>}. Usala cuando la respuesta abre un subtema que merece su propio nodo del mapa (distinto de las ramas de ESTA conversación).',
+  ]
+  if (questions.nodes.length) {
+    lines.push(`Nodos existentes del mapa de dudas:\n${questions.nodes.map((n) => `- ${n.id}: ${n.question}`).join('\n')}`)
+  }
   return lines.join('\n')
 }
 
@@ -100,7 +123,9 @@ function buildSystemPrompt(
   mode: ConversationMode,
   branch: BranchPromptInfo,
   folder: FolderPromptInfo,
+  questions: QuestionMapPromptInfo,
   rag: RetrievalResult | undefined,
+  focusNode: { id: string; question: string } | null,
 ) {
   return [
     'Sos un tutor para estudiantes de ingeniería y ciencias exactas de la FCEIA (UNR). Respondé en español rioplatense, con claridad y paso a paso.',
@@ -111,12 +136,18 @@ function buildSystemPrompt(
     '- grounding: "documents", "mixed", "general" o "insufficient" según cuánto de la respuesta se apoya en los documentos del estudiante (criterios abajo). Sin fragmentos de documentos, usá "general" o "insufficient".',
     '- actions: lista de acciones PROPUESTAS; casi siempre debe estar vacía. Las acciones son propuestas: el estudiante decide si las acepta.',
     branch.canPropose
-      ? `Rama de historial: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, y ninguna que repita lo que ya explicaste.`
+      ? `Rama del historial de ESTA conversación: {"type":"propose_history_branch","alias":<alias de hasta ${ALIAS_MAX} caracteres>,"description":<tema específico de la rama>}. Proponé ramas solo cuando la respuesta descompone la pregunta en subproblemas claramente distintos que conviene explorar por separado (por ejemplo, la definición que se usa y un paso del cálculo) o cuando el estudiante cambia de tema. Máximo ${MAX_PROPOSALS_PER_MESSAGE} por respuesta, y ninguna que repita lo que ya explicaste.`
       : 'Esta conversación ya no admite más ramas: no propongas acciones propose_history_branch.',
+    buildQuestionMapPrompt(questions),
     buildFolderPrompt(folder),
     buildBranchPrompt(branch),
     rag ? buildRagPrompt(rag) : '',
-  ].join('\n')
+    focusNode
+      ? `El estudiante volvió al nodo ${focusNode.id} («${focusNode.question}») del mapa de dudas y sigue preguntando desde ahí.`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
 }
 
 function stripFences(text: string) {
@@ -196,17 +227,22 @@ export async function runAgent({
   mode,
   branch,
   folder,
+  questions,
   history,
   rag,
+  focusNode = null,
 }: {
   mode: ConversationMode
   branch: BranchPromptInfo
   folder: FolderPromptInfo
+  questions: QuestionMapPromptInfo
   history: { role: 'user' | 'assistant'; content: string }[]
   rag?: RetrievalResult
+  /** Nodo del mapa de dudas desde el que el estudiante decidió continuar, si eligió uno. */
+  focusNode?: { id: string; question: string } | null
 }): Promise<AgentResult> {
   const config = getLlmServerConfig()
-  const system = buildSystemPrompt(mode, branch, folder, rag)
+  const system = buildSystemPrompt(mode, branch, folder, questions, rag, focusNode)
 
   const generate = (model: LanguageModel) =>
     generateText({

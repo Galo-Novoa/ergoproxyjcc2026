@@ -14,8 +14,10 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model FolderSource
- * Referencia explícita de un apunte al historial que lo justifica. Las claves al historial son
- * SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia queda inactiva.
+ * De dónde salió un apunte: la sesión, el mensaje, la rama o la duda que lo justifican.
+ * Todos opcionales: una nota escrita a mano no referencia nada. Las claves al historial
+ * son SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia
+ * queda inactiva.
  */
 export type FolderSourceModel = runtime.Types.Result.DefaultSelection<Prisma.$FolderSourcePayload>
 
@@ -32,6 +34,7 @@ export type FolderSourceMinAggregateOutputType = {
   conversationId: string | null
   messageId: string | null
   historyNodeId: string | null
+  questionNodeId: string | null
   label: string | null
   createdAt: Date | null
 }
@@ -43,6 +46,7 @@ export type FolderSourceMaxAggregateOutputType = {
   conversationId: string | null
   messageId: string | null
   historyNodeId: string | null
+  questionNodeId: string | null
   label: string | null
   createdAt: Date | null
 }
@@ -54,6 +58,7 @@ export type FolderSourceCountAggregateOutputType = {
   conversationId: number
   messageId: number
   historyNodeId: number
+  questionNodeId: number
   label: number
   createdAt: number
   _all: number
@@ -67,6 +72,7 @@ export type FolderSourceMinAggregateInputType = {
   conversationId?: true
   messageId?: true
   historyNodeId?: true
+  questionNodeId?: true
   label?: true
   createdAt?: true
 }
@@ -78,6 +84,7 @@ export type FolderSourceMaxAggregateInputType = {
   conversationId?: true
   messageId?: true
   historyNodeId?: true
+  questionNodeId?: true
   label?: true
   createdAt?: true
 }
@@ -89,6 +96,7 @@ export type FolderSourceCountAggregateInputType = {
   conversationId?: true
   messageId?: true
   historyNodeId?: true
+  questionNodeId?: true
   label?: true
   createdAt?: true
   _all?: true
@@ -173,6 +181,7 @@ export type FolderSourceGroupByOutputType = {
   conversationId: string | null
   messageId: string | null
   historyNodeId: string | null
+  questionNodeId: string | null
   label: string
   createdAt: Date
   _count: FolderSourceCountAggregateOutputType | null
@@ -205,6 +214,7 @@ export type FolderSourceWhereInput = {
   conversationId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   messageId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   historyNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
+  questionNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   label?: Prisma.StringFilter<"FolderSource"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderSource"> | Date | string
   node?: Prisma.XOR<Prisma.FolderNodeScalarRelationFilter, Prisma.FolderNodeWhereInput>
@@ -212,6 +222,7 @@ export type FolderSourceWhereInput = {
   conversation?: Prisma.XOR<Prisma.ConversationNullableScalarRelationFilter, Prisma.ConversationWhereInput> | null
   message?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   historyNode?: Prisma.XOR<Prisma.ConversationNodeNullableScalarRelationFilter, Prisma.ConversationNodeWhereInput> | null
+  questionNode?: Prisma.XOR<Prisma.QuestionNodeNullableScalarRelationFilter, Prisma.QuestionNodeWhereInput> | null
 }
 
 export type FolderSourceOrderByWithRelationInput = {
@@ -221,6 +232,7 @@ export type FolderSourceOrderByWithRelationInput = {
   conversationId?: Prisma.SortOrderInput | Prisma.SortOrder
   messageId?: Prisma.SortOrderInput | Prisma.SortOrder
   historyNodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  questionNodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   label?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   node?: Prisma.FolderNodeOrderByWithRelationInput
@@ -228,6 +240,7 @@ export type FolderSourceOrderByWithRelationInput = {
   conversation?: Prisma.ConversationOrderByWithRelationInput
   message?: Prisma.MessageOrderByWithRelationInput
   historyNode?: Prisma.ConversationNodeOrderByWithRelationInput
+  questionNode?: Prisma.QuestionNodeOrderByWithRelationInput
 }
 
 export type FolderSourceWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +253,7 @@ export type FolderSourceWhereUniqueInput = Prisma.AtLeast<{
   conversationId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   messageId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   historyNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
+  questionNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   label?: Prisma.StringFilter<"FolderSource"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderSource"> | Date | string
   node?: Prisma.XOR<Prisma.FolderNodeScalarRelationFilter, Prisma.FolderNodeWhereInput>
@@ -247,6 +261,7 @@ export type FolderSourceWhereUniqueInput = Prisma.AtLeast<{
   conversation?: Prisma.XOR<Prisma.ConversationNullableScalarRelationFilter, Prisma.ConversationWhereInput> | null
   message?: Prisma.XOR<Prisma.MessageNullableScalarRelationFilter, Prisma.MessageWhereInput> | null
   historyNode?: Prisma.XOR<Prisma.ConversationNodeNullableScalarRelationFilter, Prisma.ConversationNodeWhereInput> | null
+  questionNode?: Prisma.XOR<Prisma.QuestionNodeNullableScalarRelationFilter, Prisma.QuestionNodeWhereInput> | null
 }, "id">
 
 export type FolderSourceOrderByWithAggregationInput = {
@@ -256,6 +271,7 @@ export type FolderSourceOrderByWithAggregationInput = {
   conversationId?: Prisma.SortOrderInput | Prisma.SortOrder
   messageId?: Prisma.SortOrderInput | Prisma.SortOrder
   historyNodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  questionNodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   label?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.FolderSourceCountOrderByAggregateInput
@@ -273,19 +289,21 @@ export type FolderSourceScalarWhereWithAggregatesInput = {
   conversationId?: Prisma.UuidNullableWithAggregatesFilter<"FolderSource"> | string | null
   messageId?: Prisma.UuidNullableWithAggregatesFilter<"FolderSource"> | string | null
   historyNodeId?: Prisma.UuidNullableWithAggregatesFilter<"FolderSource"> | string | null
+  questionNodeId?: Prisma.UuidNullableWithAggregatesFilter<"FolderSource"> | string | null
   label?: Prisma.StringWithAggregatesFilter<"FolderSource"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FolderSource"> | Date | string
 }
 
 export type FolderSourceCreateInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
   user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
   conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
   message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
   historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateInput = {
@@ -295,7 +313,8 @@ export type FolderSourceUncheckedCreateInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -308,6 +327,7 @@ export type FolderSourceUpdateInput = {
   conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
   message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
   historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateInput = {
@@ -317,6 +337,7 @@ export type FolderSourceUncheckedUpdateInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -328,7 +349,8 @@ export type FolderSourceCreateManyInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -345,6 +367,7 @@ export type FolderSourceUncheckedUpdateManyInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -366,6 +389,7 @@ export type FolderSourceCountOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   messageId?: Prisma.SortOrder
   historyNodeId?: Prisma.SortOrder
+  questionNodeId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -377,6 +401,7 @@ export type FolderSourceMaxOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   messageId?: Prisma.SortOrder
   historyNodeId?: Prisma.SortOrder
+  questionNodeId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -388,6 +413,7 @@ export type FolderSourceMinOrderByAggregateInput = {
   conversationId?: Prisma.SortOrder
   messageId?: Prisma.SortOrder
   historyNodeId?: Prisma.SortOrder
+  questionNodeId?: Prisma.SortOrder
   label?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -560,6 +586,48 @@ export type FolderSourceUncheckedUpdateManyWithoutHistoryNodeNestedInput = {
   deleteMany?: Prisma.FolderSourceScalarWhereInput | Prisma.FolderSourceScalarWhereInput[]
 }
 
+export type FolderSourceCreateNestedManyWithoutQuestionNodeInput = {
+  create?: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput> | Prisma.FolderSourceCreateWithoutQuestionNodeInput[] | Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput[]
+  connectOrCreate?: Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput | Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput[]
+  createMany?: Prisma.FolderSourceCreateManyQuestionNodeInputEnvelope
+  connect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+}
+
+export type FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput = {
+  create?: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput> | Prisma.FolderSourceCreateWithoutQuestionNodeInput[] | Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput[]
+  connectOrCreate?: Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput | Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput[]
+  createMany?: Prisma.FolderSourceCreateManyQuestionNodeInputEnvelope
+  connect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+}
+
+export type FolderSourceUpdateManyWithoutQuestionNodeNestedInput = {
+  create?: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput> | Prisma.FolderSourceCreateWithoutQuestionNodeInput[] | Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput[]
+  connectOrCreate?: Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput | Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput[]
+  upsert?: Prisma.FolderSourceUpsertWithWhereUniqueWithoutQuestionNodeInput | Prisma.FolderSourceUpsertWithWhereUniqueWithoutQuestionNodeInput[]
+  createMany?: Prisma.FolderSourceCreateManyQuestionNodeInputEnvelope
+  set?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  disconnect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  delete?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  connect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  update?: Prisma.FolderSourceUpdateWithWhereUniqueWithoutQuestionNodeInput | Prisma.FolderSourceUpdateWithWhereUniqueWithoutQuestionNodeInput[]
+  updateMany?: Prisma.FolderSourceUpdateManyWithWhereWithoutQuestionNodeInput | Prisma.FolderSourceUpdateManyWithWhereWithoutQuestionNodeInput[]
+  deleteMany?: Prisma.FolderSourceScalarWhereInput | Prisma.FolderSourceScalarWhereInput[]
+}
+
+export type FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput = {
+  create?: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput> | Prisma.FolderSourceCreateWithoutQuestionNodeInput[] | Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput[]
+  connectOrCreate?: Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput | Prisma.FolderSourceCreateOrConnectWithoutQuestionNodeInput[]
+  upsert?: Prisma.FolderSourceUpsertWithWhereUniqueWithoutQuestionNodeInput | Prisma.FolderSourceUpsertWithWhereUniqueWithoutQuestionNodeInput[]
+  createMany?: Prisma.FolderSourceCreateManyQuestionNodeInputEnvelope
+  set?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  disconnect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  delete?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  connect?: Prisma.FolderSourceWhereUniqueInput | Prisma.FolderSourceWhereUniqueInput[]
+  update?: Prisma.FolderSourceUpdateWithWhereUniqueWithoutQuestionNodeInput | Prisma.FolderSourceUpdateWithWhereUniqueWithoutQuestionNodeInput[]
+  updateMany?: Prisma.FolderSourceUpdateManyWithWhereWithoutQuestionNodeInput | Prisma.FolderSourceUpdateManyWithWhereWithoutQuestionNodeInput[]
+  deleteMany?: Prisma.FolderSourceScalarWhereInput | Prisma.FolderSourceScalarWhereInput[]
+}
+
 export type FolderSourceCreateNestedManyWithoutNodeInput = {
   create?: Prisma.XOR<Prisma.FolderSourceCreateWithoutNodeInput, Prisma.FolderSourceUncheckedCreateWithoutNodeInput> | Prisma.FolderSourceCreateWithoutNodeInput[] | Prisma.FolderSourceUncheckedCreateWithoutNodeInput[]
   connectOrCreate?: Prisma.FolderSourceCreateOrConnectWithoutNodeInput | Prisma.FolderSourceCreateOrConnectWithoutNodeInput[]
@@ -604,12 +672,13 @@ export type FolderSourceUncheckedUpdateManyWithoutNodeNestedInput = {
 
 export type FolderSourceCreateWithoutUserInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
   conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
   message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
   historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateWithoutUserInput = {
@@ -618,7 +687,8 @@ export type FolderSourceUncheckedCreateWithoutUserInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -658,18 +728,20 @@ export type FolderSourceScalarWhereInput = {
   conversationId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   messageId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   historyNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
+  questionNodeId?: Prisma.UuidNullableFilter<"FolderSource"> | string | null
   label?: Prisma.StringFilter<"FolderSource"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderSource"> | Date | string
 }
 
 export type FolderSourceCreateWithoutConversationInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
   user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
   message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
   historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateWithoutConversationInput = {
@@ -678,7 +750,8 @@ export type FolderSourceUncheckedCreateWithoutConversationInput = {
   userId: string
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -710,12 +783,13 @@ export type FolderSourceUpdateManyWithWhereWithoutConversationInput = {
 
 export type FolderSourceCreateWithoutMessageInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
   user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
   conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
   historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateWithoutMessageInput = {
@@ -724,7 +798,8 @@ export type FolderSourceUncheckedCreateWithoutMessageInput = {
   userId: string
   conversationId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -756,12 +831,13 @@ export type FolderSourceUpdateManyWithWhereWithoutMessageInput = {
 
 export type FolderSourceCreateWithoutHistoryNodeInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
   user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
   conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
   message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateWithoutHistoryNodeInput = {
@@ -770,7 +846,8 @@ export type FolderSourceUncheckedCreateWithoutHistoryNodeInput = {
   userId: string
   conversationId?: string | null
   messageId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -800,14 +877,63 @@ export type FolderSourceUpdateManyWithWhereWithoutHistoryNodeInput = {
   data: Prisma.XOR<Prisma.FolderSourceUpdateManyMutationInput, Prisma.FolderSourceUncheckedUpdateManyWithoutHistoryNodeInput>
 }
 
+export type FolderSourceCreateWithoutQuestionNodeInput = {
+  id?: string
+  label?: string
+  createdAt?: Date | string
+  node: Prisma.FolderNodeCreateNestedOneWithoutSourcesInput
+  user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
+  conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
+  message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
+  historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+}
+
+export type FolderSourceUncheckedCreateWithoutQuestionNodeInput = {
+  id?: string
+  nodeId: string
+  userId: string
+  conversationId?: string | null
+  messageId?: string | null
+  historyNodeId?: string | null
+  label?: string
+  createdAt?: Date | string
+}
+
+export type FolderSourceCreateOrConnectWithoutQuestionNodeInput = {
+  where: Prisma.FolderSourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput>
+}
+
+export type FolderSourceCreateManyQuestionNodeInputEnvelope = {
+  data: Prisma.FolderSourceCreateManyQuestionNodeInput | Prisma.FolderSourceCreateManyQuestionNodeInput[]
+  skipDuplicates?: boolean
+}
+
+export type FolderSourceUpsertWithWhereUniqueWithoutQuestionNodeInput = {
+  where: Prisma.FolderSourceWhereUniqueInput
+  update: Prisma.XOR<Prisma.FolderSourceUpdateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedUpdateWithoutQuestionNodeInput>
+  create: Prisma.XOR<Prisma.FolderSourceCreateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedCreateWithoutQuestionNodeInput>
+}
+
+export type FolderSourceUpdateWithWhereUniqueWithoutQuestionNodeInput = {
+  where: Prisma.FolderSourceWhereUniqueInput
+  data: Prisma.XOR<Prisma.FolderSourceUpdateWithoutQuestionNodeInput, Prisma.FolderSourceUncheckedUpdateWithoutQuestionNodeInput>
+}
+
+export type FolderSourceUpdateManyWithWhereWithoutQuestionNodeInput = {
+  where: Prisma.FolderSourceScalarWhereInput
+  data: Prisma.XOR<Prisma.FolderSourceUpdateManyMutationInput, Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeInput>
+}
+
 export type FolderSourceCreateWithoutNodeInput = {
   id?: string
-  label: string
+  label?: string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderSourcesInput
   conversation?: Prisma.ConversationCreateNestedOneWithoutFolderSourcesInput
   message?: Prisma.MessageCreateNestedOneWithoutFolderSourcesInput
   historyNode?: Prisma.ConversationNodeCreateNestedOneWithoutFolderSourcesInput
+  questionNode?: Prisma.QuestionNodeCreateNestedOneWithoutFolderSourcesInput
 }
 
 export type FolderSourceUncheckedCreateWithoutNodeInput = {
@@ -816,7 +942,8 @@ export type FolderSourceUncheckedCreateWithoutNodeInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -852,7 +979,8 @@ export type FolderSourceCreateManyUserInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -864,6 +992,7 @@ export type FolderSourceUpdateWithoutUserInput = {
   conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
   message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
   historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateWithoutUserInput = {
@@ -872,6 +1001,7 @@ export type FolderSourceUncheckedUpdateWithoutUserInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -882,6 +1012,7 @@ export type FolderSourceUncheckedUpdateManyWithoutUserInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -892,7 +1023,8 @@ export type FolderSourceCreateManyConversationInput = {
   userId: string
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -904,6 +1036,7 @@ export type FolderSourceUpdateWithoutConversationInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutFolderSourcesNestedInput
   message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
   historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateWithoutConversationInput = {
@@ -912,6 +1045,7 @@ export type FolderSourceUncheckedUpdateWithoutConversationInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -922,6 +1056,7 @@ export type FolderSourceUncheckedUpdateManyWithoutConversationInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -932,7 +1067,8 @@ export type FolderSourceCreateManyMessageInput = {
   userId: string
   conversationId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -944,6 +1080,7 @@ export type FolderSourceUpdateWithoutMessageInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutFolderSourcesNestedInput
   conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
   historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateWithoutMessageInput = {
@@ -952,6 +1089,7 @@ export type FolderSourceUncheckedUpdateWithoutMessageInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -962,6 +1100,7 @@ export type FolderSourceUncheckedUpdateManyWithoutMessageInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -972,7 +1111,8 @@ export type FolderSourceCreateManyHistoryNodeInput = {
   userId: string
   conversationId?: string | null
   messageId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -984,6 +1124,7 @@ export type FolderSourceUpdateWithoutHistoryNodeInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutFolderSourcesNestedInput
   conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
   message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateWithoutHistoryNodeInput = {
@@ -992,6 +1133,7 @@ export type FolderSourceUncheckedUpdateWithoutHistoryNodeInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1002,6 +1144,51 @@ export type FolderSourceUncheckedUpdateManyWithoutHistoryNodeInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FolderSourceCreateManyQuestionNodeInput = {
+  id?: string
+  nodeId: string
+  userId: string
+  conversationId?: string | null
+  messageId?: string | null
+  historyNodeId?: string | null
+  label?: string
+  createdAt?: Date | string
+}
+
+export type FolderSourceUpdateWithoutQuestionNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  node?: Prisma.FolderNodeUpdateOneRequiredWithoutSourcesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutFolderSourcesNestedInput
+  conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
+  message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
+  historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+}
+
+export type FolderSourceUncheckedUpdateWithoutQuestionNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FolderSourceUncheckedUpdateManyWithoutQuestionNodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1012,7 +1199,8 @@ export type FolderSourceCreateManyNodeInput = {
   conversationId?: string | null
   messageId?: string | null
   historyNodeId?: string | null
-  label: string
+  questionNodeId?: string | null
+  label?: string
   createdAt?: Date | string
 }
 
@@ -1024,6 +1212,7 @@ export type FolderSourceUpdateWithoutNodeInput = {
   conversation?: Prisma.ConversationUpdateOneWithoutFolderSourcesNestedInput
   message?: Prisma.MessageUpdateOneWithoutFolderSourcesNestedInput
   historyNode?: Prisma.ConversationNodeUpdateOneWithoutFolderSourcesNestedInput
+  questionNode?: Prisma.QuestionNodeUpdateOneWithoutFolderSourcesNestedInput
 }
 
 export type FolderSourceUncheckedUpdateWithoutNodeInput = {
@@ -1032,6 +1221,7 @@ export type FolderSourceUncheckedUpdateWithoutNodeInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1042,6 +1232,7 @@ export type FolderSourceUncheckedUpdateManyWithoutNodeInput = {
   conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   historyNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questionNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   label?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1055,6 +1246,7 @@ export type FolderSourceSelect<ExtArgs extends runtime.Types.Extensions.Internal
   conversationId?: boolean
   messageId?: boolean
   historyNodeId?: boolean
+  questionNodeId?: boolean
   label?: boolean
   createdAt?: boolean
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
@@ -1062,6 +1254,7 @@ export type FolderSourceSelect<ExtArgs extends runtime.Types.Extensions.Internal
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }, ExtArgs["result"]["folderSource"]>
 
 export type FolderSourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1071,6 +1264,7 @@ export type FolderSourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   conversationId?: boolean
   messageId?: boolean
   historyNodeId?: boolean
+  questionNodeId?: boolean
   label?: boolean
   createdAt?: boolean
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
@@ -1078,6 +1272,7 @@ export type FolderSourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }, ExtArgs["result"]["folderSource"]>
 
 export type FolderSourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1087,6 +1282,7 @@ export type FolderSourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   conversationId?: boolean
   messageId?: boolean
   historyNodeId?: boolean
+  questionNodeId?: boolean
   label?: boolean
   createdAt?: boolean
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
@@ -1094,6 +1290,7 @@ export type FolderSourceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }, ExtArgs["result"]["folderSource"]>
 
 export type FolderSourceSelectScalar = {
@@ -1103,17 +1300,19 @@ export type FolderSourceSelectScalar = {
   conversationId?: boolean
   messageId?: boolean
   historyNodeId?: boolean
+  questionNodeId?: boolean
   label?: boolean
   createdAt?: boolean
 }
 
-export type FolderSourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nodeId" | "userId" | "conversationId" | "messageId" | "historyNodeId" | "label" | "createdAt", ExtArgs["result"]["folderSource"]>
+export type FolderSourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nodeId" | "userId" | "conversationId" | "messageId" | "historyNodeId" | "questionNodeId" | "label" | "createdAt", ExtArgs["result"]["folderSource"]>
 export type FolderSourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }
 export type FolderSourceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
@@ -1121,6 +1320,7 @@ export type FolderSourceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }
 export type FolderSourceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   node?: boolean | Prisma.FolderNodeDefaultArgs<ExtArgs>
@@ -1128,6 +1328,7 @@ export type FolderSourceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
   conversation?: boolean | Prisma.FolderSource$conversationArgs<ExtArgs>
   message?: boolean | Prisma.FolderSource$messageArgs<ExtArgs>
   historyNode?: boolean | Prisma.FolderSource$historyNodeArgs<ExtArgs>
+  questionNode?: boolean | Prisma.FolderSource$questionNodeArgs<ExtArgs>
 }
 
 export type $FolderSourcePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1138,6 +1339,7 @@ export type $FolderSourcePayload<ExtArgs extends runtime.Types.Extensions.Intern
     conversation: Prisma.$ConversationPayload<ExtArgs> | null
     message: Prisma.$MessagePayload<ExtArgs> | null
     historyNode: Prisma.$ConversationNodePayload<ExtArgs> | null
+    questionNode: Prisma.$QuestionNodePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1146,6 +1348,10 @@ export type $FolderSourcePayload<ExtArgs extends runtime.Types.Extensions.Intern
     conversationId: string | null
     messageId: string | null
     historyNodeId: string | null
+    questionNodeId: string | null
+    /**
+     * Etiqueta legible de la referencia (ej. «Cálculo II › Rama: integrales»).
+     */
     label: string
     createdAt: Date
   }, ExtArgs["result"]["folderSource"]>
@@ -1547,6 +1753,7 @@ export interface Prisma__FolderSourceClient<T, Null = never, ExtArgs extends run
   conversation<T extends Prisma.FolderSource$conversationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderSource$conversationArgs<ExtArgs>>): Prisma.Prisma__ConversationClient<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   message<T extends Prisma.FolderSource$messageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderSource$messageArgs<ExtArgs>>): Prisma.Prisma__MessageClient<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   historyNode<T extends Prisma.FolderSource$historyNodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderSource$historyNodeArgs<ExtArgs>>): Prisma.Prisma__ConversationNodeClient<runtime.Types.Result.GetResult<Prisma.$ConversationNodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  questionNode<T extends Prisma.FolderSource$questionNodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderSource$questionNodeArgs<ExtArgs>>): Prisma.Prisma__QuestionNodeClient<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1582,6 +1789,7 @@ export interface FolderSourceFieldRefs {
   readonly conversationId: Prisma.FieldRef<"FolderSource", 'String'>
   readonly messageId: Prisma.FieldRef<"FolderSource", 'String'>
   readonly historyNodeId: Prisma.FieldRef<"FolderSource", 'String'>
+  readonly questionNodeId: Prisma.FieldRef<"FolderSource", 'String'>
   readonly label: Prisma.FieldRef<"FolderSource", 'String'>
   readonly createdAt: Prisma.FieldRef<"FolderSource", 'DateTime'>
 }
@@ -2039,6 +2247,25 @@ export type FolderSource$historyNodeArgs<ExtArgs extends runtime.Types.Extension
    */
   include?: Prisma.ConversationNodeInclude<ExtArgs> | null
   where?: Prisma.ConversationNodeWhereInput
+}
+
+/**
+ * FolderSource.questionNode
+ */
+export type FolderSource$questionNodeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QuestionNode
+   */
+  select?: Prisma.QuestionNodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QuestionNode
+   */
+  omit?: Prisma.QuestionNodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QuestionNodeInclude<ExtArgs> | null
+  where?: Prisma.QuestionNodeWhereInput
 }
 
 /**

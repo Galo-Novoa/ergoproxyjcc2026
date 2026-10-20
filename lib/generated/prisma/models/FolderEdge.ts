@@ -249,11 +249,11 @@ export type FolderEdgeScalarWhereWithAggregatesInput = {
 
 export type FolderEdgeCreateInput = {
   id?: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderEdgesInput
-  from: Prisma.FolderNodeCreateNestedOneWithoutOutgoingInput
-  to: Prisma.FolderNodeCreateNestedOneWithoutIncomingInput
+  from: Prisma.FolderNodeCreateNestedOneWithoutEdgesFromInput
+  to: Prisma.FolderNodeCreateNestedOneWithoutEdgesToInput
 }
 
 export type FolderEdgeUncheckedCreateInput = {
@@ -261,7 +261,7 @@ export type FolderEdgeUncheckedCreateInput = {
   userId: string
   fromId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -270,8 +270,8 @@ export type FolderEdgeUpdateInput = {
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderEdgesNestedInput
-  from?: Prisma.FolderNodeUpdateOneRequiredWithoutOutgoingNestedInput
-  to?: Prisma.FolderNodeUpdateOneRequiredWithoutIncomingNestedInput
+  from?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesFromNestedInput
+  to?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesToNestedInput
 }
 
 export type FolderEdgeUncheckedUpdateInput = {
@@ -288,7 +288,7 @@ export type FolderEdgeCreateManyInput = {
   userId: string
   fromId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -478,17 +478,17 @@ export type FolderEdgeUncheckedUpdateManyWithoutToNestedInput = {
 
 export type FolderEdgeCreateWithoutUserInput = {
   id?: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
-  from: Prisma.FolderNodeCreateNestedOneWithoutOutgoingInput
-  to: Prisma.FolderNodeCreateNestedOneWithoutIncomingInput
+  from: Prisma.FolderNodeCreateNestedOneWithoutEdgesFromInput
+  to: Prisma.FolderNodeCreateNestedOneWithoutEdgesToInput
 }
 
 export type FolderEdgeUncheckedCreateWithoutUserInput = {
   id?: string
   fromId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -532,17 +532,17 @@ export type FolderEdgeScalarWhereInput = {
 
 export type FolderEdgeCreateWithoutFromInput = {
   id?: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderEdgesInput
-  to: Prisma.FolderNodeCreateNestedOneWithoutIncomingInput
+  to: Prisma.FolderNodeCreateNestedOneWithoutEdgesToInput
 }
 
 export type FolderEdgeUncheckedCreateWithoutFromInput = {
   id?: string
   userId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -558,17 +558,17 @@ export type FolderEdgeCreateManyFromInputEnvelope = {
 
 export type FolderEdgeCreateWithoutToInput = {
   id?: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderEdgesInput
-  from: Prisma.FolderNodeCreateNestedOneWithoutOutgoingInput
+  from: Prisma.FolderNodeCreateNestedOneWithoutEdgesFromInput
 }
 
 export type FolderEdgeUncheckedCreateWithoutToInput = {
   id?: string
   userId: string
   fromId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -618,7 +618,7 @@ export type FolderEdgeCreateManyUserInput = {
   id?: string
   fromId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -626,8 +626,8 @@ export type FolderEdgeUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  from?: Prisma.FolderNodeUpdateOneRequiredWithoutOutgoingNestedInput
-  to?: Prisma.FolderNodeUpdateOneRequiredWithoutIncomingNestedInput
+  from?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesFromNestedInput
+  to?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesToNestedInput
 }
 
 export type FolderEdgeUncheckedUpdateWithoutUserInput = {
@@ -650,7 +650,7 @@ export type FolderEdgeCreateManyFromInput = {
   id?: string
   userId: string
   toId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -658,7 +658,7 @@ export type FolderEdgeCreateManyToInput = {
   id?: string
   userId: string
   fromId: string
-  kind: string
+  kind?: string
   createdAt?: Date | string
 }
 
@@ -667,7 +667,7 @@ export type FolderEdgeUpdateWithoutFromInput = {
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderEdgesNestedInput
-  to?: Prisma.FolderNodeUpdateOneRequiredWithoutIncomingNestedInput
+  to?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesToNestedInput
 }
 
 export type FolderEdgeUncheckedUpdateWithoutFromInput = {
@@ -691,7 +691,7 @@ export type FolderEdgeUpdateWithoutToInput = {
   kind?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderEdgesNestedInput
-  from?: Prisma.FolderNodeUpdateOneRequiredWithoutOutgoingNestedInput
+  from?: Prisma.FolderNodeUpdateOneRequiredWithoutEdgesFromNestedInput
 }
 
 export type FolderEdgeUncheckedUpdateWithoutToInput = {

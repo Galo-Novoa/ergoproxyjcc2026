@@ -31,6 +31,7 @@ const contentSchema = z
 
 const DEFAULT_TITLE = 'Nueva conversación'
 const MAX_SELECTED_FILES = 8
+const MAX_QUESTION_NODES = 40
 const SHORT_FOLLOW_UP_LENGTH = 60
 const CITATION_MARKERS = /\s?\[F\d+(?:\s*[,;]\s*F?\d+)*\]/g
 
@@ -41,6 +42,7 @@ export async function sendMessage(
   rawContent: string,
   rawFileIds: string[] = [],
   rawNodeId: string | null = null,
+  rawFocusNodeId: string | null = null,
 ): Promise<ActionResult<{ proposedActions: number; nodeId: string }>> {
   const blocked = demoModeBlock()
   if (blocked) return blocked
@@ -107,6 +109,22 @@ export async function sendMessage(
 
   const folderIndex = await loadFolderIndex(userId, conversation.subjectId)
 
+  // Mapa de dudas de la materia: el agente puede proponer nodos nuevos colgando de uno existente.
+  const [questionNodes, focusNode] = await Promise.all([
+    db.questionNode.findMany({
+      where: { userId, ...(conversation.subjectId ? { subjectId: conversation.subjectId } : {}) },
+      select: { id: true, question: true },
+      orderBy: { createdAt: 'desc' },
+      take: MAX_QUESTION_NODES,
+    }),
+    rawFocusNodeId && isUuid(rawFocusNodeId)
+      ? db.questionNode.findFirst({
+          where: { id: rawFocusNodeId, userId },
+          select: { id: true, question: true },
+        })
+      : Promise.resolve(null),
+  ])
+
   // Si el modelo falla no se guarda nada: el usuario conserva su borrador y puede reintentar.
   let result
   try {
@@ -117,6 +135,7 @@ export async function sendMessage(
         canPropose: folderIndex.nodes.length < MAX_NODES_PER_WORKSPACE,
         nodes: folderIndex.nodes,
       },
+      questions: { canPropose: true, nodes: questionNodes },
       rag: retrieval,
       branch: {
         alias: target.alias,
@@ -127,6 +146,7 @@ export async function sendMessage(
         canPropose,
         truncated: context.truncated,
       },
+      focusNode,
     })
   } catch (error) {
     if (error instanceof AgentError) return { ok: false, error: error.message }
@@ -147,13 +167,36 @@ export async function sendMessage(
         })
         .slice(0, MAX_PROPOSALS_PER_MESSAGE)
     : []
+  // Los nodos del mapa de dudas solo pueden colgar de nodos del propio usuario; el resto se descarta.
+  const questionParentIds = [
+    ...new Set(
+      proposed.flatMap((a) =>
+        a.type === 'propose_question_node' && a.parent_node_id ? [a.parent_node_id] : [],
+      ),
+    ),
+  ].filter(isUuid)
+  const ownedParents = new Set(
+    questionParentIds.length
+      ? (
+          await db.questionNode.findMany({
+            where: { id: { in: questionParentIds }, userId },
+            select: { id: true },
+          })
+        ).map((n) => n.id)
+      : [],
+  )
+  const questionActions = proposed.filter(
+    (a) =>
+      a.type === 'propose_question_node' &&
+      (a.parent_node_id === null || ownedParents.has(a.parent_node_id)),
+  )
   // Las de Carpeta se validan contra los apuntes reales: ids inventados y duplicados se descartan acá.
   const folderPrepared = await prepareFolderProposals(
     userId,
     conversation.subjectId,
     proposed.filter((a) => a.type === 'propose_folder_change'),
   )
-  const actions = [...branchActions, ...folderPrepared.valid]
+  const actions = [...branchActions, ...questionActions, ...folderPrepared.valid]
   const droppedActions = result.metadata.droppedActions + (proposed.length - actions.length)
   const grounded = applyGrounding(result.response.output, result.response.grounding, retrieval)
   const newTitle =
@@ -201,6 +244,6 @@ export async function sendMessage(
   // El resumen se genera después de responder para no sumar latencia al turno.
   after(() => compactOwnContext(nodeId, userId))
 
-  revalidatePath('/chat', 'layout')
+  revalidatePath('/', 'layout')
   return { ok: true, data: { proposedActions: actions.length, nodeId } }
 }

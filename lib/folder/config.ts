@@ -1,16 +1,30 @@
-export const FOLDER_KINDS = ['concept', 'key_points', 'exercise', 'solution', 'note'] as const
-export type FolderKind = (typeof FOLDER_KINDS)[number]
+/** Tipos de apunte de la Carpeta. */
+export const FOLDER_NODE_TYPES = ['concept', 'key_points', 'exercise', 'solution', 'note'] as const
+export type FolderNodeType = (typeof FOLDER_NODE_TYPES)[number]
 
-export const FOLDER_KIND_LABELS: Record<FolderKind, string> = {
+export const FOLDER_NODE_LABELS: Record<FolderNodeType, string> = {
   concept: 'Concepto',
-  key_points: 'Puntos clave',
+  key_points: 'Para recordar',
   exercise: 'Ejercicio',
   solution: 'Resolución',
   note: 'Apunte',
 }
 
-export const FOLDER_EDGE_KINDS = ['child', 'related'] as const
+/** Tipos de relación entre apuntes. */
+export const FOLDER_EDGE_KINDS = ['relates', 'contains', 'solves'] as const
 export type FolderEdgeKind = (typeof FOLDER_EDGE_KINDS)[number]
+
+export const FOLDER_EDGE_LABELS: Record<FolderEdgeKind, string> = {
+  relates: 'se relaciona con',
+  contains: 'contiene',
+  solves: 'resuelve',
+}
+
+export const isFolderNodeType = (value: unknown): value is FolderNodeType =>
+  typeof value === 'string' && (FOLDER_NODE_TYPES as readonly string[]).includes(value)
+
+export const isFolderEdgeKind = (value: unknown): value is FolderEdgeKind =>
+  typeof value === 'string' && (FOLDER_EDGE_KINDS as readonly string[]).includes(value)
 
 export const TITLE_MAX = 120
 export const CONTENT_MAX = 20_000

@@ -65,8 +65,8 @@ export const ModelName = {
   Conversation: 'Conversation',
   ConversationFile: 'ConversationFile',
   Message: 'Message',
-  ConversationNode: 'ConversationNode',
   AgentAction: 'AgentAction',
+  ConversationNode: 'ConversationNode',
   QuestionNode: 'QuestionNode',
   FolderNode: 'FolderNode',
   FolderEdge: 'FolderEdge',
@@ -302,6 +302,22 @@ export const MessageScalarFieldEnum = {
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
+export const AgentActionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  conversationId: 'conversationId',
+  messageId: 'messageId',
+  type: 'type',
+  payload: 'payload',
+  status: 'status',
+  resultNodeId: 'resultNodeId',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt'
+} as const
+
+export type AgentActionScalarFieldEnum = (typeof AgentActionScalarFieldEnum)[keyof typeof AgentActionScalarFieldEnum]
+
+
 export const ConversationNodeScalarFieldEnum = {
   id: 'id',
   conversationId: 'conversationId',
@@ -321,22 +337,6 @@ export const ConversationNodeScalarFieldEnum = {
 } as const
 
 export type ConversationNodeScalarFieldEnum = (typeof ConversationNodeScalarFieldEnum)[keyof typeof ConversationNodeScalarFieldEnum]
-
-
-export const AgentActionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  conversationId: 'conversationId',
-  messageId: 'messageId',
-  type: 'type',
-  payload: 'payload',
-  status: 'status',
-  resultNodeId: 'resultNodeId',
-  createdAt: 'createdAt',
-  resolvedAt: 'resolvedAt'
-} as const
-
-export type AgentActionScalarFieldEnum = (typeof AgentActionScalarFieldEnum)[keyof typeof AgentActionScalarFieldEnum]
 
 
 export const QuestionNodeScalarFieldEnum = {
@@ -363,9 +363,12 @@ export const FolderNodeScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   subjectId: 'subjectId',
-  kind: 'kind',
+  type: 'type',
   title: 'title',
-  content: 'content',
+  contentMd: 'contentMd',
+  posX: 'posX',
+  posY: 'posY',
+  origin: 'origin',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -392,6 +395,7 @@ export const FolderSourceScalarFieldEnum = {
   conversationId: 'conversationId',
   messageId: 'messageId',
   historyNodeId: 'historyNodeId',
+  questionNodeId: 'questionNodeId',
   label: 'label',
   createdAt: 'createdAt'
 } as const

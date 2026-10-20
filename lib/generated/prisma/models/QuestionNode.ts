@@ -299,6 +299,7 @@ export type QuestionNodeWhereInput = {
   file?: Prisma.XOR<Prisma.FileNullableScalarRelationFilter, Prisma.FileWhereInput> | null
   parent?: Prisma.XOR<Prisma.QuestionNodeNullableScalarRelationFilter, Prisma.QuestionNodeWhereInput> | null
   children?: Prisma.QuestionNodeListRelationFilter
+  folderSources?: Prisma.FolderSourceListRelationFilter
 }
 
 export type QuestionNodeOrderByWithRelationInput = {
@@ -323,6 +324,7 @@ export type QuestionNodeOrderByWithRelationInput = {
   file?: Prisma.FileOrderByWithRelationInput
   parent?: Prisma.QuestionNodeOrderByWithRelationInput
   children?: Prisma.QuestionNodeOrderByRelationAggregateInput
+  folderSources?: Prisma.FolderSourceOrderByRelationAggregateInput
 }
 
 export type QuestionNodeWhereUniqueInput = Prisma.AtLeast<{
@@ -350,6 +352,7 @@ export type QuestionNodeWhereUniqueInput = Prisma.AtLeast<{
   file?: Prisma.XOR<Prisma.FileNullableScalarRelationFilter, Prisma.FileWhereInput> | null
   parent?: Prisma.XOR<Prisma.QuestionNodeNullableScalarRelationFilter, Prisma.QuestionNodeWhereInput> | null
   children?: Prisma.QuestionNodeListRelationFilter
+  folderSources?: Prisma.FolderSourceListRelationFilter
 }, "id">
 
 export type QuestionNodeOrderByWithAggregationInput = {
@@ -410,6 +413,7 @@ export type QuestionNodeCreateInput = {
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateInput = {
@@ -428,6 +432,7 @@ export type QuestionNodeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUpdateInput = {
@@ -446,6 +451,7 @@ export type QuestionNodeUpdateInput = {
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateInput = {
@@ -464,6 +470,7 @@ export type QuestionNodeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeCreateManyInput = {
@@ -863,6 +870,22 @@ export type QuestionNodeUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.QuestionNodeScalarWhereInput | Prisma.QuestionNodeScalarWhereInput[]
 }
 
+export type QuestionNodeCreateNestedOneWithoutFolderSourcesInput = {
+  create?: Prisma.XOR<Prisma.QuestionNodeCreateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedCreateWithoutFolderSourcesInput>
+  connectOrCreate?: Prisma.QuestionNodeCreateOrConnectWithoutFolderSourcesInput
+  connect?: Prisma.QuestionNodeWhereUniqueInput
+}
+
+export type QuestionNodeUpdateOneWithoutFolderSourcesNestedInput = {
+  create?: Prisma.XOR<Prisma.QuestionNodeCreateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedCreateWithoutFolderSourcesInput>
+  connectOrCreate?: Prisma.QuestionNodeCreateOrConnectWithoutFolderSourcesInput
+  upsert?: Prisma.QuestionNodeUpsertWithoutFolderSourcesInput
+  disconnect?: Prisma.QuestionNodeWhereInput | boolean
+  delete?: Prisma.QuestionNodeWhereInput | boolean
+  connect?: Prisma.QuestionNodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionNodeUpdateToOneWithWhereWithoutFolderSourcesInput, Prisma.QuestionNodeUpdateWithoutFolderSourcesInput>, Prisma.QuestionNodeUncheckedUpdateWithoutFolderSourcesInput>
+}
+
 export type QuestionNodeCreateWithoutUserInput = {
   id?: string
   question: string
@@ -878,6 +901,7 @@ export type QuestionNodeCreateWithoutUserInput = {
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutUserInput = {
@@ -895,6 +919,7 @@ export type QuestionNodeUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutUserInput = {
@@ -958,6 +983,7 @@ export type QuestionNodeCreateWithoutSubjectInput = {
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutSubjectInput = {
@@ -975,6 +1001,7 @@ export type QuestionNodeUncheckedCreateWithoutSubjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutSubjectInput = {
@@ -1018,6 +1045,7 @@ export type QuestionNodeCreateWithoutFileInput = {
   message?: Prisma.MessageCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutFileInput = {
@@ -1035,6 +1063,7 @@ export type QuestionNodeUncheckedCreateWithoutFileInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutFileInput = {
@@ -1078,6 +1107,7 @@ export type QuestionNodeCreateWithoutConversationInput = {
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutConversationInput = {
@@ -1095,6 +1125,7 @@ export type QuestionNodeUncheckedCreateWithoutConversationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutConversationInput = {
@@ -1138,6 +1169,7 @@ export type QuestionNodeCreateWithoutMessageInput = {
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutMessageInput = {
@@ -1155,6 +1187,7 @@ export type QuestionNodeUncheckedCreateWithoutMessageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutMessageInput = {
@@ -1198,6 +1231,7 @@ export type QuestionNodeCreateWithoutChildrenInput = {
   message?: Prisma.MessageCreateNestedOneWithoutQuestionNodesInput
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutChildrenInput = {
@@ -1215,6 +1249,7 @@ export type QuestionNodeUncheckedCreateWithoutChildrenInput = {
   posY?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutChildrenInput = {
@@ -1237,6 +1272,7 @@ export type QuestionNodeCreateWithoutParentInput = {
   message?: Prisma.MessageCreateNestedOneWithoutQuestionNodesInput
   file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
   children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeUncheckedCreateWithoutParentInput = {
@@ -1254,6 +1290,7 @@ export type QuestionNodeUncheckedCreateWithoutParentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutQuestionNodeInput
 }
 
 export type QuestionNodeCreateOrConnectWithoutParentInput = {
@@ -1292,6 +1329,7 @@ export type QuestionNodeUpdateWithoutChildrenInput = {
   message?: Prisma.MessageUpdateOneWithoutQuestionNodesNestedInput
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutChildrenInput = {
@@ -1309,6 +1347,7 @@ export type QuestionNodeUncheckedUpdateWithoutChildrenInput = {
   posY?: Prisma.FloatFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUpsertWithWhereUniqueWithoutParentInput = {
@@ -1325,6 +1364,94 @@ export type QuestionNodeUpdateWithWhereUniqueWithoutParentInput = {
 export type QuestionNodeUpdateManyWithWhereWithoutParentInput = {
   where: Prisma.QuestionNodeScalarWhereInput
   data: Prisma.XOR<Prisma.QuestionNodeUpdateManyMutationInput, Prisma.QuestionNodeUncheckedUpdateManyWithoutParentInput>
+}
+
+export type QuestionNodeCreateWithoutFolderSourcesInput = {
+  id?: string
+  question: string
+  answerSummary?: string | null
+  status?: string
+  posX?: number
+  posY?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutQuestionNodesInput
+  subject?: Prisma.SubjectCreateNestedOneWithoutQuestionNodesInput
+  conversation?: Prisma.ConversationCreateNestedOneWithoutQuestionNodesInput
+  message?: Prisma.MessageCreateNestedOneWithoutQuestionNodesInput
+  file?: Prisma.FileCreateNestedOneWithoutQuestionNodesInput
+  parent?: Prisma.QuestionNodeCreateNestedOneWithoutChildrenInput
+  children?: Prisma.QuestionNodeCreateNestedManyWithoutParentInput
+}
+
+export type QuestionNodeUncheckedCreateWithoutFolderSourcesInput = {
+  id?: string
+  userId: string
+  subjectId?: string | null
+  conversationId?: string | null
+  messageId?: string | null
+  fileId?: string | null
+  parentId?: string | null
+  question: string
+  answerSummary?: string | null
+  status?: string
+  posX?: number
+  posY?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  children?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type QuestionNodeCreateOrConnectWithoutFolderSourcesInput = {
+  where: Prisma.QuestionNodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.QuestionNodeCreateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedCreateWithoutFolderSourcesInput>
+}
+
+export type QuestionNodeUpsertWithoutFolderSourcesInput = {
+  update: Prisma.XOR<Prisma.QuestionNodeUpdateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedUpdateWithoutFolderSourcesInput>
+  create: Prisma.XOR<Prisma.QuestionNodeCreateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedCreateWithoutFolderSourcesInput>
+  where?: Prisma.QuestionNodeWhereInput
+}
+
+export type QuestionNodeUpdateToOneWithWhereWithoutFolderSourcesInput = {
+  where?: Prisma.QuestionNodeWhereInput
+  data: Prisma.XOR<Prisma.QuestionNodeUpdateWithoutFolderSourcesInput, Prisma.QuestionNodeUncheckedUpdateWithoutFolderSourcesInput>
+}
+
+export type QuestionNodeUpdateWithoutFolderSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  answerSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutQuestionNodesNestedInput
+  subject?: Prisma.SubjectUpdateOneWithoutQuestionNodesNestedInput
+  conversation?: Prisma.ConversationUpdateOneWithoutQuestionNodesNestedInput
+  message?: Prisma.MessageUpdateOneWithoutQuestionNodesNestedInput
+  file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
+  parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+}
+
+export type QuestionNodeUncheckedUpdateWithoutFolderSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conversationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  messageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  answerSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type QuestionNodeCreateManyUserInput = {
@@ -1358,6 +1485,7 @@ export type QuestionNodeUpdateWithoutUserInput = {
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutUserInput = {
@@ -1375,6 +1503,7 @@ export type QuestionNodeUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutUserInput = {
@@ -1424,6 +1553,7 @@ export type QuestionNodeUpdateWithoutSubjectInput = {
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutSubjectInput = {
@@ -1441,6 +1571,7 @@ export type QuestionNodeUncheckedUpdateWithoutSubjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutSubjectInput = {
@@ -1490,6 +1621,7 @@ export type QuestionNodeUpdateWithoutFileInput = {
   message?: Prisma.MessageUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutFileInput = {
@@ -1507,6 +1639,7 @@ export type QuestionNodeUncheckedUpdateWithoutFileInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutFileInput = {
@@ -1556,6 +1689,7 @@ export type QuestionNodeUpdateWithoutConversationInput = {
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutConversationInput = {
@@ -1573,6 +1707,7 @@ export type QuestionNodeUncheckedUpdateWithoutConversationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutConversationInput = {
@@ -1622,6 +1757,7 @@ export type QuestionNodeUpdateWithoutMessageInput = {
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   parent?: Prisma.QuestionNodeUpdateOneWithoutChildrenNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutMessageInput = {
@@ -1639,6 +1775,7 @@ export type QuestionNodeUncheckedUpdateWithoutMessageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutMessageInput = {
@@ -1688,6 +1825,7 @@ export type QuestionNodeUpdateWithoutParentInput = {
   message?: Prisma.MessageUpdateOneWithoutQuestionNodesNestedInput
   file?: Prisma.FileUpdateOneWithoutQuestionNodesNestedInput
   children?: Prisma.QuestionNodeUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateWithoutParentInput = {
@@ -1705,6 +1843,7 @@ export type QuestionNodeUncheckedUpdateWithoutParentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.QuestionNodeUncheckedUpdateManyWithoutParentNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutQuestionNodeNestedInput
 }
 
 export type QuestionNodeUncheckedUpdateManyWithoutParentInput = {
@@ -1730,10 +1869,12 @@ export type QuestionNodeUncheckedUpdateManyWithoutParentInput = {
 
 export type QuestionNodeCountOutputType = {
   children: number
+  folderSources: number
 }
 
 export type QuestionNodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | QuestionNodeCountOutputTypeCountChildrenArgs
+  folderSources?: boolean | QuestionNodeCountOutputTypeCountFolderSourcesArgs
 }
 
 /**
@@ -1751,6 +1892,13 @@ export type QuestionNodeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
  */
 export type QuestionNodeCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.QuestionNodeWhereInput
+}
+
+/**
+ * QuestionNodeCountOutputType without action
+ */
+export type QuestionNodeCountOutputTypeCountFolderSourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FolderSourceWhereInput
 }
 
 
@@ -1776,6 +1924,7 @@ export type QuestionNodeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   file?: boolean | Prisma.QuestionNode$fileArgs<ExtArgs>
   parent?: boolean | Prisma.QuestionNode$parentArgs<ExtArgs>
   children?: boolean | Prisma.QuestionNode$childrenArgs<ExtArgs>
+  folderSources?: boolean | Prisma.QuestionNode$folderSourcesArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionNodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["questionNode"]>
 
@@ -1851,6 +2000,7 @@ export type QuestionNodeInclude<ExtArgs extends runtime.Types.Extensions.Interna
   file?: boolean | Prisma.QuestionNode$fileArgs<ExtArgs>
   parent?: boolean | Prisma.QuestionNode$parentArgs<ExtArgs>
   children?: boolean | Prisma.QuestionNode$childrenArgs<ExtArgs>
+  folderSources?: boolean | Prisma.QuestionNode$folderSourcesArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionNodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type QuestionNodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1880,6 +2030,7 @@ export type $QuestionNodePayload<ExtArgs extends runtime.Types.Extensions.Intern
     file: Prisma.$FilePayload<ExtArgs> | null
     parent: Prisma.$QuestionNodePayload<ExtArgs> | null
     children: Prisma.$QuestionNodePayload<ExtArgs>[]
+    folderSources: Prisma.$FolderSourcePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2297,6 +2448,7 @@ export interface Prisma__QuestionNodeClient<T, Null = never, ExtArgs extends run
   file<T extends Prisma.QuestionNode$fileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionNode$fileArgs<ExtArgs>>): Prisma.Prisma__FileClient<runtime.Types.Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   parent<T extends Prisma.QuestionNode$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionNode$parentArgs<ExtArgs>>): Prisma.Prisma__QuestionNodeClient<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.QuestionNode$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionNode$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionNodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  folderSources<T extends Prisma.QuestionNode$folderSourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionNode$folderSourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2857,6 +3009,30 @@ export type QuestionNode$childrenArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.QuestionNodeScalarFieldEnum | Prisma.QuestionNodeScalarFieldEnum[]
+}
+
+/**
+ * QuestionNode.folderSources
+ */
+export type QuestionNode$folderSourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FolderSource
+   */
+  select?: Prisma.FolderSourceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FolderSource
+   */
+  omit?: Prisma.FolderSourceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderSourceInclude<ExtArgs> | null
+  where?: Prisma.FolderSourceWhereInput
+  orderBy?: Prisma.FolderSourceOrderByWithRelationInput | Prisma.FolderSourceOrderByWithRelationInput[]
+  cursor?: Prisma.FolderSourceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FolderSourceScalarFieldEnum | Prisma.FolderSourceScalarFieldEnum[]
 }
 
 /**

@@ -88,16 +88,16 @@ export type ConversationFile = Prisma.ConversationFileModel
  */
 export type Message = Prisma.MessageModel
 /**
+ * Model AgentAction
+ * 
+ */
+export type AgentAction = Prisma.AgentActionModel
+/**
  * Model ConversationNode
  * Árbol de ramas de UNA conversación (distinto de QuestionNode, el mapa de dudas de la materia).
  * La raíz es el único nodo sin padre; un índice único parcial (ver migración 6) lo garantiza.
  */
 export type ConversationNode = Prisma.ConversationNodeModel
-/**
- * Model AgentAction
- * 
- */
-export type AgentAction = Prisma.AgentActionModel
 /**
  * Model QuestionNode
  * 
@@ -115,7 +115,9 @@ export type FolderNode = Prisma.FolderNodeModel
 export type FolderEdge = Prisma.FolderEdgeModel
 /**
  * Model FolderSource
- * Referencia explícita de un apunte al historial que lo justifica. Las claves al historial son
- * SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia queda inactiva.
+ * De dónde salió un apunte: la sesión, el mensaje, la rama o la duda que lo justifican.
+ * Todos opcionales: una nota escrita a mano no referencia nada. Las claves al historial
+ * son SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia
+ * queda inactiva.
  */
 export type FolderSource = Prisma.FolderSourceModel

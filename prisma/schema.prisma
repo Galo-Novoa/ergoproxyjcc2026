@@ -247,7 +247,7 @@ model FileChunk {
   @@map("file_chunks")
 }
 
-// kind: 'note' | 'summary'
+// kind: 'note' | 'summary' | 'source' (texto extraído de un archivo subido)
 model Document {
   id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId         String
@@ -345,7 +345,29 @@ model Message {
 
 // Acciones que el agente PROPONE. Nunca se ejecutan solas: pasan a 'accepted'
 // únicamente cuando el usuario las confirma y el backend las revalida.
-// type: 'propose_history_branch' (ampliable) · status: 'proposed' | 'accepted' | 'dismissed'
+// type: 'propose_history_branch' | 'propose_question_node' | 'propose_folder_change'
+// status: 'proposed' | 'accepted' | 'dismissed'
+model AgentAction {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String
+  conversationId String       @db.Uuid
+  messageId      String       @db.Uuid
+  type           String
+  payload        Json
+  status         String       @default("proposed")
+  resultNodeId   String?      @db.Uuid
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  resolvedAt     DateTime?    @db.Timestamp(6)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  message        Message      @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "agent_actions_user_idx")
+  @@index([conversationId], map: "agent_actions_conversation_idx")
+  @@index([messageId], map: "agent_actions_message_idx")
+  @@map("agent_actions")
+}
+
 /// Árbol de ramas de UNA conversación (distinto de QuestionNode, el mapa de dudas de la materia).
 /// La raíz es el único nodo sin padre; un índice único parcial (ver migración 6) lo garantiza.
 model ConversationNode {
@@ -376,32 +398,11 @@ model ConversationNode {
   anchorMessage Message?           @relation("NodeAnchor", fields: [anchorMessageId], references: [id], onDelete: SetNull)
   messages      Message[]          @relation("NodeMessages")
   folderSources FolderSource[]
-  
+
   @@index([conversationId], map: "conversation_nodes_conversation_idx")
   @@index([parentId], map: "conversation_nodes_parent_idx")
   @@index([userId], map: "conversation_nodes_user_idx")
   @@map("conversation_nodes")
-}
-
-model AgentAction {
-  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId         String
-  conversationId String       @db.Uuid
-  messageId      String       @db.Uuid
-  type           String
-  payload        Json
-  status         String       @default("proposed")
-  resultNodeId   String?      @db.Uuid
-  createdAt      DateTime     @default(now()) @db.Timestamp(6)
-  resolvedAt     DateTime?    @db.Timestamp(6)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  message        Message      @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  @@index([userId], map: "agent_actions_user_idx")
-  @@index([conversationId], map: "agent_actions_conversation_idx")
-  @@index([messageId], map: "agent_actions_message_idx")
-  @@map("agent_actions")
 }
 
 // Nodos del mapa conceptual: cada duda es un nodo; `parentId` arma el árbol.
@@ -428,6 +429,7 @@ model QuestionNode {
   file           File?         @relation(fields: [fileId], references: [id], onDelete: SetNull)
   parent         QuestionNode? @relation("QuestionTree", fields: [parentId], references: [id], onDelete: SetNull)
   children       QuestionNode[] @relation("QuestionTree")
+  folderSources  FolderSource[]
 
   @@index([userId], map: "question_nodes_user_idx")
   @@index([subjectId], map: "question_nodes_subject_idx")
@@ -435,52 +437,61 @@ model QuestionNode {
   @@map("question_nodes")
 }
 
-// --- Carpeta: grafo de conocimiento por workspace ---------------------------
+// --- Carpeta: grafo de conocimiento por materia ------------------------------
 // Distinto del árbol de ramas del historial (ConversationNode): un apunte puede recibir
 // referencias de muchas sesiones y ramas mediante FolderSource, sin compartir estructura.
 // subjectId NULL = workspace General (mismo criterio que File y Document).
-// kind: 'concept' | 'key_points' | 'exercise' | 'solution' | 'note'
+// type: 'concept' | 'key_points' | 'exercise' | 'solution' | 'note'
+// origin: 'ai' | 'manual' — lo tocado a mano sobrevive a una regeneración.
 model FolderNode {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String
   subjectId String?  @db.Uuid
-  kind      String   @default("concept")
+  type      String   @default("concept")
   title     String
   /// Contenido en Markdown.
-  content   String   @default("")
+  contentMd String   @default("")
+  /// Posición en el canvas de la Carpeta (porcentajes 0-100).
+  posX      Float    @default(0) @db.Real
+  posY      Float    @default(0) @db.Real
+  origin    String   @default("manual")
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
 
-  outgoing FolderEdge[]   @relation("EdgeFrom")
-  incoming FolderEdge[]   @relation("EdgeTo")
-  sources  FolderSource[]
+  edgesFrom FolderEdge[]   @relation("FolderEdgeFrom")
+  edgesTo   FolderEdge[]   @relation("FolderEdgeTo")
+  sources   FolderSource[]
 
   @@index([userId, subjectId], map: "folder_nodes_user_subject_idx")
   @@map("folder_nodes")
 }
 
-// kind: 'child' (from contiene a to; el grafo no admite ciclos) | 'related' (simétrica; se guarda con from < to)
+// kind: 'contains' (from contiene a to; el grafo no admite ciclos) |
+//       'relates' (simétrica; se guarda con from < to) |
+//       'solves' (la resolución resuelve al ejercicio)
 model FolderEdge {
   id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String
   fromId    String     @db.Uuid
   toId      String     @db.Uuid
-  kind      String
+  kind      String     @default("relates")
   createdAt DateTime   @default(now()) @db.Timestamp(6)
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  from      FolderNode @relation("EdgeFrom", fields: [fromId], references: [id], onDelete: Cascade)
-  to        FolderNode @relation("EdgeTo", fields: [toId], references: [id], onDelete: Cascade)
+  from      FolderNode @relation("FolderEdgeFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to        FolderNode @relation("FolderEdgeTo", fields: [toId], references: [id], onDelete: Cascade)
 
-  @@unique([fromId, toId, kind], map: "folder_edges_unique_key")
+  @@unique([fromId, toId, kind], map: "folder_edges_unique")
   @@index([toId], map: "folder_edges_to_idx")
   @@index([userId], map: "folder_edges_user_idx")
   @@map("folder_edges")
 }
 
-/// Referencia explícita de un apunte al historial que lo justifica. Las claves al historial son
-/// SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia queda inactiva.
+/// De dónde salió un apunte: la sesión, el mensaje, la rama o la duda que lo justifican.
+/// Todos opcionales: una nota escrita a mano no referencia nada. Las claves al historial
+/// son SET NULL: si la conversación se borra, el apunte conserva `label` y la referencia
+/// queda inactiva.
 model FolderSource {
   id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nodeId         String            @db.Uuid
@@ -488,13 +499,16 @@ model FolderSource {
   conversationId String?           @db.Uuid
   messageId      String?           @db.Uuid
   historyNodeId  String?           @db.Uuid
-  label          String
+  questionNodeId String?           @db.Uuid
+  /// Etiqueta legible de la referencia (ej. «Cálculo II › Rama: integrales»).
+  label          String            @default("")
   createdAt      DateTime          @default(now()) @db.Timestamp(6)
   node           FolderNode        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversation   Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   message        Message?          @relation(fields: [messageId], references: [id], onDelete: SetNull)
   historyNode    ConversationNode? @relation(fields: [historyNodeId], references: [id], onDelete: SetNull)
+  questionNode   QuestionNode?     @relation(fields: [questionNodeId], references: [id], onDelete: SetNull)
 
   @@index([nodeId], map: "folder_sources_node_idx")
   @@index([conversationId], map: "folder_sources_conversation_idx")

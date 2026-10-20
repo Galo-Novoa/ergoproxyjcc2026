@@ -549,20 +549,6 @@ export type ConversationUpdateOneRequiredWithoutMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutMessagesInput, Prisma.ConversationUpdateWithoutMessagesInput>, Prisma.ConversationUncheckedUpdateWithoutMessagesInput>
 }
 
-export type ConversationCreateNestedOneWithoutNodesInput = {
-  create?: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
-  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutNodesInput
-  connect?: Prisma.ConversationWhereUniqueInput
-}
-
-export type ConversationUpdateOneRequiredWithoutNodesNestedInput = {
-  create?: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
-  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutNodesInput
-  upsert?: Prisma.ConversationUpsertWithoutNodesInput
-  connect?: Prisma.ConversationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutNodesInput, Prisma.ConversationUpdateWithoutNodesInput>, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
-}
-
 export type ConversationCreateNestedOneWithoutAgentActionsInput = {
   create?: Prisma.XOR<Prisma.ConversationCreateWithoutAgentActionsInput, Prisma.ConversationUncheckedCreateWithoutAgentActionsInput>
   connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutAgentActionsInput
@@ -575,6 +561,20 @@ export type ConversationUpdateOneRequiredWithoutAgentActionsNestedInput = {
   upsert?: Prisma.ConversationUpsertWithoutAgentActionsInput
   connect?: Prisma.ConversationWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutAgentActionsInput, Prisma.ConversationUpdateWithoutAgentActionsInput>, Prisma.ConversationUncheckedUpdateWithoutAgentActionsInput>
+}
+
+export type ConversationCreateNestedOneWithoutNodesInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutNodesInput
+  connect?: Prisma.ConversationWhereUniqueInput
+}
+
+export type ConversationUpdateOneRequiredWithoutNodesNestedInput = {
+  create?: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
+  connectOrCreate?: Prisma.ConversationCreateOrConnectWithoutNodesInput
+  upsert?: Prisma.ConversationUpsertWithoutNodesInput
+  connect?: Prisma.ConversationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConversationUpdateToOneWithWhereWithoutNodesInput, Prisma.ConversationUpdateWithoutNodesInput>, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
 }
 
 export type ConversationCreateNestedOneWithoutQuestionNodesInput = {
@@ -899,86 +899,6 @@ export type ConversationUncheckedUpdateWithoutMessagesInput = {
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutConversationNestedInput
 }
 
-export type ConversationCreateWithoutNodesInput = {
-  id?: string
-  title?: string
-  mode?: string
-  activeNodeId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutConversationsInput
-  subject?: Prisma.SubjectCreateNestedOneWithoutConversationsInput
-  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
-  fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
-  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
-  agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
-  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutConversationInput
-}
-
-export type ConversationUncheckedCreateWithoutNodesInput = {
-  id?: string
-  userId: string
-  subjectId?: string | null
-  title?: string
-  mode?: string
-  activeNodeId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
-  fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
-  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
-  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
-  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutConversationInput
-}
-
-export type ConversationCreateOrConnectWithoutNodesInput = {
-  where: Prisma.ConversationWhereUniqueInput
-  create: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
-}
-
-export type ConversationUpsertWithoutNodesInput = {
-  update: Prisma.XOR<Prisma.ConversationUpdateWithoutNodesInput, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
-  create: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
-  where?: Prisma.ConversationWhereInput
-}
-
-export type ConversationUpdateToOneWithWhereWithoutNodesInput = {
-  where?: Prisma.ConversationWhereInput
-  data: Prisma.XOR<Prisma.ConversationUpdateWithoutNodesInput, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
-}
-
-export type ConversationUpdateWithoutNodesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  mode?: Prisma.StringFieldUpdateOperationsInput | string
-  activeNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutConversationsNestedInput
-  subject?: Prisma.SubjectUpdateOneWithoutConversationsNestedInput
-  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
-  fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
-  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
-  agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
-  folderSources?: Prisma.FolderSourceUpdateManyWithoutConversationNestedInput
-}
-
-export type ConversationUncheckedUpdateWithoutNodesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  mode?: Prisma.StringFieldUpdateOperationsInput | string
-  activeNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
-  fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
-  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
-  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
-  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutConversationNestedInput
-}
-
 export type ConversationCreateWithoutAgentActionsInput = {
   id?: string
   title?: string
@@ -1056,6 +976,86 @@ export type ConversationUncheckedUpdateWithoutAgentActionsInput = {
   fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
   questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
   nodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutConversationNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationCreateWithoutNodesInput = {
+  id?: string
+  title?: string
+  mode?: string
+  activeNodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutConversationsInput
+  subject?: Prisma.SubjectCreateNestedOneWithoutConversationsInput
+  messages?: Prisma.MessageCreateNestedManyWithoutConversationInput
+  fileLinks?: Prisma.ConversationFileCreateNestedManyWithoutConversationInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutConversationInput
+  agentActions?: Prisma.AgentActionCreateNestedManyWithoutConversationInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationUncheckedCreateWithoutNodesInput = {
+  id?: string
+  userId: string
+  subjectId?: string | null
+  title?: string
+  mode?: string
+  activeNodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutConversationInput
+  fileLinks?: Prisma.ConversationFileUncheckedCreateNestedManyWithoutConversationInput
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutConversationInput
+  agentActions?: Prisma.AgentActionUncheckedCreateNestedManyWithoutConversationInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutConversationInput
+}
+
+export type ConversationCreateOrConnectWithoutNodesInput = {
+  where: Prisma.ConversationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
+}
+
+export type ConversationUpsertWithoutNodesInput = {
+  update: Prisma.XOR<Prisma.ConversationUpdateWithoutNodesInput, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
+  create: Prisma.XOR<Prisma.ConversationCreateWithoutNodesInput, Prisma.ConversationUncheckedCreateWithoutNodesInput>
+  where?: Prisma.ConversationWhereInput
+}
+
+export type ConversationUpdateToOneWithWhereWithoutNodesInput = {
+  where?: Prisma.ConversationWhereInput
+  data: Prisma.XOR<Prisma.ConversationUpdateWithoutNodesInput, Prisma.ConversationUncheckedUpdateWithoutNodesInput>
+}
+
+export type ConversationUpdateWithoutNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.StringFieldUpdateOperationsInput | string
+  activeNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutConversationsNestedInput
+  subject?: Prisma.SubjectUpdateOneWithoutConversationsNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutConversationNestedInput
+  fileLinks?: Prisma.ConversationFileUpdateManyWithoutConversationNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutConversationNestedInput
+  agentActions?: Prisma.AgentActionUpdateManyWithoutConversationNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutConversationNestedInput
+}
+
+export type ConversationUncheckedUpdateWithoutNodesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.StringFieldUpdateOperationsInput | string
+  activeNodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutConversationNestedInput
+  fileLinks?: Prisma.ConversationFileUncheckedUpdateManyWithoutConversationNestedInput
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutConversationNestedInput
+  agentActions?: Prisma.AgentActionUncheckedUpdateManyWithoutConversationNestedInput
   folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutConversationNestedInput
 }
 

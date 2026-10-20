@@ -20,17 +20,32 @@ export type FolderNodeModel = runtime.Types.Result.DefaultSelection<Prisma.$Fold
 
 export type AggregateFolderNode = {
   _count: FolderNodeCountAggregateOutputType | null
+  _avg: FolderNodeAvgAggregateOutputType | null
+  _sum: FolderNodeSumAggregateOutputType | null
   _min: FolderNodeMinAggregateOutputType | null
   _max: FolderNodeMaxAggregateOutputType | null
+}
+
+export type FolderNodeAvgAggregateOutputType = {
+  posX: number | null
+  posY: number | null
+}
+
+export type FolderNodeSumAggregateOutputType = {
+  posX: number | null
+  posY: number | null
 }
 
 export type FolderNodeMinAggregateOutputType = {
   id: string | null
   userId: string | null
   subjectId: string | null
-  kind: string | null
+  type: string | null
   title: string | null
-  content: string | null
+  contentMd: string | null
+  posX: number | null
+  posY: number | null
+  origin: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -39,9 +54,12 @@ export type FolderNodeMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   subjectId: string | null
-  kind: string | null
+  type: string | null
   title: string | null
-  content: string | null
+  contentMd: string | null
+  posX: number | null
+  posY: number | null
+  origin: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,22 +68,38 @@ export type FolderNodeCountAggregateOutputType = {
   id: number
   userId: number
   subjectId: number
-  kind: number
+  type: number
   title: number
-  content: number
+  contentMd: number
+  posX: number
+  posY: number
+  origin: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
 
+export type FolderNodeAvgAggregateInputType = {
+  posX?: true
+  posY?: true
+}
+
+export type FolderNodeSumAggregateInputType = {
+  posX?: true
+  posY?: true
+}
+
 export type FolderNodeMinAggregateInputType = {
   id?: true
   userId?: true
   subjectId?: true
-  kind?: true
+  type?: true
   title?: true
-  content?: true
+  contentMd?: true
+  posX?: true
+  posY?: true
+  origin?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -74,9 +108,12 @@ export type FolderNodeMaxAggregateInputType = {
   id?: true
   userId?: true
   subjectId?: true
-  kind?: true
+  type?: true
   title?: true
-  content?: true
+  contentMd?: true
+  posX?: true
+  posY?: true
+  origin?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -85,9 +122,12 @@ export type FolderNodeCountAggregateInputType = {
   id?: true
   userId?: true
   subjectId?: true
-  kind?: true
+  type?: true
   title?: true
-  content?: true
+  contentMd?: true
+  posX?: true
+  posY?: true
+  origin?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -131,6 +171,18 @@ export type FolderNodeAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: FolderNodeAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: FolderNodeSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: FolderNodeMinAggregateInputType
@@ -161,6 +213,8 @@ export type FolderNodeGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: FolderNodeCountAggregateInputType | true
+  _avg?: FolderNodeAvgAggregateInputType
+  _sum?: FolderNodeSumAggregateInputType
   _min?: FolderNodeMinAggregateInputType
   _max?: FolderNodeMaxAggregateInputType
 }
@@ -169,12 +223,17 @@ export type FolderNodeGroupByOutputType = {
   id: string
   userId: string
   subjectId: string | null
-  kind: string
+  type: string
   title: string
-  content: string
+  contentMd: string
+  posX: number
+  posY: number
+  origin: string
   createdAt: Date
   updatedAt: Date
   _count: FolderNodeCountAggregateOutputType | null
+  _avg: FolderNodeAvgAggregateOutputType | null
+  _sum: FolderNodeSumAggregateOutputType | null
   _min: FolderNodeMinAggregateOutputType | null
   _max: FolderNodeMaxAggregateOutputType | null
 }
@@ -201,15 +260,18 @@ export type FolderNodeWhereInput = {
   id?: Prisma.UuidFilter<"FolderNode"> | string
   userId?: Prisma.StringFilter<"FolderNode"> | string
   subjectId?: Prisma.UuidNullableFilter<"FolderNode"> | string | null
-  kind?: Prisma.StringFilter<"FolderNode"> | string
+  type?: Prisma.StringFilter<"FolderNode"> | string
   title?: Prisma.StringFilter<"FolderNode"> | string
-  content?: Prisma.StringFilter<"FolderNode"> | string
+  contentMd?: Prisma.StringFilter<"FolderNode"> | string
+  posX?: Prisma.FloatFilter<"FolderNode"> | number
+  posY?: Prisma.FloatFilter<"FolderNode"> | number
+  origin?: Prisma.StringFilter<"FolderNode"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   subject?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
-  outgoing?: Prisma.FolderEdgeListRelationFilter
-  incoming?: Prisma.FolderEdgeListRelationFilter
+  edgesFrom?: Prisma.FolderEdgeListRelationFilter
+  edgesTo?: Prisma.FolderEdgeListRelationFilter
   sources?: Prisma.FolderSourceListRelationFilter
 }
 
@@ -217,15 +279,18 @@ export type FolderNodeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  contentMd?: Prisma.SortOrder
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
+  origin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   subject?: Prisma.SubjectOrderByWithRelationInput
-  outgoing?: Prisma.FolderEdgeOrderByRelationAggregateInput
-  incoming?: Prisma.FolderEdgeOrderByRelationAggregateInput
+  edgesFrom?: Prisma.FolderEdgeOrderByRelationAggregateInput
+  edgesTo?: Prisma.FolderEdgeOrderByRelationAggregateInput
   sources?: Prisma.FolderSourceOrderByRelationAggregateInput
 }
 
@@ -236,15 +301,18 @@ export type FolderNodeWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FolderNodeWhereInput | Prisma.FolderNodeWhereInput[]
   userId?: Prisma.StringFilter<"FolderNode"> | string
   subjectId?: Prisma.UuidNullableFilter<"FolderNode"> | string | null
-  kind?: Prisma.StringFilter<"FolderNode"> | string
+  type?: Prisma.StringFilter<"FolderNode"> | string
   title?: Prisma.StringFilter<"FolderNode"> | string
-  content?: Prisma.StringFilter<"FolderNode"> | string
+  contentMd?: Prisma.StringFilter<"FolderNode"> | string
+  posX?: Prisma.FloatFilter<"FolderNode"> | number
+  posY?: Prisma.FloatFilter<"FolderNode"> | number
+  origin?: Prisma.StringFilter<"FolderNode"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   subject?: Prisma.XOR<Prisma.SubjectNullableScalarRelationFilter, Prisma.SubjectWhereInput> | null
-  outgoing?: Prisma.FolderEdgeListRelationFilter
-  incoming?: Prisma.FolderEdgeListRelationFilter
+  edgesFrom?: Prisma.FolderEdgeListRelationFilter
+  edgesTo?: Prisma.FolderEdgeListRelationFilter
   sources?: Prisma.FolderSourceListRelationFilter
 }, "id">
 
@@ -252,14 +320,19 @@ export type FolderNodeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrderInput | Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  contentMd?: Prisma.SortOrder
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
+  origin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.FolderNodeCountOrderByAggregateInput
+  _avg?: Prisma.FolderNodeAvgOrderByAggregateInput
   _max?: Prisma.FolderNodeMaxOrderByAggregateInput
   _min?: Prisma.FolderNodeMinOrderByAggregateInput
+  _sum?: Prisma.FolderNodeSumOrderByAggregateInput
 }
 
 export type FolderNodeScalarWhereWithAggregatesInput = {
@@ -269,24 +342,30 @@ export type FolderNodeScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"FolderNode"> | string
   userId?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
   subjectId?: Prisma.UuidNullableWithAggregatesFilter<"FolderNode"> | string | null
-  kind?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
+  type?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
   title?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
-  content?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
+  contentMd?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
+  posX?: Prisma.FloatWithAggregatesFilter<"FolderNode"> | number
+  posY?: Prisma.FloatWithAggregatesFilter<"FolderNode"> | number
+  origin?: Prisma.StringWithAggregatesFilter<"FolderNode"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FolderNode"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FolderNode"> | Date | string
 }
 
 export type FolderNodeCreateInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderNodesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFolderNodesInput
-  outgoing?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceCreateNestedManyWithoutNodeInput
 }
 
@@ -294,27 +373,33 @@ export type FolderNodeUncheckedCreateInput = {
   id?: string
   userId: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutNodeInput
 }
 
 export type FolderNodeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderNodesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFolderNodesNestedInput
-  outgoing?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUpdateManyWithoutNodeNestedInput
 }
 
@@ -322,13 +407,16 @@ export type FolderNodeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUncheckedUpdateManyWithoutNodeNestedInput
 }
 
@@ -336,18 +424,24 @@ export type FolderNodeCreateManyInput = {
   id?: string
   userId: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type FolderNodeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -356,9 +450,12 @@ export type FolderNodeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -377,20 +474,31 @@ export type FolderNodeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  contentMd?: Prisma.SortOrder
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
+  origin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type FolderNodeAvgOrderByAggregateInput = {
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
 }
 
 export type FolderNodeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  contentMd?: Prisma.SortOrder
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
+  origin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -399,11 +507,19 @@ export type FolderNodeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  contentMd?: Prisma.SortOrder
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
+  origin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type FolderNodeSumOrderByAggregateInput = {
+  posX?: Prisma.SortOrder
+  posY?: Prisma.SortOrder
 }
 
 export type FolderNodeScalarRelationFilter = {
@@ -495,32 +611,32 @@ export type FolderNodeUncheckedUpdateManyWithoutSubjectNestedInput = {
   deleteMany?: Prisma.FolderNodeScalarWhereInput | Prisma.FolderNodeScalarWhereInput[]
 }
 
-export type FolderNodeCreateNestedOneWithoutOutgoingInput = {
-  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutOutgoingInput, Prisma.FolderNodeUncheckedCreateWithoutOutgoingInput>
-  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutOutgoingInput
+export type FolderNodeCreateNestedOneWithoutEdgesFromInput = {
+  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesFromInput>
+  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutEdgesFromInput
   connect?: Prisma.FolderNodeWhereUniqueInput
 }
 
-export type FolderNodeCreateNestedOneWithoutIncomingInput = {
-  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutIncomingInput, Prisma.FolderNodeUncheckedCreateWithoutIncomingInput>
-  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutIncomingInput
+export type FolderNodeCreateNestedOneWithoutEdgesToInput = {
+  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesToInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesToInput>
+  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutEdgesToInput
   connect?: Prisma.FolderNodeWhereUniqueInput
 }
 
-export type FolderNodeUpdateOneRequiredWithoutOutgoingNestedInput = {
-  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutOutgoingInput, Prisma.FolderNodeUncheckedCreateWithoutOutgoingInput>
-  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutOutgoingInput
-  upsert?: Prisma.FolderNodeUpsertWithoutOutgoingInput
+export type FolderNodeUpdateOneRequiredWithoutEdgesFromNestedInput = {
+  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesFromInput>
+  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutEdgesFromInput
+  upsert?: Prisma.FolderNodeUpsertWithoutEdgesFromInput
   connect?: Prisma.FolderNodeWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.FolderNodeUpdateToOneWithWhereWithoutOutgoingInput, Prisma.FolderNodeUpdateWithoutOutgoingInput>, Prisma.FolderNodeUncheckedUpdateWithoutOutgoingInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FolderNodeUpdateToOneWithWhereWithoutEdgesFromInput, Prisma.FolderNodeUpdateWithoutEdgesFromInput>, Prisma.FolderNodeUncheckedUpdateWithoutEdgesFromInput>
 }
 
-export type FolderNodeUpdateOneRequiredWithoutIncomingNestedInput = {
-  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutIncomingInput, Prisma.FolderNodeUncheckedCreateWithoutIncomingInput>
-  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutIncomingInput
-  upsert?: Prisma.FolderNodeUpsertWithoutIncomingInput
+export type FolderNodeUpdateOneRequiredWithoutEdgesToNestedInput = {
+  create?: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesToInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesToInput>
+  connectOrCreate?: Prisma.FolderNodeCreateOrConnectWithoutEdgesToInput
+  upsert?: Prisma.FolderNodeUpsertWithoutEdgesToInput
   connect?: Prisma.FolderNodeWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.FolderNodeUpdateToOneWithWhereWithoutIncomingInput, Prisma.FolderNodeUpdateWithoutIncomingInput>, Prisma.FolderNodeUncheckedUpdateWithoutIncomingInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FolderNodeUpdateToOneWithWhereWithoutEdgesToInput, Prisma.FolderNodeUpdateWithoutEdgesToInput>, Prisma.FolderNodeUncheckedUpdateWithoutEdgesToInput>
 }
 
 export type FolderNodeCreateNestedOneWithoutSourcesInput = {
@@ -539,27 +655,33 @@ export type FolderNodeUpdateOneRequiredWithoutSourcesNestedInput = {
 
 export type FolderNodeCreateWithoutUserInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   subject?: Prisma.SubjectCreateNestedOneWithoutFolderNodesInput
-  outgoing?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceCreateNestedManyWithoutNodeInput
 }
 
 export type FolderNodeUncheckedCreateWithoutUserInput = {
   id?: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutNodeInput
 }
 
@@ -596,36 +718,45 @@ export type FolderNodeScalarWhereInput = {
   id?: Prisma.UuidFilter<"FolderNode"> | string
   userId?: Prisma.StringFilter<"FolderNode"> | string
   subjectId?: Prisma.UuidNullableFilter<"FolderNode"> | string | null
-  kind?: Prisma.StringFilter<"FolderNode"> | string
+  type?: Prisma.StringFilter<"FolderNode"> | string
   title?: Prisma.StringFilter<"FolderNode"> | string
-  content?: Prisma.StringFilter<"FolderNode"> | string
+  contentMd?: Prisma.StringFilter<"FolderNode"> | string
+  posX?: Prisma.FloatFilter<"FolderNode"> | number
+  posY?: Prisma.FloatFilter<"FolderNode"> | number
+  origin?: Prisma.StringFilter<"FolderNode"> | string
   createdAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FolderNode"> | Date | string
 }
 
 export type FolderNodeCreateWithoutSubjectInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderNodesInput
-  outgoing?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceCreateNestedManyWithoutNodeInput
 }
 
 export type FolderNodeUncheckedCreateWithoutSubjectInput = {
   id?: string
   userId: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutNodeInput
 }
 
@@ -655,166 +786,196 @@ export type FolderNodeUpdateManyWithWhereWithoutSubjectInput = {
   data: Prisma.XOR<Prisma.FolderNodeUpdateManyMutationInput, Prisma.FolderNodeUncheckedUpdateManyWithoutSubjectInput>
 }
 
-export type FolderNodeCreateWithoutOutgoingInput = {
+export type FolderNodeCreateWithoutEdgesFromInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderNodesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFolderNodesInput
-  incoming?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
+  edgesTo?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceCreateNestedManyWithoutNodeInput
 }
 
-export type FolderNodeUncheckedCreateWithoutOutgoingInput = {
+export type FolderNodeUncheckedCreateWithoutEdgesFromInput = {
   id?: string
   userId: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  incoming?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
+  edgesTo?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
   sources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutNodeInput
 }
 
-export type FolderNodeCreateOrConnectWithoutOutgoingInput = {
+export type FolderNodeCreateOrConnectWithoutEdgesFromInput = {
   where: Prisma.FolderNodeWhereUniqueInput
-  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutOutgoingInput, Prisma.FolderNodeUncheckedCreateWithoutOutgoingInput>
+  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesFromInput>
 }
 
-export type FolderNodeCreateWithoutIncomingInput = {
+export type FolderNodeCreateWithoutEdgesToInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderNodesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFolderNodesInput
-  outgoing?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
+  edgesFrom?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
   sources?: Prisma.FolderSourceCreateNestedManyWithoutNodeInput
 }
 
-export type FolderNodeUncheckedCreateWithoutIncomingInput = {
+export type FolderNodeUncheckedCreateWithoutEdgesToInput = {
   id?: string
   userId: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
   sources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutNodeInput
 }
 
-export type FolderNodeCreateOrConnectWithoutIncomingInput = {
+export type FolderNodeCreateOrConnectWithoutEdgesToInput = {
   where: Prisma.FolderNodeWhereUniqueInput
-  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutIncomingInput, Prisma.FolderNodeUncheckedCreateWithoutIncomingInput>
+  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesToInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesToInput>
 }
 
-export type FolderNodeUpsertWithoutOutgoingInput = {
-  update: Prisma.XOR<Prisma.FolderNodeUpdateWithoutOutgoingInput, Prisma.FolderNodeUncheckedUpdateWithoutOutgoingInput>
-  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutOutgoingInput, Prisma.FolderNodeUncheckedCreateWithoutOutgoingInput>
+export type FolderNodeUpsertWithoutEdgesFromInput = {
+  update: Prisma.XOR<Prisma.FolderNodeUpdateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedUpdateWithoutEdgesFromInput>
+  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesFromInput>
   where?: Prisma.FolderNodeWhereInput
 }
 
-export type FolderNodeUpdateToOneWithWhereWithoutOutgoingInput = {
+export type FolderNodeUpdateToOneWithWhereWithoutEdgesFromInput = {
   where?: Prisma.FolderNodeWhereInput
-  data: Prisma.XOR<Prisma.FolderNodeUpdateWithoutOutgoingInput, Prisma.FolderNodeUncheckedUpdateWithoutOutgoingInput>
+  data: Prisma.XOR<Prisma.FolderNodeUpdateWithoutEdgesFromInput, Prisma.FolderNodeUncheckedUpdateWithoutEdgesFromInput>
 }
 
-export type FolderNodeUpdateWithoutOutgoingInput = {
+export type FolderNodeUpdateWithoutEdgesFromInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderNodesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFolderNodesNestedInput
-  incoming?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
+  edgesTo?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUpdateManyWithoutNodeNestedInput
 }
 
-export type FolderNodeUncheckedUpdateWithoutOutgoingInput = {
+export type FolderNodeUncheckedUpdateWithoutEdgesFromInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  incoming?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
+  edgesTo?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUncheckedUpdateManyWithoutNodeNestedInput
 }
 
-export type FolderNodeUpsertWithoutIncomingInput = {
-  update: Prisma.XOR<Prisma.FolderNodeUpdateWithoutIncomingInput, Prisma.FolderNodeUncheckedUpdateWithoutIncomingInput>
-  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutIncomingInput, Prisma.FolderNodeUncheckedCreateWithoutIncomingInput>
+export type FolderNodeUpsertWithoutEdgesToInput = {
+  update: Prisma.XOR<Prisma.FolderNodeUpdateWithoutEdgesToInput, Prisma.FolderNodeUncheckedUpdateWithoutEdgesToInput>
+  create: Prisma.XOR<Prisma.FolderNodeCreateWithoutEdgesToInput, Prisma.FolderNodeUncheckedCreateWithoutEdgesToInput>
   where?: Prisma.FolderNodeWhereInput
 }
 
-export type FolderNodeUpdateToOneWithWhereWithoutIncomingInput = {
+export type FolderNodeUpdateToOneWithWhereWithoutEdgesToInput = {
   where?: Prisma.FolderNodeWhereInput
-  data: Prisma.XOR<Prisma.FolderNodeUpdateWithoutIncomingInput, Prisma.FolderNodeUncheckedUpdateWithoutIncomingInput>
+  data: Prisma.XOR<Prisma.FolderNodeUpdateWithoutEdgesToInput, Prisma.FolderNodeUncheckedUpdateWithoutEdgesToInput>
 }
 
-export type FolderNodeUpdateWithoutIncomingInput = {
+export type FolderNodeUpdateWithoutEdgesToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderNodesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFolderNodesNestedInput
-  outgoing?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
+  edgesFrom?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
   sources?: Prisma.FolderSourceUpdateManyWithoutNodeNestedInput
 }
 
-export type FolderNodeUncheckedUpdateWithoutIncomingInput = {
+export type FolderNodeUncheckedUpdateWithoutEdgesToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
   sources?: Prisma.FolderSourceUncheckedUpdateManyWithoutNodeNestedInput
 }
 
 export type FolderNodeCreateWithoutSourcesInput = {
   id?: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutFolderNodesInput
   subject?: Prisma.SubjectCreateNestedOneWithoutFolderNodesInput
-  outgoing?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeCreateNestedManyWithoutToInput
 }
 
 export type FolderNodeUncheckedCreateWithoutSourcesInput = {
   id?: string
   userId: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
-  incoming?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutFromInput
+  edgesTo?: Prisma.FolderEdgeUncheckedCreateNestedManyWithoutToInput
 }
 
 export type FolderNodeCreateOrConnectWithoutSourcesInput = {
@@ -835,72 +996,90 @@ export type FolderNodeUpdateToOneWithWhereWithoutSourcesInput = {
 
 export type FolderNodeUpdateWithoutSourcesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderNodesNestedInput
   subject?: Prisma.SubjectUpdateOneWithoutFolderNodesNestedInput
-  outgoing?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
 }
 
 export type FolderNodeUncheckedUpdateWithoutSourcesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
 }
 
 export type FolderNodeCreateManyUserInput = {
   id?: string
   subjectId?: string | null
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type FolderNodeUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subject?: Prisma.SubjectUpdateOneWithoutFolderNodesNestedInput
-  outgoing?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUpdateManyWithoutNodeNestedInput
 }
 
 export type FolderNodeUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUncheckedUpdateManyWithoutNodeNestedInput
 }
 
 export type FolderNodeUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -908,45 +1087,57 @@ export type FolderNodeUncheckedUpdateManyWithoutUserInput = {
 export type FolderNodeCreateManySubjectInput = {
   id?: string
   userId: string
-  kind?: string
+  type?: string
   title: string
-  content?: string
+  contentMd?: string
+  posX?: number
+  posY?: number
+  origin?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type FolderNodeUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutFolderNodesNestedInput
-  outgoing?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUpdateManyWithoutNodeNestedInput
 }
 
 export type FolderNodeUncheckedUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  outgoing?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
-  incoming?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
+  edgesFrom?: Prisma.FolderEdgeUncheckedUpdateManyWithoutFromNestedInput
+  edgesTo?: Prisma.FolderEdgeUncheckedUpdateManyWithoutToNestedInput
   sources?: Prisma.FolderSourceUncheckedUpdateManyWithoutNodeNestedInput
 }
 
 export type FolderNodeUncheckedUpdateManyWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
+  contentMd?: Prisma.StringFieldUpdateOperationsInput | string
+  posX?: Prisma.FloatFieldUpdateOperationsInput | number
+  posY?: Prisma.FloatFieldUpdateOperationsInput | number
+  origin?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -957,14 +1148,14 @@ export type FolderNodeUncheckedUpdateManyWithoutSubjectInput = {
  */
 
 export type FolderNodeCountOutputType = {
-  outgoing: number
-  incoming: number
+  edgesFrom: number
+  edgesTo: number
   sources: number
 }
 
 export type FolderNodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  outgoing?: boolean | FolderNodeCountOutputTypeCountOutgoingArgs
-  incoming?: boolean | FolderNodeCountOutputTypeCountIncomingArgs
+  edgesFrom?: boolean | FolderNodeCountOutputTypeCountEdgesFromArgs
+  edgesTo?: boolean | FolderNodeCountOutputTypeCountEdgesToArgs
   sources?: boolean | FolderNodeCountOutputTypeCountSourcesArgs
 }
 
@@ -981,14 +1172,14 @@ export type FolderNodeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
 /**
  * FolderNodeCountOutputType without action
  */
-export type FolderNodeCountOutputTypeCountOutgoingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type FolderNodeCountOutputTypeCountEdgesFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FolderEdgeWhereInput
 }
 
 /**
  * FolderNodeCountOutputType without action
  */
-export type FolderNodeCountOutputTypeCountIncomingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type FolderNodeCountOutputTypeCountEdgesToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.FolderEdgeWhereInput
 }
 
@@ -1004,15 +1195,18 @@ export type FolderNodeSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   userId?: boolean
   subjectId?: boolean
-  kind?: boolean
+  type?: boolean
   title?: boolean
-  content?: boolean
+  contentMd?: boolean
+  posX?: boolean
+  posY?: boolean
+  origin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.FolderNode$subjectArgs<ExtArgs>
-  outgoing?: boolean | Prisma.FolderNode$outgoingArgs<ExtArgs>
-  incoming?: boolean | Prisma.FolderNode$incomingArgs<ExtArgs>
+  edgesFrom?: boolean | Prisma.FolderNode$edgesFromArgs<ExtArgs>
+  edgesTo?: boolean | Prisma.FolderNode$edgesToArgs<ExtArgs>
   sources?: boolean | Prisma.FolderNode$sourcesArgs<ExtArgs>
   _count?: boolean | Prisma.FolderNodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["folderNode"]>
@@ -1021,9 +1215,12 @@ export type FolderNodeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   userId?: boolean
   subjectId?: boolean
-  kind?: boolean
+  type?: boolean
   title?: boolean
-  content?: boolean
+  contentMd?: boolean
+  posX?: boolean
+  posY?: boolean
+  origin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1034,9 +1231,12 @@ export type FolderNodeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   userId?: boolean
   subjectId?: boolean
-  kind?: boolean
+  type?: boolean
   title?: boolean
-  content?: boolean
+  contentMd?: boolean
+  posX?: boolean
+  posY?: boolean
+  origin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1047,19 +1247,22 @@ export type FolderNodeSelectScalar = {
   id?: boolean
   userId?: boolean
   subjectId?: boolean
-  kind?: boolean
+  type?: boolean
   title?: boolean
-  content?: boolean
+  contentMd?: boolean
+  posX?: boolean
+  posY?: boolean
+  origin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FolderNodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "subjectId" | "kind" | "title" | "content" | "createdAt" | "updatedAt", ExtArgs["result"]["folderNode"]>
+export type FolderNodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "subjectId" | "type" | "title" | "contentMd" | "posX" | "posY" | "origin" | "createdAt" | "updatedAt", ExtArgs["result"]["folderNode"]>
 export type FolderNodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.FolderNode$subjectArgs<ExtArgs>
-  outgoing?: boolean | Prisma.FolderNode$outgoingArgs<ExtArgs>
-  incoming?: boolean | Prisma.FolderNode$incomingArgs<ExtArgs>
+  edgesFrom?: boolean | Prisma.FolderNode$edgesFromArgs<ExtArgs>
+  edgesTo?: boolean | Prisma.FolderNode$edgesToArgs<ExtArgs>
   sources?: boolean | Prisma.FolderNode$sourcesArgs<ExtArgs>
   _count?: boolean | Prisma.FolderNodeCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1077,20 +1280,26 @@ export type $FolderNodePayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     subject: Prisma.$SubjectPayload<ExtArgs> | null
-    outgoing: Prisma.$FolderEdgePayload<ExtArgs>[]
-    incoming: Prisma.$FolderEdgePayload<ExtArgs>[]
+    edgesFrom: Prisma.$FolderEdgePayload<ExtArgs>[]
+    edgesTo: Prisma.$FolderEdgePayload<ExtArgs>[]
     sources: Prisma.$FolderSourcePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
     subjectId: string | null
-    kind: string
+    type: string
     title: string
     /**
      * Contenido en Markdown.
      */
-    content: string
+    contentMd: string
+    /**
+     * Posición en el canvas de la Carpeta (porcentajes 0-100).
+     */
+    posX: number
+    posY: number
+    origin: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["folderNode"]>
@@ -1489,8 +1698,8 @@ export interface Prisma__FolderNodeClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   subject<T extends Prisma.FolderNode$subjectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$subjectArgs<ExtArgs>>): Prisma.Prisma__SubjectClient<runtime.Types.Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  outgoing<T extends Prisma.FolderNode$outgoingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$outgoingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderEdgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  incoming<T extends Prisma.FolderNode$incomingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$incomingArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderEdgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  edgesFrom<T extends Prisma.FolderNode$edgesFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$edgesFromArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderEdgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  edgesTo<T extends Prisma.FolderNode$edgesToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$edgesToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderEdgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sources<T extends Prisma.FolderNode$sourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderNode$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FolderSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1524,9 +1733,12 @@ export interface FolderNodeFieldRefs {
   readonly id: Prisma.FieldRef<"FolderNode", 'String'>
   readonly userId: Prisma.FieldRef<"FolderNode", 'String'>
   readonly subjectId: Prisma.FieldRef<"FolderNode", 'String'>
-  readonly kind: Prisma.FieldRef<"FolderNode", 'String'>
+  readonly type: Prisma.FieldRef<"FolderNode", 'String'>
   readonly title: Prisma.FieldRef<"FolderNode", 'String'>
-  readonly content: Prisma.FieldRef<"FolderNode", 'String'>
+  readonly contentMd: Prisma.FieldRef<"FolderNode", 'String'>
+  readonly posX: Prisma.FieldRef<"FolderNode", 'Float'>
+  readonly posY: Prisma.FieldRef<"FolderNode", 'Float'>
+  readonly origin: Prisma.FieldRef<"FolderNode", 'String'>
   readonly createdAt: Prisma.FieldRef<"FolderNode", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FolderNode", 'DateTime'>
 }
@@ -1949,9 +2161,9 @@ export type FolderNode$subjectArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * FolderNode.outgoing
+ * FolderNode.edgesFrom
  */
-export type FolderNode$outgoingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type FolderNode$edgesFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the FolderEdge
    */
@@ -1973,9 +2185,9 @@ export type FolderNode$outgoingArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * FolderNode.incoming
+ * FolderNode.edgesTo
  */
-export type FolderNode$incomingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type FolderNode$edgesToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the FolderEdge
    */

@@ -497,14 +497,14 @@ export type MessageSumOrderByAggregateInput = {
   seq?: Prisma.SortOrder
 }
 
-export type MessageNullableScalarRelationFilter = {
-  is?: Prisma.MessageWhereInput | null
-  isNot?: Prisma.MessageWhereInput | null
-}
-
 export type MessageScalarRelationFilter = {
   is?: Prisma.MessageWhereInput
   isNot?: Prisma.MessageWhereInput
+}
+
+export type MessageNullableScalarRelationFilter = {
+  is?: Prisma.MessageWhereInput | null
+  isNot?: Prisma.MessageWhereInput | null
 }
 
 export type MessageCreateNestedManyWithoutUserInput = {
@@ -599,6 +599,20 @@ export type BigIntFieldUpdateOperationsInput = {
   divide?: bigint | number
 }
 
+export type MessageCreateNestedOneWithoutAgentActionsInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAgentActionsInput
+  connect?: Prisma.MessageWhereUniqueInput
+}
+
+export type MessageUpdateOneRequiredWithoutAgentActionsNestedInput = {
+  create?: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
+  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAgentActionsInput
+  upsert?: Prisma.MessageUpsertWithoutAgentActionsInput
+  connect?: Prisma.MessageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutAgentActionsInput, Prisma.MessageUpdateWithoutAgentActionsInput>, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
+}
+
 export type MessageCreateNestedOneWithoutAnchoredNodesInput = {
   create?: Prisma.XOR<Prisma.MessageCreateWithoutAnchoredNodesInput, Prisma.MessageUncheckedCreateWithoutAnchoredNodesInput>
   connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAnchoredNodesInput
@@ -655,20 +669,6 @@ export type MessageUncheckedUpdateManyWithoutNodeNestedInput = {
   update?: Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput | Prisma.MessageUpdateWithWhereUniqueWithoutNodeInput[]
   updateMany?: Prisma.MessageUpdateManyWithWhereWithoutNodeInput | Prisma.MessageUpdateManyWithWhereWithoutNodeInput[]
   deleteMany?: Prisma.MessageScalarWhereInput | Prisma.MessageScalarWhereInput[]
-}
-
-export type MessageCreateNestedOneWithoutAgentActionsInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAgentActionsInput
-  connect?: Prisma.MessageWhereUniqueInput
-}
-
-export type MessageUpdateOneRequiredWithoutAgentActionsNestedInput = {
-  create?: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
-  connectOrCreate?: Prisma.MessageCreateOrConnectWithoutAgentActionsInput
-  upsert?: Prisma.MessageUpsertWithoutAgentActionsInput
-  connect?: Prisma.MessageWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MessageUpdateToOneWithWhereWithoutAgentActionsInput, Prisma.MessageUpdateWithoutAgentActionsInput>, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
 }
 
 export type MessageCreateNestedOneWithoutQuestionNodesInput = {
@@ -835,6 +835,86 @@ export type MessageUpdateManyWithWhereWithoutConversationInput = {
   data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutConversationInput>
 }
 
+export type MessageCreateWithoutAgentActionsInput = {
+  id?: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: bigint | number
+  createdAt?: Date | string
+  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
+  user: Prisma.UserCreateNestedOneWithoutMessagesInput
+  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
+  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
+}
+
+export type MessageUncheckedCreateWithoutAgentActionsInput = {
+  id?: string
+  conversationId: string
+  userId: string
+  role: string
+  content: string
+  description?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: string | null
+  seq?: bigint | number
+  createdAt?: Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
+  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
+}
+
+export type MessageCreateOrConnectWithoutAgentActionsInput = {
+  where: Prisma.MessageWhereUniqueInput
+  create: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
+}
+
+export type MessageUpsertWithoutAgentActionsInput = {
+  update: Prisma.XOR<Prisma.MessageUpdateWithoutAgentActionsInput, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
+  create: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
+  where?: Prisma.MessageWhereInput
+}
+
+export type MessageUpdateToOneWithWhereWithoutAgentActionsInput = {
+  where?: Prisma.MessageWhereInput
+  data: Prisma.XOR<Prisma.MessageUpdateWithoutAgentActionsInput, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
+}
+
+export type MessageUpdateWithoutAgentActionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
+  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
+}
+
+export type MessageUncheckedUpdateWithoutAgentActionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
+  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
+  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
+}
+
 export type MessageCreateWithoutAnchoredNodesInput = {
   id?: string
   role: string
@@ -971,86 +1051,6 @@ export type MessageUpdateWithWhereUniqueWithoutNodeInput = {
 export type MessageUpdateManyWithWhereWithoutNodeInput = {
   where: Prisma.MessageScalarWhereInput
   data: Prisma.XOR<Prisma.MessageUpdateManyMutationInput, Prisma.MessageUncheckedUpdateManyWithoutNodeInput>
-}
-
-export type MessageCreateWithoutAgentActionsInput = {
-  id?: string
-  role: string
-  content: string
-  description?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  seq?: bigint | number
-  createdAt?: Date | string
-  conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
-  user: Prisma.UserCreateNestedOneWithoutMessagesInput
-  node?: Prisma.ConversationNodeCreateNestedOneWithoutMessagesInput
-  questionNodes?: Prisma.QuestionNodeCreateNestedManyWithoutMessageInput
-  anchoredNodes?: Prisma.ConversationNodeCreateNestedManyWithoutAnchorMessageInput
-  folderSources?: Prisma.FolderSourceCreateNestedManyWithoutMessageInput
-}
-
-export type MessageUncheckedCreateWithoutAgentActionsInput = {
-  id?: string
-  conversationId: string
-  userId: string
-  role: string
-  content: string
-  description?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  nodeId?: string | null
-  seq?: bigint | number
-  createdAt?: Date | string
-  questionNodes?: Prisma.QuestionNodeUncheckedCreateNestedManyWithoutMessageInput
-  anchoredNodes?: Prisma.ConversationNodeUncheckedCreateNestedManyWithoutAnchorMessageInput
-  folderSources?: Prisma.FolderSourceUncheckedCreateNestedManyWithoutMessageInput
-}
-
-export type MessageCreateOrConnectWithoutAgentActionsInput = {
-  where: Prisma.MessageWhereUniqueInput
-  create: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
-}
-
-export type MessageUpsertWithoutAgentActionsInput = {
-  update: Prisma.XOR<Prisma.MessageUpdateWithoutAgentActionsInput, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
-  create: Prisma.XOR<Prisma.MessageCreateWithoutAgentActionsInput, Prisma.MessageUncheckedCreateWithoutAgentActionsInput>
-  where?: Prisma.MessageWhereInput
-}
-
-export type MessageUpdateToOneWithWhereWithoutAgentActionsInput = {
-  where?: Prisma.MessageWhereInput
-  data: Prisma.XOR<Prisma.MessageUpdateWithoutAgentActionsInput, Prisma.MessageUncheckedUpdateWithoutAgentActionsInput>
-}
-
-export type MessageUpdateWithoutAgentActionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
-  node?: Prisma.ConversationNodeUpdateOneWithoutMessagesNestedInput
-  questionNodes?: Prisma.QuestionNodeUpdateManyWithoutMessageNestedInput
-  anchoredNodes?: Prisma.ConversationNodeUpdateManyWithoutAnchorMessageNestedInput
-  folderSources?: Prisma.FolderSourceUpdateManyWithoutMessageNestedInput
-}
-
-export type MessageUncheckedUpdateWithoutAgentActionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  conversationId?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  nodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  seq?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  questionNodes?: Prisma.QuestionNodeUncheckedUpdateManyWithoutMessageNestedInput
-  anchoredNodes?: Prisma.ConversationNodeUncheckedUpdateManyWithoutAnchorMessageNestedInput
-  folderSources?: Prisma.FolderSourceUncheckedUpdateManyWithoutMessageNestedInput
 }
 
 export type MessageCreateWithoutQuestionNodesInput = {

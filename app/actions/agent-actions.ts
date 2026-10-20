@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { isUuid } from '@/lib/data/queries'
+import { nextNodePosition } from '@/lib/data/tree-layout'
 import { db } from '@/lib/db'
 import { applyFolderProposal, FolderError, type FolderSourceRef } from '@/lib/folder/server'
 import { isConversationMode, parseProposalPayload } from '@/lib/llm/contract'
@@ -13,9 +14,20 @@ import type { ActionResult } from '@/lib/types'
 
 const ALREADY_RESOLVED = 'Esta acción ya fue resuelta.'
 
+type ActionRow = {
+  id: string
+  conversationId: string
+  messageId: string
+  message: { id: string; nodeId: string | null }
+  conversation: { subjectId: string | null; title: string }
+}
+
 /**
- * Confirma o descarta una acción propuesta. Al aceptar, la rama nueva cuelga del nodo donde se hizo la
- * propuesta (se lee del mensaje, no del payload del modelo) y hereda hasta ese mensaje inclusive.
+ * Confirma o descarta una acción propuesta por el agente.
+ *
+ * El agente nunca escribe solo: deja la propuesta en estado 'proposed' y acá se
+ * revalida todo (que los nodos sigan existiendo y sean del usuario) antes de
+ * ejecutarla. Descartar no toca ni el historial ni la Carpeta.
  */
 export async function resolveAgentAction(
   actionId: string,
@@ -28,7 +40,10 @@ export async function resolveAgentAction(
 
   const action = await db.agentAction.findFirst({
     where: { id: actionId, userId },
-    include: { message: { select: { id: true, nodeId: true } } },
+    include: {
+      message: { select: { id: true, nodeId: true } },
+      conversation: { select: { subjectId: true, title: true } },
+    },
   })
   if (!action) return { ok: false, error: 'No encontramos la acción.' }
   if (action.status !== 'proposed') return { ok: false, error: ALREADY_RESOLVED }
@@ -39,7 +54,7 @@ export async function resolveAgentAction(
       data: { status: 'dismissed', resolvedAt: new Date() },
     })
     if (count === 0) return { ok: false, error: ALREADY_RESOLVED }
-    revalidatePath('/chat', 'layout')
+    revalidatePath('/', 'layout')
     return { ok: true }
   }
 
@@ -47,44 +62,36 @@ export async function resolveAgentAction(
   if (!proposal) return { ok: false, error: 'La acción propuesta no es válida.' }
 
   if (proposal.type === 'propose_folder_change') {
-    const conversation = await db.conversation.findFirst({
-      where: { id: action.conversationId, userId },
-      select: { subjectId: true, title: true },
-    })
-    if (!conversation) return { ok: false, error: 'No encontramos la conversación.' }
-    const historyNode = action.message.nodeId
-      ? await db.conversationNode.findFirst({
-          where: { id: action.message.nodeId, conversationId: action.conversationId, userId },
-          select: { id: true, alias: true },
-        })
-      : null
-    const source: FolderSourceRef = {
-      conversationId: action.conversationId,
-      messageId: action.message.id,
-      historyNodeId: historyNode?.id ?? null,
-      label: historyNode ? `${conversation.title} › ${historyNode.alias}` : conversation.title,
-    }
-    try {
-      const folderNodeId = await db.$transaction(async (tx) => {
-        const claimed = await tx.agentAction.updateMany({
-          where: { id: actionId, userId, status: 'proposed' },
-          data: { status: 'accepted', resolvedAt: new Date() },
-        })
-        if (claimed.count === 0) return null
-        const { nodeId } = await applyFolderProposal(tx, userId, conversation.subjectId, proposal, source)
-        await tx.agentAction.update({ where: { id: actionId }, data: { resultNodeId: nodeId } })
-        return nodeId
-      })
-      if (!folderNodeId) return { ok: false, error: ALREADY_RESOLVED }
-    } catch (error) {
-      if (error instanceof FolderError) return { ok: false, error: error.message }
-      throw error
-    }
-    revalidatePath('/folder')
-    revalidatePath('/chat', 'layout')
-    return { ok: true }
+    return acceptFolderChange(userId, action as ActionRow, proposal)
   }
+  if (proposal.type === 'propose_question_node') {
+    return acceptQuestionNode(userId, action as ActionRow, proposal)
+  }
+  return acceptConversationBranch(userId, action as ActionRow, proposal)
+}
 
+/** Marca la acción como aceptada. Devuelve false si otra pestaña se adelantó. */
+async function claim(
+  tx: Parameters<Parameters<typeof db.$transaction>[0]>[0],
+  userId: string,
+  actionId: string,
+) {
+  const { count } = await tx.agentAction.updateMany({
+    where: { id: actionId, userId, status: 'proposed' },
+    data: { status: 'accepted', resolvedAt: new Date() },
+  })
+  return count > 0
+}
+
+/**
+ * Abre una rama nueva en el árbol de la conversación. El nodo padre no lo decide
+ * el modelo: es la rama donde se hizo la propuesta (se lee del mensaje).
+ */
+async function acceptConversationBranch(
+  userId: string,
+  action: ActionRow,
+  proposal: { alias: string; description: string },
+): Promise<ActionResult<{ nodeId?: string }>> {
   const parentId = action.message.nodeId
   if (!parentId) return { ok: false, error: 'La rama de origen ya no existe. Descartá la propuesta.' }
 
@@ -104,11 +111,7 @@ export async function resolveAgentAction(
   }
 
   const nodeId = await db.$transaction(async (tx) => {
-    const claimed = await tx.agentAction.updateMany({
-      where: { id: actionId, userId, status: 'proposed' },
-      data: { status: 'accepted', resolvedAt: new Date() },
-    })
-    if (claimed.count === 0) return null
+    if (!(await claim(tx, userId, action.id))) return null
     const node = await tx.conversationNode.create({
       data: {
         conversationId: action.conversationId,
@@ -121,7 +124,7 @@ export async function resolveAgentAction(
       },
       select: { id: true },
     })
-    await tx.agentAction.update({ where: { id: actionId }, data: { resultNodeId: node.id } })
+    await tx.agentAction.update({ where: { id: action.id }, data: { resultNodeId: node.id } })
     await tx.conversation.updateMany({
       where: { id: action.conversationId, userId },
       data: { activeNodeId: node.id },
@@ -130,8 +133,107 @@ export async function resolveAgentAction(
   })
   if (!nodeId) return { ok: false, error: ALREADY_RESOLVED }
 
-  revalidatePath('/chat', 'layout')
+  revalidatePath('/', 'layout')
   return { ok: true, data: { nodeId } }
+}
+
+/** Agrega un nodo al mapa de dudas de la materia (QuestionNode). */
+async function acceptQuestionNode(
+  userId: string,
+  action: ActionRow,
+  proposal: { parent_node_id: string | null; title: string; description: string },
+): Promise<ActionResult<{ nodeId?: string }>> {
+  const { parent_node_id, title, description } = proposal
+
+  let parentSubjectId: string | null = null
+  let parentPosition: { posX: number; posY: number } | null = null
+  if (parent_node_id) {
+    if (!isUuid(parent_node_id)) return { ok: false, error: 'La acción propuesta no es válida.' }
+    const parent = await db.questionNode.findFirst({
+      where: { id: parent_node_id, userId },
+      select: { subjectId: true, posX: true, posY: true },
+    })
+    if (!parent) return { ok: false, error: 'El nodo padre ya no existe. Descartá la propuesta.' }
+    parentSubjectId = parent.subjectId
+    parentPosition = { posX: parent.posX, posY: parent.posY }
+  }
+
+  const nodeSubjectId = action.conversation.subjectId ?? parentSubjectId
+  const siblingCount = await db.questionNode.count({
+    where: parent_node_id
+      ? { userId, parentId: parent_node_id }
+      : { userId, parentId: null, subjectId: nodeSubjectId },
+  })
+  const position = nextNodePosition({ parent: parentPosition, siblingCount })
+
+  const nodeId = await db.$transaction(async (tx) => {
+    if (!(await claim(tx, userId, action.id))) return null
+    const node = await tx.questionNode.create({
+      data: {
+        userId,
+        question: title,
+        answerSummary: description,
+        parentId: parent_node_id,
+        subjectId: nodeSubjectId,
+        conversationId: action.conversationId,
+        messageId: action.messageId,
+        ...position,
+      },
+      select: { id: true },
+    })
+    await tx.agentAction.update({ where: { id: action.id }, data: { resultNodeId: node.id } })
+    return node.id
+  })
+  if (!nodeId) return { ok: false, error: ALREADY_RESOLVED }
+
+  revalidatePath('/', 'layout')
+  return { ok: true, data: { nodeId } }
+}
+
+/**
+ * Ejecuta un cambio en la Carpeta ya autorizado por la persona.
+ *
+ * Todo lo que el agente nombró se vuelve a buscar acá filtrando por userId: un
+ * id inventado o ajeno hace fallar la operación en lugar de tocar datos de otro.
+ */
+async function acceptFolderChange(
+  userId: string,
+  action: ActionRow,
+  proposal: Parameters<typeof applyFolderProposal>[3],
+): Promise<ActionResult<{ nodeId?: string }>> {
+  const subjectId = action.conversation.subjectId
+  if (!subjectId) {
+    return { ok: false, error: 'La conversación no pertenece a una materia, así que no hay Carpeta.' }
+  }
+
+  const historyNode = action.message.nodeId
+    ? await db.conversationNode.findFirst({
+        where: { id: action.message.nodeId, conversationId: action.conversationId, userId },
+        select: { id: true, alias: true },
+      })
+    : null
+  const source: FolderSourceRef = {
+    conversationId: action.conversationId,
+    messageId: action.message.id,
+    historyNodeId: historyNode?.id ?? null,
+    questionNodeId: null,
+    label: historyNode ? `${action.conversation.title} › ${historyNode.alias}` : action.conversation.title,
+  }
+
+  try {
+    const folderNodeId = await db.$transaction(async (tx) => {
+      if (!(await claim(tx, userId, action.id))) return null
+      const { nodeId } = await applyFolderProposal(tx, userId, subjectId, proposal, source)
+      await tx.agentAction.update({ where: { id: action.id }, data: { resultNodeId: nodeId } })
+      return nodeId
+    })
+    if (!folderNodeId) return { ok: false, error: ALREADY_RESOLVED }
+    revalidatePath('/', 'layout')
+    return { ok: true, data: { nodeId: folderNodeId } }
+  } catch (error) {
+    if (error instanceof FolderError) return { ok: false, error: error.message }
+    throw error
+  }
 }
 
 export async function setConversationMode(
@@ -148,7 +250,7 @@ export async function setConversationMode(
     data: { mode },
   })
   if (count === 0) return { ok: false, error: 'No encontramos la conversación.' }
-  revalidatePath('/chat', 'layout')
+  revalidatePath('/', 'layout')
   return { ok: true }
 }
 
@@ -172,6 +274,6 @@ export async function setActiveNode(
     where: { id: conversationId, userId },
     data: { activeNodeId: nodeId },
   })
-  revalidatePath('/chat', 'layout')
+  revalidatePath('/', 'layout')
   return { ok: true }
 }

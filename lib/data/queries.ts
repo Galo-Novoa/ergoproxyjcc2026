@@ -13,6 +13,9 @@ const uuid = z.uuid()
 export const isUuid = (value: string) => uuid.safeParse(value).success
 
 export async function getOverview(userId: string) {
+  if (!isDatabaseConfigured) {
+    return { subjects: 0, files: 0, conversations: 0, documents: 0, openQuestions: 0 }
+  }
   const scope = await readScope(userId)
   const [subjects, files, conversations, documents, openQuestions] = await Promise.all([
     db.subject.count({ where: scope }),
@@ -63,6 +66,7 @@ export async function getGeneralSummary(userId: string) {
 }
 
 export async function listGeneralFiles(userId: string) {
+  if (!isDatabaseConfigured) return []
   const scope = await readScope(userId)
   return db.file.findMany({
     where: { AND: [scope, { subjectId: null }] },
@@ -71,6 +75,7 @@ export async function listGeneralFiles(userId: string) {
 }
 
 export async function listGeneralDocuments(userId: string) {
+  if (!isDatabaseConfigured) return []
   const scope = await readScope(userId)
   return db.document.findMany({
     where: { AND: [scope, { subjectId: null }] },
@@ -119,6 +124,9 @@ export async function searchAll(userId: string, query: string) {
 }
 
 export async function listSubjectOptions(userId: string) {
+  if (!isDatabaseConfigured) {
+    return (await getSubjectsRepo().list(userId)).map(({ id, name }) => ({ id, name }))
+  }
   const scope = await readScope(userId)
   return db.subject.findMany({
     where: scope,
@@ -132,6 +140,7 @@ export async function getSubject(userId: string, id: string) {
 }
 
 export async function listFiles(userId: string, subjectId?: string) {
+  if (!isDatabaseConfigured) return []
   const scope = await readScope(userId)
   const rows = await db.file.findMany({
     where: { AND: [scope, subjectId ? { subjectId } : {}] },
@@ -154,6 +163,7 @@ export async function listChatFiles(userId: string) {
 }
 
 export async function listDocuments(userId: string, subjectId?: string) {
+  if (!isDatabaseConfigured) return []
   const scope = await readScope(userId)
   const rows = await db.document.findMany({
     where: { AND: [scope, subjectId ? { subjectId } : {}] },
@@ -171,6 +181,7 @@ export async function listDocuments(userId: string, subjectId?: string) {
 }
 
 export async function getDocument(userId: string, id: string) {
+  if (!isDatabaseConfigured) return undefined
   if (!isUuid(id)) return undefined
   const scope = await readScope(userId)
   const row = await db.document.findFirst({
@@ -183,6 +194,7 @@ export async function getDocument(userId: string, id: string) {
 }
 
 export async function listConversations(userId: string, subjectId?: string) {
+  if (!isDatabaseConfigured) return []
   const rows = await db.conversation.findMany({
     where: { userId, ...(subjectId ? { subjectId } : {}) },
     include: {
@@ -199,6 +211,7 @@ export async function listConversations(userId: string, subjectId?: string) {
 }
 
 export async function getConversationWithMessages(userId: string, id: string) {
+  if (!isDatabaseConfigured) return undefined
   if (!isUuid(id)) return undefined
   const row = await db.conversation.findFirst({
     where: { id, userId },
@@ -234,9 +247,64 @@ export async function getConversationHeader(userId: string, id: string) {
 }
 
 export async function listQuestionNodes(userId: string, subjectId?: string) {
+  if (!isDatabaseConfigured) return []
   return db.questionNode.findMany({
     where: { userId, ...(subjectId ? { subjectId } : {}) },
     orderBy: { createdAt: 'asc' },
+  })
+}
+
+/**
+ * Grafo completo de la Carpeta de una materia: apuntes, relaciones y de dónde
+ * salió cada nota. Es independiente del mapa de dudas.
+ */
+export async function getFolderGraph(userId: string, subjectId: string) {
+  if (!isDatabaseConfigured || !isUuid(subjectId)) return { nodes: [], edges: [] }
+
+  const [nodes, edges] = await Promise.all([
+    db.folderNode.findMany({
+      where: { userId, subjectId },
+      include: {
+        sources: {
+          select: {
+            id: true,
+            label: true,
+            conversationId: true,
+            messageId: true,
+            questionNodeId: true,
+            conversation: { select: { title: true } },
+            questionNode: { select: { question: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    }),
+    db.folderEdge.findMany({
+      where: { userId, from: { subjectId } },
+      select: { id: true, fromId: true, toId: true, kind: true },
+    }),
+  ])
+
+  return { nodes, edges }
+}
+
+/** Busca apuntes por título y por contenido, dentro de una materia. */
+export async function searchFolderNodes(userId: string, subjectId: string, query: string) {
+  if (!isDatabaseConfigured || !isUuid(subjectId)) return []
+  const term = query.trim()
+  if (!term) return []
+
+  const contains = { contains: term, mode: 'insensitive' } as const
+  return db.folderNode.findMany({
+    where: {
+      userId,
+      subjectId,
+      OR: [{ title: contains }, { contentMd: contains }],
+    },
+    select: { id: true, title: true, type: true },
+    orderBy: { updatedAt: 'desc' },
+    take: 20,
   })
 }
 
