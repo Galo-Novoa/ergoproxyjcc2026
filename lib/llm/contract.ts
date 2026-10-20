@@ -59,12 +59,19 @@ export const proposeHistoryBranchSchema = z.object({
   description: z.string().trim().min(1).max(200),
 })
 
-/** Nodo nuevo en el mapa de dudas de la materia (QuestionNode). */
-export const proposeQuestionNodeSchema = z.object({
+/**
+ * Nodo nuevo en el mapa de dudas de la materia (QuestionNode). La versión "plain" es la que se
+ * le exige al proveedor: sin `.default`, para que `parent_node_id` quede en `required`.
+ */
+const proposeQuestionNodePlain = z.object({
   type: z.literal('propose_question_node'),
-  parent_node_id: z.string().trim().max(64).nullable().default(null),
+  parent_node_id: z.string().trim().max(64).nullable(),
   title: z.string().trim().min(1).max(60),
   description: z.string().trim().min(1).max(200),
+})
+
+export const proposeQuestionNodeSchema = proposeQuestionNodePlain.extend({
+  parent_node_id: proposeQuestionNodePlain.shape.parent_node_id.default(null),
 })
 
 export const agentActionSchema = z.union([
@@ -130,7 +137,7 @@ export const agentResponseSchema = z.object({
   actions: z.array(
     z.union([
       proposeHistoryBranchSchema,
-      proposeQuestionNodeSchema,
+      proposeQuestionNodePlain,
       proposeFolderChangePlain,
       proposeDiagramSchema,
       generateFileSchema,

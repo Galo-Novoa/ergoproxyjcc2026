@@ -41,6 +41,15 @@ export const jevSchema = z.object({
 
 export type JevClassification = z.infer<typeof jevSchema>
 
+/**
+ * Lo que se le exige al proveedor: sin `.default`, porque un campo con default deja de
+ * figurar en `required` y OpenAI rechaza el esquema estricto (HTTP 400).
+ */
+export const jevProviderSchema = jevSchema.extend({
+  isExercise: z.boolean(),
+  evidence: z.array(z.string().trim().min(1).max(120)).max(6),
+})
+
 /** Esquema tolerante para recuperar JSON crudo del proveedor. */
 export const jevLenientSchema = z.object({
   intent: z.enum(JEV_INTENTS).nullish(),

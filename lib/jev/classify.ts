@@ -4,6 +4,7 @@ import { generateText, NoObjectGeneratedError, Output } from 'ai'
 import { getLlmServerConfig } from '@/lib/llm/config'
 import {
   jevLenientSchema,
+  jevProviderSchema,
   jevSchema,
   JEV_INTENTS,
   JEV_INTENT_LABELS,
@@ -75,7 +76,7 @@ export async function classifyIntent(text: string, context?: string): Promise<Je
       model,
       system: SYSTEM,
       messages: [{ role: 'user', content: input }],
-      output: Output.object({ schema: jevSchema }),
+      output: Output.object({ schema: jevProviderSchema }),
       timeout: 30_000,
     })
     const parsed = jevSchema.safeParse(result.output)

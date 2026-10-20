@@ -35,25 +35,39 @@ export const FOLDER_OPERATION_LABELS: Record<FolderOperation, string> = {
  * Los ids de nodos los valida el servidor contra la materia: el modelo solo puede referirse
  * a apuntes que ya existen en la lista del prompt.
  */
-const proposeFolderChangeBase = z.object({
+/**
+ * Versión sin refinamientos: la que se le exige al proveedor (JSON Schema plano). Los campos
+ * anulables NO llevan `.default`: con default dejan de figurar en `required` y OpenAI rechaza
+ * el esquema estricto (HTTP 400). El modelo siempre los manda, con `null` si no aplican.
+ */
+export const proposeFolderChangePlain = z.object({
   type: z.literal('propose_folder_change'),
   operation: z.enum(FOLDER_OPERATIONS),
   /** Nodo sobre el que se opera (actualizar, colgar un hijo, relacionar). */
-  target_node_id: z.string().trim().max(64).nullable().default(null),
+  target_node_id: z.string().trim().max(64).nullable(),
   /** Segundo nodo, solo para relate_nodes. */
-  related_node_id: z.string().trim().max(64).nullable().default(null),
-  edge_kind: z.enum(FOLDER_EDGE_KINDS).nullable().default(null),
-  node_type: z.enum(FOLDER_NODE_TYPES).nullable().default(null),
-  title: z.string().trim().max(TITLE_MAX).nullable().default(null),
-  content_md: z.string().trim().max(CONTENT_MAX).nullable().default(null),
+  related_node_id: z.string().trim().max(64).nullable(),
+  edge_kind: z.enum(FOLDER_EDGE_KINDS).nullable(),
+  node_type: z.enum(FOLDER_NODE_TYPES).nullable(),
+  title: z.string().trim().max(TITLE_MAX).nullable(),
+  content_md: z.string().trim().max(CONTENT_MAX).nullable(),
   /** Resolución, solo para create_exercise_with_solution. */
-  solution_md: z.string().trim().max(CONTENT_MAX).nullable().default(null),
+  solution_md: z.string().trim().max(CONTENT_MAX).nullable(),
   /** Por qué vale la pena: se le muestra a la persona en la vista previa. */
   reason: z.string().trim().min(1).max(REASON_MAX),
 })
 
-/** Versión sin refinamientos: la que se le exige al proveedor (JSON Schema plano). */
-export const proposeFolderChangePlain = proposeFolderChangeBase
+/** Para payloads guardados: los anulables que falten se completan con `null`. */
+const { shape } = proposeFolderChangePlain
+const proposeFolderChangeBase = proposeFolderChangePlain.extend({
+  target_node_id: shape.target_node_id.default(null),
+  related_node_id: shape.related_node_id.default(null),
+  edge_kind: shape.edge_kind.default(null),
+  node_type: shape.node_type.default(null),
+  title: shape.title.default(null),
+  content_md: shape.content_md.default(null),
+  solution_md: shape.solution_md.default(null),
+})
 
 /** Versión con la validación por operación, para parsear payloads guardados. */
 export const proposeFolderChangeSchema = proposeFolderChangeBase.superRefine((value, ctx) => {
