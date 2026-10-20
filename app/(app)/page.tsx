@@ -1,7 +1,7 @@
 import { Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
 import { SubjectGrid, type SubjectCard } from '@/components/nodo/subject-grid'
-import { getOverview, listSubjects } from '@/lib/data/queries'
+import { listSubjects } from '@/lib/data/queries'
 import { isDatabaseConfigured } from '@/lib/db/config'
 import { requireUser } from '@/lib/session'
 
@@ -15,7 +15,7 @@ const dateFormat = new Intl.DateTimeFormat('es-AR', {
 
 export default async function SubjectsDashboardPage() {
   const user = await requireUser()
-  const [subjects, overview] = await Promise.all([listSubjects(user.id), getOverview(user.id)])
+  const subjects = await listSubjects(user.id)
 
   const cards: SubjectCard[] = subjects.map((subject) => ({
     id: subject.id,
@@ -35,21 +35,6 @@ export default async function SubjectsDashboardPage() {
             Mis materias <span className="wave">⌁</span>
           </h1>
           <p>Continuá donde lo dejaste o empezá algo nuevo.</p>
-        </div>
-      </div>
-
-      <div className="stats-row">
-        <div>
-          <strong>{overview.subjects}</strong>
-          <span>Materias activas</span>
-        </div>
-        <div>
-          <strong>{overview.conversations}</strong>
-          <span>Sesiones de estudio</span>
-        </div>
-        <div>
-          <strong>{overview.openQuestions}</strong>
-          <span>Dudas abiertas</span>
         </div>
       </div>
 

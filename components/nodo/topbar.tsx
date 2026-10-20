@@ -52,7 +52,7 @@ export function Topbar({ user }: { user: { name: string; email: string } }) {
         <span className="brand-mark">
           <GitBranch size={17} />
         </span>
-        <span>nodo</span>
+        <span>Landscape</span>
       </Link>
       <div className="top-actions">
         <Link href="/settings" className="icon-button" aria-label="Ajustes">

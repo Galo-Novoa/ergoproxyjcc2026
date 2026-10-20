@@ -102,7 +102,7 @@ export function AppSidebar({
                   <GraduationCap className="size-4" />
                 </span>
                 <span className="flex flex-col leading-tight">
-                  <span className="font-serif text-base font-semibold">Ergoproxy</span>
+                  <span className="font-serif text-base font-semibold">Landscape</span>
                   <span className="text-xs text-muted-foreground">FCEIA · UNR</span>
                 </span>
               </Link>

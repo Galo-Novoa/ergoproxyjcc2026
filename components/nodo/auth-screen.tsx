@@ -52,7 +52,7 @@ export function AuthScreen({ mode }: { mode: 'sign-in' | 'sign-up' }) {
           <span className="brand-mark">
             <GitBranch size={19} />
           </span>
-          <span>nodo</span>
+          <span>Landscape</span>
         </div>
         <div className="login-copy">
           <div className="eyebrow">TU ESPACIO PARA APRENDER</div>

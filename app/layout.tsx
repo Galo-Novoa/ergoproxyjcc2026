@@ -17,8 +17,8 @@ const serif = Source_Serif_4({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Ergoproxy — Estudio activo para la FCEIA',
-    template: '%s · Ergoproxy',
+    default: 'Landscape — Estudio activo para la FCEIA',
+    template: '%s · Landscape',
   },
   description:
     'Convertí tus materiales de estudio en una experiencia activa: materias, archivos, conversaciones, mapa de dudas y documentos en un solo lugar. Para estudiantes de la FCEIA (UNR).',

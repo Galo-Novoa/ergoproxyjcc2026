@@ -23,7 +23,7 @@ export function AuthShell({
           <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <GraduationCap className="size-5" />
           </span>
-          <span className="font-serif text-xl font-semibold">Ergoproxy</span>
+          <span className="font-serif text-xl font-semibold">Landscape</span>
         </div>
         <div className="flex max-w-md flex-col gap-8">
           <h2 className="text-4xl leading-tight font-semibold">
@@ -52,7 +52,7 @@ export function AuthShell({
             <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <GraduationCap className="size-5" />
             </span>
-            <span className="font-serif text-xl font-semibold">Ergoproxy</span>
+            <span className="font-serif text-xl font-semibold">Landscape</span>
           </div>
           <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-semibold">{title}</h1>
