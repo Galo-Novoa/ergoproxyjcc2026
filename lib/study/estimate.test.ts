@@ -115,4 +115,33 @@ describe('estimateDifficulty', () => {
     const scores = estimateDifficulty([theme('t1', 'Integrales por partes')], [], [])
     expect(scores).toEqual([])
   })
+
+  it('acumula repetición: más mensajes sobre el mismo tema pesan más', () => {
+    const themes = [theme('t1', 'Integrales por partes')]
+    const one = estimateDifficulty(themes, [msg('m1', 'integrales por partes')], [])
+    const three = estimateDifficulty(
+      themes,
+      [
+        msg('m1', 'integrales por partes'),
+        msg('m2', 'integrales por partes'),
+        msg('m3', 'integrales por partes'),
+      ],
+      [],
+    )
+    expect(three[0].score).toBeGreaterThan(one[0].score)
+    expect(three[0].byKind.question).toBe(3)
+    expect(three[0].signals).toBe(3)
+    expect(three[0].reasons.some((r) => r.startsWith('3 '))).toBe(true)
+  })
+
+  it('cuenta una señal por fuente aunque se repita el mismo tipo', () => {
+    // Dos mensajes distintos con la misma señal de aclaración ⇒ cuenta 2, no 1.
+    const themes = [theme('t1', 'Integrales por partes')]
+    const scores = estimateDifficulty(
+      themes,
+      [msg('m1', 'no entiendo integrales por partes'), msg('m2', 'no entiendo integrales por partes otra vez')],
+      [],
+    )
+    expect(scores[0].byKind.clarification).toBe(2)
+  })
 })

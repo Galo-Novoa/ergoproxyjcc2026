@@ -138,7 +138,7 @@ export async function applyFolderProposal(
     }
     const parentPosition = p.target_node_id
       ? await tx.folderNode.findFirst({
-          where: { id: p.target_node_id },
+          where: { id: p.target_node_id, userId },
           select: { posX: true, posY: true },
         })
       : null

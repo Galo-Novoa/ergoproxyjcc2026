@@ -3,11 +3,11 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { isDatabaseConfigured } from '@/lib/db/config'
+import { isDatabaseConfigured, isDemoMode } from '@/lib/db/config'
 
 type SessionUser = { id: string; name: string; email: string }
 
-// Identidad local del modo demo: solo existe cuando no hay base de datos.
+// Identidad local del modo demo: solo existe cuando no hay base y NO estamos en producción.
 const DEMO_USER: SessionUser = {
   id: 'demo-user',
   name: 'Usuario demo',
@@ -15,13 +15,17 @@ const DEMO_USER: SessionUser = {
 }
 
 /**
- * Las acciones que escriben en Postgres no pueden correr con la identidad demo
- * (su id no existe en la tabla de usuarios). Devuelven este error en su lugar.
+ * Las acciones que escriben en Postgres no pueden correr sin base de datos (la
+ * identidad demo no existe en la tabla de usuarios). Devuelven este error.
  */
 export function demoModeBlock(): { ok: false; error: string } | null {
-  return isDatabaseConfigured
-    ? null
-    : { ok: false, error: 'Modo demo: conectá una base de datos para guardar datos.' }
+  if (isDatabaseConfigured) return null
+  return {
+    ok: false,
+    error: isDemoMode
+      ? 'Modo demo: conectá una base de datos para guardar datos.'
+      : 'La aplicación no tiene base de datos configurada.',
+  }
 }
 
 export const getSession = cache(async () =>
@@ -30,7 +34,7 @@ export const getSession = cache(async () =>
 
 /** Para páginas: redirige a /sign-in si no hay sesión válida en el servidor. */
 export async function requireUser(): Promise<SessionUser> {
-  if (!isDatabaseConfigured) return DEMO_USER
+  if (isDemoMode) return DEMO_USER
   const session = await getSession()
   if (!session?.user) redirect('/sign-in')
   return session.user
@@ -38,7 +42,7 @@ export async function requireUser(): Promise<SessionUser> {
 
 /** Para server actions y route handlers: lanza si no hay sesión. */
 export async function getUserId() {
-  if (!isDatabaseConfigured) return DEMO_USER.id
+  if (isDemoMode) return DEMO_USER.id
   const session = await getSession()
   if (!session?.user) throw new Error('No autorizado')
   return session.user.id

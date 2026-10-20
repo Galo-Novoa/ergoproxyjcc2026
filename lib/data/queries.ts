@@ -141,6 +141,7 @@ export async function getSubject(userId: string, id: string) {
 
 export async function listFiles(userId: string, subjectId?: string) {
   if (!isDatabaseConfigured) return []
+  if (subjectId && !isUuid(subjectId)) return []
   const scope = await readScope(userId)
   const rows = await db.file.findMany({
     where: { AND: [scope, subjectId ? { subjectId } : {}] },
@@ -152,6 +153,7 @@ export async function listFiles(userId: string, subjectId?: string) {
 
 /** Archivos que el chat puede consultar: legibles por la persona y ya indexados. */
 export async function listChatFiles(userId: string) {
+  if (!isDatabaseConfigured) return []
   const scope = await readScope(userId)
   const rows = await db.file.findMany({
     where: { AND: [scope, { status: 'ready', indexStatus: 'indexed' }] },

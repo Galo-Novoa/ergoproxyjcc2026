@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { readScope, writeScope } from '@/lib/authz'
 import { isUuid } from '@/lib/data/queries'
 import { db } from '@/lib/db'
+import { isDatabaseConfigured } from '@/lib/db/config'
 import { MAX_FILE_SIZE_BYTES, filePathnameFor } from '@/lib/files/constants'
 import { indexFile } from '@/lib/rag/index-file'
 import { demoModeBlock, getUserId } from '@/lib/session'
@@ -194,6 +195,7 @@ export async function deleteFile(fileId: string): Promise<ActionResult> {
 
 /** Páginas extraídas de un archivo, para citarlas por número. Solo lectura. */
 export async function getFilePages(fileId: string) {
+  if (!isDatabaseConfigured) return []
   const userId = await getUserId()
   if (!isUuid(fileId)) return []
   const scope = await readScope(userId)

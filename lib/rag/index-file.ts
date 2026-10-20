@@ -13,7 +13,7 @@ export type IndexResult = { ok: true; chunkCount: number } | { ok: false; error:
  * Parte el texto extraído de un archivo en fragmentos por página, les calcula el embedding y
  * los guarda con los permisos del archivo. Es idempotente (reemplaza los fragmentos previos) y
  * nunca lanza: el resultado queda en `File.indexStatus`. El que llama debe haber verificado
- * antes que la persona puede escribir sobre el archivo.
+ * antes que la persona puede escribir sobre el archivo (ver `writeScope` en los callers).
  */
 export async function indexFile(fileId: string): Promise<IndexResult> {
   const file = await db.file.findUnique({

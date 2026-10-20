@@ -59,14 +59,13 @@ function distance(theme: ThemeNode, conversationId: string | null, depth: number
 }
 
 function addContribution(
-  bucket: Map<SignalKind, Contribution>,
+  bucket: Map<string, Contribution>,
   contribution: Contribution,
 ) {
-  // Dedupe por tipo + fuente: el mismo mensaje no se cuenta dos veces.
-  const key: SignalKind = contribution.kind
-  const existing = bucket.get(key)
-  if (existing && existing.ref === contribution.ref) return
-  bucket.set(key, contribution)
+  // Dedupe por tipo + fuente: el mismo mensaje no se cuenta dos veces, pero
+  // fuentes distintas del mismo tipo SÍ acumulan (dos preguntas sobre el mismo
+  // tema pesan más que una). La clave es `${kind}:${ref}`.
+  bucket.set(`${contribution.kind}:${contribution.ref}`, contribution)
 }
 
 function summarizeReasons(byKind: Partial<Record<SignalKind, number>>): string[] {
@@ -102,7 +101,7 @@ export function estimateDifficulty(
   const decay = opts?.decay ?? DIFFICULTY_DECAY
   const weight = (distance: number) => base * Math.pow(decay, Math.max(0, distance))
 
-  const buckets = new Map<string, Map<SignalKind, Contribution>>()
+  const buckets = new Map<string, Map<string, Contribution>>()
   for (const theme of themes) buckets.set(theme.id, new Map())
 
   const themeById = new Map(themes.map((t) => [t.id, t]))

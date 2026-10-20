@@ -3,16 +3,13 @@ import 'server-only'
 import { APICallError, generateText, NoObjectGeneratedError, Output, RetryError, type LanguageModel } from 'ai'
 import { getLlmFallback, getLlmServerConfig } from '@/lib/llm/config'
 import {
-  agentActionSchema,
   agentResponseSchema,
-  lenientResponseSchema,
   MODE_LABELS,
-  type AgentActionProposal,
   type AgentResponse,
   type ConversationMode,
   type MessageMetadata,
-  type RecoveryKind,
 } from '@/lib/llm/contract'
+import { recover, validateActions } from '@/lib/llm/recover'
 import { buildRagPrompt } from '@/lib/rag/prompt'
 import type { RetrievalResult } from '@/lib/rag/retrieve'
 import type { LabeledText } from '@/lib/tree/compose'
@@ -224,72 +221,6 @@ function buildSystemPrompt(
     .join('\n')
 }
 
-function stripFences(text: string) {
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i)
-  return (fenced ? fenced[1] : text).trim()
-}
-
-function extractJson(text: string): unknown {
-  const candidate = stripFences(text)
-  try {
-    return JSON.parse(candidate)
-  } catch {
-    const start = candidate.indexOf('{')
-    const end = candidate.lastIndexOf('}')
-    if (start === -1 || end <= start) return undefined
-    try {
-      return JSON.parse(candidate.slice(start, end + 1))
-    } catch {
-      return undefined
-    }
-  }
-}
-
-/** Valida cada acción por separado: las inválidas se descartan, nunca se ejecutan. */
-function validateActions(raw: unknown[]) {
-  const valid: AgentActionProposal[] = []
-  let dropped = 0
-  for (const item of raw) {
-    const parsed = agentActionSchema.safeParse(item)
-    if (parsed.success) valid.push(parsed.data)
-    else dropped += 1
-  }
-  return { valid, dropped }
-}
-
-/** Recupera una respuesta cuando el proveedor no cumplió el esquema. Devuelve null si no hay texto utilizable. */
-function recover(
-  rawText: string | undefined,
-): { response: AgentResponse; dropped: number; kind: RecoveryKind } | null {
-  const text = rawText?.trim()
-  if (!text) return null
-
-  const json = extractJson(text)
-  const lenient = lenientResponseSchema.safeParse(json)
-  if (lenient.success) {
-    const { valid, dropped } = validateActions(lenient.data.actions ?? [])
-    return {
-      response: {
-        output: lenient.data.output,
-        description: lenient.data.description ?? null,
-        grounding: lenient.data.grounding ?? 'general',
-        actions: valid,
-      },
-      dropped,
-      kind: 'extracted_json',
-    }
-  }
-
-  // Si el texto parece un JSON roto, no se lo muestra tal cual al estudiante.
-  if (json !== undefined || /^\s*[{[]/.test(stripFences(text))) return null
-
-  return {
-    response: { output: text, description: null, grounding: 'general', actions: [] },
-    dropped: 0,
-    kind: 'plain_text',
-  }
-}
-
 export class AgentError extends Error {}
 
 function providerStatus(error: unknown): number | undefined {
@@ -345,9 +276,13 @@ export async function runAgent({
       result = await generate(fallback.model)
     }
     const { output, description, grounding, actions } = result.output
+    // El esquema de generación usa una variante "plana" de las propuestas (sin
+    // refinamientos, por límites del proveedor). Acá se revalidan una por una con
+    // el contrato estricto: las que no cumplen se descartan y no llegan a guardarse.
+    const { valid, dropped } = validateActions(actions)
     return {
-      response: { output, description, grounding, actions },
-      metadata: { model: modelId, recovery: 'none', droppedActions: 0 },
+      response: { output, description, grounding, actions: valid },
+      metadata: { model: modelId, recovery: 'none', droppedActions: dropped },
     }
   } catch (error) {
     const cause = RetryError.isInstance(error) ? error.lastError : error

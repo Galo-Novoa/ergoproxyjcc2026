@@ -360,6 +360,11 @@ async function acceptGeneratedFile(
   action: ActionRow,
   proposal: { format: 'md' | 'csv' | 'txt'; file_name: string; content: string },
 ): Promise<ActionResult<{ nodeId?: string }>> {
+  // Reclama la acción ANTES de materializar: si dos pestañas aceptan a la vez, solo
+  // una gana y se evita crear dos archivos (y dos blobs) para la misma propuesta.
+  const claimed = await db.$transaction((tx) => claim(tx, userId, action.id))
+  if (!claimed) return { ok: false, error: ALREADY_RESOLVED }
+
   const result = await materializeGeneratedFile({
     userId,
     conversationId: action.conversationId,
@@ -368,13 +373,14 @@ async function acceptGeneratedFile(
     format: proposal.format,
     content: proposal.content,
   })
-  if (!result.ok) return { ok: false, error: result.error }
-
-  const { count } = await db.agentAction.updateMany({
-    where: { id: action.id, userId, status: 'proposed' },
-    data: { status: 'accepted', resolvedAt: new Date() },
-  })
-  if (count === 0) return { ok: false, error: ALREADY_RESOLVED }
+  if (!result.ok) {
+    // Si no se pudo generar, se libera la acción para que se pueda reintentar.
+    await db.agentAction.updateMany({
+      where: { id: action.id, userId, status: 'accepted' },
+      data: { status: 'proposed', resolvedAt: null },
+    })
+    return { ok: false, error: result.error }
+  }
 
   revalidatePath('/', 'layout')
   return { ok: true }

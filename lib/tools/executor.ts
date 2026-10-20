@@ -22,10 +22,14 @@ import { runWebSearch, type WebSearchOutcome } from '@/lib/tools/web-search'
 
 export { callSignature }
 
-/** ¿Esta misma llamada ya se ejecutó en este mensaje? Evita repetirla por reintentos. */
-export async function alreadyExecuted(signature: string, conversationId: string | null): Promise<boolean> {
+/** ¿Esta misma llamada ya se ejecutó antes? Evita repetirla por reintentos (y nunca cruza usuarios). */
+export async function alreadyExecuted(
+  signature: string,
+  userId: string,
+  conversationId: string | null,
+): Promise<boolean> {
   const existing = await db.toolCall.findFirst({
-    where: { signature, ...(conversationId ? { conversationId } : {}) },
+    where: { signature, userId, ...(conversationId ? { conversationId } : {}) },
     select: { id: true },
   })
   return Boolean(existing)
@@ -91,7 +95,7 @@ export async function executeReadTool(input: {
   const kind = isToolName(tool) ? TOOL_KIND_BY_NAME[tool] : 'read'
   const signature = callSignature(tool, input.args)
 
-  if (await alreadyExecuted(signature, conversationId)) {
+  if (await alreadyExecuted(signature, userId, conversationId)) {
     await logToolCall({ ...input, kind, status: 'skipped_duplicate', signature })
     return { tool, label, status: 'skipped_duplicate' }
   }

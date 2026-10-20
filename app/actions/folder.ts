@@ -218,6 +218,7 @@ export async function searchFolder(
   const blocked = demoModeBlock()
   if (blocked) return blocked
   const userId = await getUserId()
+  if (!isUuid(subjectId)) return { ok: false, error: 'No encontramos la materia.' }
 
   // Solo lectura: alcanza con poder ver la materia.
   const scope = await readScope(userId)
